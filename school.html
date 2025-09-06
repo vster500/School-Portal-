@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Portal</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <h1>School Portal</h1>
+  <h2>Notifications</h2>
+  <div id="notices"></div>
+
+  <h2>Search Results</h2>
+  <input id="searchRes" placeholder="Admission No">
+  <button onclick="getResult()">Get Result</button>
+  <div id="resOutput"></div>
+
+  <h2>Search Fees</h2>
+  <input id="searchFee" placeholder="Admission No">
+  <button onclick="getFee()">Get Fee</button>
+  <div id="feeOutput"></div>
+
+  <script src="firebase.js"></script>
+  <script>
+    db.collection('notifications').orderBy('date','desc').onSnapshot(snap => {
+      let out = '';
+      snap.forEach(doc => {
+        out += '<p>' + doc.data().msg + '</p>';
+      });
+      document.getElementById('notices').innerHTML = out;
+    });
+
+    function getResult() {
+      const adm = document.getElementById('searchRes').value;
+      db.collection('results').doc(adm).get().then(doc => {
+        if (doc.exists) {
+          document.getElementById('resOutput').innerText = 'Marks: ' + doc.data().marks;
+        } else {
+          document.getElementById('resOutput').innerText = 'No record found';
+        }
+      });
+    }
+
+    function getFee() {
+      const adm = document.getElementById('searchFee').value;
+      db.collection('fees').doc(adm).get().then(doc => {
+        if (doc.exists) {
+          document.getElementById('feeOutput').innerText = 'Balance: ' + doc.data().balance;
+        } else {
+          document.getElementById('feeOutput').innerText = 'No record found';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
