@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Admin Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #444;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+    .totals {
+      display: flex;
+      justify-content: space-around;
+      padding: 15px;
+      background: #fff;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .totals div {
+      font-size: 16px;
+      font-weight: bold;
+    }
+    #chart-container {
+      width: 90%;
+      margin: 20px auto;
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .grid-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      padding: 20px;
+    }
+    .grid-buttons button {
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.2s ease-in-out;
+    }
+    .grid-buttons button:hover {
+      transform: scale(1.05);
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      margin-top: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2 id="schoolName">Loading School...</h2>
+  </header>
+
+  <div class="totals">
+    <div>Students: <span id="totalStudents">0</span></div>
+    <div>Teachers: <span id="totalTeachers">0</span></div>
+    <div>Classes: <span id="totalClasses">0</span></div>
+  </div>
+
+  <div id="chart-container">
+    <canvas id="performanceChart"></canvas>
+  </div>
+
+  <div class="grid-buttons" id="featureButtons">
+    <!-- Buttons will be dynamically loaded from Firestore -->
+  </div>
+
+  <footer>
+    ⓒ Powered by Vster
+  </footer>
+
+  <script type="module">
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.firebasestorage.app",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+    };
+
+    // Init Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Load school info
+    async function loadSchoolInfo() {
+      const schoolRef = await db.collection("schoolInfo").doc("main").get();
+      if (schoolRef.exists) {
+        const data = schoolRef.data();
+        document.getElementById("schoolName").innerText = data.name || "My School";
+        document.getElementById("totalStudents").innerText = data.students || 0;
+        document.getElementById("totalTeachers").innerText = data.teachers || 0;
+        document.getElementById("totalClasses").innerText = data.classes || 0;
+        renderChart(data.performance || {});
+      }
+    }
+
+    // Render performance chart
+    function renderChart(performance) {
+      const ctx = document.getElementById("performanceChart").getContext("2d");
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(performance),
+          datasets: [{
+            label: 'Average Scores',
+            data: Object.values(performance),
+            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+          }]
+        },
+        options: { responsive: true }
+      });
+    }
+
+    // Load feature buttons
+    async function loadFeatures() {
+      const featureGrid = document.getElementById("featureButtons");
+      const snapshot = await db.collection("features").get();
+      snapshot.forEach(doc => {
+        const feature = doc.data();
+        const btn = document.createElement("button");
+        btn.style.background = feature.color || "#555";
+        btn.innerText = feature.name;
+        btn.onclick = () => window.location.href = feature.link;
+        featureGrid.appendChild(btn);
+      });
+    }
+
+    loadSchoolInfo();
+    loadFeatures();
+  </script>
+</body>
+</html>
