@@ -4,13 +4,130 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>School Portal</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Welcome to School Portal</h1>
-  <ul>
-    <li><a href="admin.html">Admin Panel</a></li>
-    <li><a href="school.html">School Portal</a></li>
-    <li><a href="parent.html">Parent Dashboard</a></li>
-  </ul>
+  <header>
+    <h1>School Portal</h1>
+  </header>
+  <main>
+    <section id="notifications">
+      <h2>General Notifications</h2>
+      <div id="notification-container"></div>
+    </section>
+
+    <section id="school-selection">
+      <h2>Select a School</h2>
+      <ul id="school-list"></ul>
+    </section>
+
+    <section id="child-search">
+      <h2>Search for Your Child</h2>
+      <input type="text" id="admission-number" placeholder="Enter Admission Number">
+      <button id="search-button">Search</button>
+      <div id="child-profile"></div>
+    </section>
+
+    <section id="saved-children">
+      <h2>Saved Children</h2>
+      <ul id="saved-children-list"></ul>
+    </section>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import Firebase v9 modular SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+    // Your Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.firebasestorage.app",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Populate school list
+    async function loadSchools() {
+      const schoolList = document.getElementById("school-list");
+      schoolList.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "schools"));
+      querySnapshot.forEach((docSnap) => {
+        const schoolItem = document.createElement("li");
+        schoolItem.textContent = docSnap.data().name;
+        schoolList.appendChild(schoolItem);
+      });
+    }
+
+    // Search for child
+    document.getElementById("search-button").addEventListener("click", async () => {
+      const admissionNumber = document.getElementById("admission-number").value.trim();
+      if (!admissionNumber) return;
+
+      const studentRef = doc(db, "students", admissionNumber);
+      const docSnap = await getDoc(studentRef);
+
+      const childProfile = document.getElementById("child-profile");
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        childProfile.innerHTML = `
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Class:</strong> ${data.class}</p>
+          <p><strong>Admission Number:</strong> ${admissionNumber}</p>
+          <button id="save-child">Save Child</button>
+        `;
+
+        document.getElementById("save-child").addEventListener("click", () => {
+          saveChild(admissionNumber, data.name, data.class);
+        });
+      } else {
+        childProfile.innerHTML = `<p style="color:red;">Child not found</p>`;
+      }
+    });
+
+    // Save child to localStorage
+    function saveChild(admNo, name, studentClass) {
+      let savedChildren = JSON.parse(localStorage.getItem("savedChildren")) || [];
+      savedChildren.push({ admNo, name, class: studentClass });
+      localStorage.setItem("savedChildren", JSON.stringify(savedChildren));
+      displaySavedChildren();
+    }
+
+    // Display saved children
+    function displaySavedChildren() {
+      const savedList = document.getElementById("saved-children-list");
+      savedList.innerHTML = "";
+      let savedChildren = JSON.parse(localStorage.getItem("savedChildren")) || [];
+      savedChildren.forEach((child) => {
+        const li = document.createElement("li");
+        li.textContent = `${child.name} (${child.class}) - ${child.admNo}`;
+        savedList.appendChild(li);
+      });
+    }
+
+    // Load notifications
+    async function loadNotifications() {
+      const container = document.getElementById("notification-container");
+      container.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "notifications"));
+      querySnapshot.forEach((docSnap) => {
+        const notificationItem = document.createElement("p");
+        notificationItem.textContent = docSnap.data().message;
+        container.appendChild(notificationItem);
+      });
+    }
+
+    // Run on load
+    loadSchools();
+    loadNotifications();
+    displaySavedChildren();
+  </script>
 </body>
 </html>
