@@ -177,19 +177,28 @@
     }
 
     // Load schools
-    async function loadSchools() {
-      const schoolList = document.getElementById("school-list");
-      schoolList.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "schools"));
-      if (querySnapshot.empty) {
-        schoolList.innerHTML = "<li>No schools registered yet</li>";
-      }
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="school.html?id=${docSnap.id}">${data.name} (${data.location || "Location N/A"})</a>`;
-        schoolList.appendChild(li);
-      });
+async function loadSchools() {
+  const schoolList = document.getElementById("school-list");
+  schoolList.innerHTML = "";
+  const querySnapshot = await getDocs(collection(db, "schools"));
+  if (querySnapshot.empty) {
+    schoolList.innerHTML = "<li>No schools registered yet</li>";
+  }
+  querySnapshot.forEach((docSnap) => {
+    const li = document.createElement("li");
+
+    // Create clickable link
+    const a = document.createElement("a");
+    a.textContent = docSnap.data().name;
+    a.href = `school.html?id=${docSnap.id}`; // open school page with ID
+    a.style.cursor = "pointer";
+    a.style.color = "#3498db";
+    a.style.textDecoration = "underline";
+
+    li.appendChild(a);
+    schoolList.appendChild(li);
+  });
+}
     }
 
     // Search child (global collection for now)
