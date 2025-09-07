@@ -1,33 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>School Portal</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    header {
+      background: #2c3e50;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+    }
+    header h1 {
+      margin: 0;
+    }
+    .toggle-dark {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      cursor: pointer;
+      background: #34495e;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      color: #fff;
+    }
+    main {
+      padding: 1.5rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    section {
+      background: #fff;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    #school-list li,
+    #saved-children-list li {
+      padding: 0.5rem;
+      border-bottom: 1px solid #eee;
+    }
+    #notification-container p {
+      background: #ecf0f1;
+      padding: 0.5rem;
+      border-radius: 5px;
+      margin: 0.3rem 0;
+    }
+    input,
+    button {
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      cursor: pointer;
+      background: #3498db;
+      color: #fff;
+      border: none;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    /* Dark mode */
+    body.dark {
+      background: #1e1e1e;
+      color: #eee;
+    }
+    body.dark section {
+      background: #2b2b2b;
+      box-shadow: none;
+    }
+    body.dark h2 {
+      color: #f1c40f;
+    }
+    body.dark .toggle-dark {
+      background: #e67e22;
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1>School Portal</h1>
+    <button class="toggle-dark" id="darkModeToggle">🌙 Dark</button>
   </header>
   <main>
+    <!-- Notifications -->
     <section id="notifications">
       <h2>General Notifications</h2>
-      <div id="notification-container"></div>
+      <div id="notification-container">
+        <p>Loading notifications...</p>
+      </div>
     </section>
 
+    <!-- Registered schools -->
     <section id="school-selection">
-      <h2>Select a School</h2>
-      <ul id="school-list"></ul>
+      <h2>Registered Schools</h2>
+      <ul id="school-list">
+        <li>Loading schools...</li>
+      </ul>
     </section>
 
+    <!-- Child search -->
     <section id="child-search">
       <h2>Search for Your Child</h2>
-      <input type="text" id="admission-number" placeholder="Enter Admission Number">
+      <input type="text" id="admission-number" placeholder="Enter Admission Number" />
       <button id="search-button">Search</button>
       <div id="child-profile"></div>
     </section>
 
+    <!-- Saved children -->
     <section id="saved-children">
       <h2>Saved Children</h2>
       <ul id="saved-children-list"></ul>
@@ -36,7 +133,6 @@
 
   <!-- Firebase SDK -->
   <script type="module">
-    // Import Firebase v9 modular SDKs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
     import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
@@ -50,23 +146,40 @@
       appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Populate school list
+    // Load notifications
+    async function loadNotifications() {
+      const container = document.getElementById("notification-container");
+      container.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "notifications"));
+      if (querySnapshot.empty) {
+        container.innerHTML = "<p>No notifications yet</p>";
+      }
+      querySnapshot.forEach((docSnap) => {
+        const item = document.createElement("p");
+        item.textContent = docSnap.data().message;
+        container.appendChild(item);
+      });
+    }
+
+    // Load schools
     async function loadSchools() {
       const schoolList = document.getElementById("school-list");
       schoolList.innerHTML = "";
       const querySnapshot = await getDocs(collection(db, "schools"));
+      if (querySnapshot.empty) {
+        schoolList.innerHTML = "<li>No schools registered yet</li>";
+      }
       querySnapshot.forEach((docSnap) => {
-        const schoolItem = document.createElement("li");
-        schoolItem.textContent = docSnap.data().name;
-        schoolList.appendChild(schoolItem);
+        const li = document.createElement("li");
+        li.textContent = docSnap.data().name;
+        schoolList.appendChild(li);
       });
     }
 
-    // Search for child
+    // Search child
     document.getElementById("search-button").addEventListener("click", async () => {
       const admissionNumber = document.getElementById("admission-number").value.trim();
       if (!admissionNumber) return;
@@ -78,12 +191,13 @@
       if (docSnap.exists()) {
         const data = docSnap.data();
         childProfile.innerHTML = `
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>Class:</strong> ${data.class}</p>
-          <p><strong>Admission Number:</strong> ${admissionNumber}</p>
-          <button id="save-child">Save Child</button>
+          <div style="margin-top:1rem;padding:1rem;border:1px solid #ccc;border-radius:5px;">
+            <p><strong>Name:</strong> ${data.name}</p>
+            <p><strong>Class:</strong> ${data.class}</p>
+            <p><strong>Admission No:</strong> ${admissionNumber}</p>
+            <button id="save-child">Save Child</button>
+          </div>
         `;
-
         document.getElementById("save-child").addEventListener("click", () => {
           saveChild(admissionNumber, data.name, data.class);
         });
@@ -92,7 +206,7 @@
       }
     });
 
-    // Save child to localStorage
+    // Save child locally
     function saveChild(admNo, name, studentClass) {
       let savedChildren = JSON.parse(localStorage.getItem("savedChildren")) || [];
       savedChildren.push({ admNo, name, class: studentClass });
@@ -105,6 +219,9 @@
       const savedList = document.getElementById("saved-children-list");
       savedList.innerHTML = "";
       let savedChildren = JSON.parse(localStorage.getItem("savedChildren")) || [];
+      if (savedChildren.length === 0) {
+        savedList.innerHTML = "<li>No children saved</li>";
+      }
       savedChildren.forEach((child) => {
         const li = document.createElement("li");
         li.textContent = `${child.name} (${child.class}) - ${child.admNo}`;
@@ -112,21 +229,14 @@
       });
     }
 
-    // Load notifications
-    async function loadNotifications() {
-      const container = document.getElementById("notification-container");
-      container.innerHTML = "";
-      const querySnapshot = await getDocs(collection(db, "notifications"));
-      querySnapshot.forEach((docSnap) => {
-        const notificationItem = document.createElement("p");
-        notificationItem.textContent = docSnap.data().message;
-        container.appendChild(notificationItem);
-      });
-    }
+    // Dark mode
+    document.getElementById("darkModeToggle").addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+    });
 
-    // Run on load
-    loadSchools();
+    // Init
     loadNotifications();
+    loadSchools();
     displaySavedChildren();
   </script>
 </body>
