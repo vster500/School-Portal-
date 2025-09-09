@@ -1,0 +1,144 @@
+<!-- Save as login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - School Portal</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark { background: #1e1e1e; color: #eee; }
+    .btn-primary {
+      background: #2c3e50;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #34495e; }
+    #darkModeToggle {
+      position: fixed;
+      bottom: 1.2rem;
+      right: 1.2rem;
+      background: #2c3e50;
+      color: #fff;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transition: background 0.3s, transform 0.2s;
+    }
+    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
+    body.dark #darkModeToggle { background: #e67e22; }
+  </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+
+  <div class="bg-white dark:bg-gray-800 p-8 rounded shadow w-full max-w-sm text-center transition-colors duration-300">
+    <h1 class="text-3xl font-bold mb-4 dark:text-yellow-400">Welcome to School Portal</h1>
+    <p class="mb-6 dark:text-gray-300">Login as Teacher or Admin to continue</p>
+
+    <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded mb-4 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+    <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded mb-6 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+
+    <button id="loginBtn" class="btn-primary w-full py-3 rounded mb-2">Login</button>
+
+    <p id="errorMsg" class="text-red-500 mt-4"></p>
+  </div>
+
+  <button id="darkModeToggle">🌙</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.firebasestorage.app",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const loginBtn = document.getElementById("loginBtn");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const errorMsg = document.getElementById("errorMsg");
+
+    // Get schoolId from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const schoolId = urlParams.get("schoolId") || "school1";
+
+    loginBtn.addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      errorMsg.textContent = "";
+
+      if (!email || !password) {
+        errorMsg.textContent = "Please enter email and password.";
+        return;
+      }
+
+      // === Main admin login ===
+      if (email === "levisbonventure@gmail.com" && password === "wamalwa1") {
+        window.location.href = "main_admin_dashboard.html";
+        return;
+      }
+
+      // === Teacher login ===
+      try {
+        const q = query(collection(db, "teachers"), where("email", "==", email));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+          errorMsg.textContent = "No teacher found with this email.";
+          return;
+        }
+
+        let loggedIn = false;
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          if (data.password === password) {
+            loggedIn = true;
+            window.location.href = `teacher_dashboard.html?schoolId=${schoolId}&teacherId=${docSnap.id}`;
+          }
+        });
+
+        if (!loggedIn) {
+          errorMsg.textContent = "Incorrect password.";
+        }
+      } catch (err) {
+        console.error(err);
+        errorMsg.textContent = "Login failed. Try again.";
+      }
+    });
+
+    // 🌙 Dark Mode Toggle
+    const darkToggle = document.getElementById("darkModeToggle");
+    darkToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    });
+
+    // Load saved dark mode
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark");
+      darkToggle.textContent = "☀️";
+    }
+  </script>
+</body>
+</html>
