@@ -13,13 +13,16 @@
     body { background: #f4f6f9; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
     header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
     .card { background: white; padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 600px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .btn { background: #2c3e50; color: white; padding: 10px; border-radius: 6px; font-size: 16px; cursor: pointer; width: 100%; }
+    .btn { background: #2c3e50; color: white; padding: 10px; border-radius: 6px; font-size: 16px; cursor: pointer; width: 100%; transition: 0.3s; }
     .btn:hover { background: #1a242f; }
+    select, input, textarea { border: 1px solid #ccc; }
+    select:focus, input:focus, textarea:focus { border-color: #2c3e50; outline: none; box-shadow: 0 0 4px rgba(44,62,80,0.5); }
     #darkModeToggle { position: fixed; bottom: 1.2rem; right: 1.2rem; background: #2c3e50; color: #fff; border-radius: 50%; width: 50px; height: 50px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: 0.3s; z-index: 50; }
     #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
     body.dark { background: #1e1e1e; color: #eee; }
     body.dark header { background: #111; }
     body.dark .card { background: #2b2b2b; color: #eee; }
+    body.dark .btn { background: #111; }
   </style>
 </head>
 <body>
@@ -34,7 +37,7 @@
 
       <div class="flex gap-2">
         <input type="text" id="admission" placeholder="Admission No." class="flex-1 border rounded-lg p-2">
-        <button type="button" id="generateAdmission" class="px-4 bg-gray-300 rounded">Auto</button>
+        <button type="button" id="generateAdmission" class="px-4 bg-gray-200 rounded">Auto</button>
       </div>
 
       <!-- Level & Class Dropdowns -->
@@ -92,10 +95,10 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    // Class options by level
+    // ✅ Fixed class options
     const classOptions = {
       "Pre-Primary": ["PP1", "PP2"],
-      "Primary": ["Grade 1","Grade 2","Grade 3","Grade 4","Grade 5","Grade 6"],
+      "Primary": ["Class 1","Class 2","Class 3","Class 4","Class 5","Class 6","Class 7","Class 8"],
       "Junior Secondary": ["Grade 7","Grade 8","Grade 9"],
       "Secondary": ["Form 1","Form 2","Form 3","Form 4"]
     };
@@ -116,38 +119,6 @@
       document.getElementById("admission").value = "ADM" + Math.floor(Math.random() * 100000);
     });
 
-    // Save student
-    document.getElementById("studentForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("name").value;
-      const admission = document.getElementById("admission").value || "ADM" + Math.floor(Math.random() * 100000);
-      const level = document.getElementById("level").value;
-      const studentClass = document.getElementById("class").value;
-      const parentContact = document.getElementById("parentContact").value;
-      const notes = document.getElementById("notes").value;
-      const photoFile = document.getElementById("photo").files[0];
-
-      let photoURL = "";
-      try {
-        if (photoFile) {
-          const photoRef = ref(storage, `students/${admission}_${photoFile.name}`);
-          await uploadBytes(photoRef, photoFile);
-          photoURL = await getDownloadURL(photoRef);
-        }
-
-        await addDoc(collection(db, "students"), {
-          name, admission, level, classLevel: studentClass,
-          parentContact, notes, photoURL, createdAt: new Date()
-        });
-
-        alert("✅ Student added successfully!");
-        e.target.reset();
-      } catch (err) {
-        console.error(err);
-        alert("❌ Failed to add student");
-      }
-    });
-
     // Dark mode toggle
     const toggle = document.getElementById("darkModeToggle");
     toggle.addEventListener("click", () => {
@@ -159,6 +130,46 @@
       document.body.classList.add("dark");
       toggle.textContent = "☀️";
     }
+    
+    // Save student
+document.getElementById("studentForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const name = document.getElementById("name").value;
+  const admission = document.getElementById("admission").value || "ADM" + Math.floor(Math.random() * 100000);
+  const level = document.getElementById("level").value;
+  const studentClass = document.getElementById("class").value;
+  const parentContact = document.getElementById("parentContact").value;
+  const notes = document.getElementById("notes").value;
+  const photoFile = document.getElementById("photo").files[0];
+
+  // 🔑 Example: you get schoolId from localStorage (after login)
+  const schoolId = localStorage.getItem("schoolId"); 
+  if (!schoolId) {
+    alert("❌ No school ID found. Please log in again.");
+    return;
+  }
+
+  let photoURL = "";
+  try {
+    if (photoFile) {
+      const photoRef = ref(storage, `students/${admission}_${photoFile.name}`);
+      await uploadBytes(photoRef, photoFile);
+      photoURL = await getDownloadURL(photoRef);
+    }
+
+    // ✅ Store under this school only
+    await addDoc(collection(db, "schools", schoolId, "students"), {
+      name, admission, level, classLevel: studentClass,
+      parentContact, notes, photoURL, createdAt: new Date()
+    });
+
+    alert("✅ Student added successfully!");
+    e.target.reset();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Failed to add student");
+  }
+});
   </script>
 </body>
 </html>
