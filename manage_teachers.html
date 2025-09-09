@@ -5,27 +5,53 @@
   <title>Manage Teachers</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body.dark-mode {
-      background-color: #121212;
-      color: #ffffff;
-    }
-    .dark-mode .card {
-      background-color: #1e1e1e;
+    body.dark-mode { background-color: #121212; color: #ffffff; }
+    .dark-mode .card { background-color: #1e1e1e; color: #fff; }
+    header {
+      background: #2c2c2c;
       color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+    .floating-darkmode {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #2c2c2c;
+      color: #fff;
+      border: none;
+      box-shadow: 0px 2px 8px rgba(0,0,0,0.4);
+    }
+    .floating-darkmode:hover { background: #444; }
+    .badge { margin-right: 4px; }
   </style>
 </head>
-<body class="p-3">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Manage Teachers</h3>
-    <div>
-      <button id="darkModeBtn" class="btn btn-sm btn-secondary">🌙 Dark Mode</button>
-      <button id="addTeacherBtn" class="btn btn-primary">+ Add Teacher</button>
-    </div>
+<body class="p-0">
+
+  <!-- HEADER -->
+  <header>
+    <h3 class="m-0">👩‍🏫 Manage Teachers</h3>
+    <input id="searchInput" type="text" class="form-control" placeholder="🔎 Search teacher..." style="width:220px;">
+  </header>
+
+  <!-- Add Teacher Button -->
+  <div class="p-3">
+    <button id="addTeacherBtn" class="btn btn-dark">+ Add Teacher</button>
   </div>
 
   <!-- Teacher List -->
-  <div id="teachersList" class="row g-3"></div>
+  <div id="teachersList" class="row g-3 p-3"></div>
+
+  <!-- Floating Dark Mode -->
+  <button id="darkModeBtn" class="floating-darkmode">🌙</button>
 
   <!-- Modal -->
   <div class="modal fade" id="teacherModal" tabindex="-1">
@@ -66,7 +92,7 @@
             </div>
             <div class="mb-2">
               <label class="form-label">Subjects</label>
-              <select id="tSubjects" class="form-select" multiple required></select>
+              <div id="subjectsContainer" class="d-flex flex-wrap gap-3"></div>
             </div>
             <div class="mb-2">
               <label class="form-label">Photo</label>
@@ -87,7 +113,7 @@
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button id="saveTeacherBtn" class="btn btn-primary">Save</button>
+          <button id="saveTeacherBtn" class="btn btn-dark">Save</button>
         </div>
       </div>
     </div>
@@ -95,17 +121,17 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDocs, collection, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, getDocs, collection, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MSG_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.appspot.com",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -113,8 +139,10 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    const schoolId = localStorage.getItem("schoolId") || "school1";
-    const currentUserId = localStorage.getItem("userId") || "admin1";
+    let schoolId = localStorage.getItem("schoolId") || "school1";
+    let currentUserId = null;
+
+    onAuthStateChanged(auth, user => { if (user) currentUserId = user.uid; });
 
     const teacherModal = new bootstrap.Modal(document.getElementById("teacherModal"));
     const teacherListEl = document.getElementById("teachersList");
@@ -124,38 +152,47 @@
       document.body.classList.toggle("dark-mode");
     });
 
-    // Fetch Subjects
+    // Load Subjects as Checkboxes
     async function loadSubjects() {
       const subjectsRef = collection(db, "schools", schoolId, "subjects");
       const snap = await getDocs(subjectsRef);
-      const select = document.getElementById("tSubjects");
-      select.innerHTML = "";
+      const container = document.getElementById("subjectsContainer");
+      container.innerHTML = "";
       snap.forEach(doc => {
-        const opt = document.createElement("option");
-        opt.value = doc.id;
-        opt.textContent = doc.data().name;
-        select.appendChild(opt);
+        const s = doc.data();
+        const id = doc.id;
+        container.innerHTML += `
+          <div class="form-check me-3">
+            <input class="form-check-input subjectCheck" type="checkbox" value="${id}" id="sub_${id}">
+            <label class="form-check-label" for="sub_${id}">${s.name}</label>
+          </div>
+        `;
       });
     }
 
     // Load Teachers
-    async function loadTeachers() {
+    async function loadTeachers(searchTerm = "") {
       teacherListEl.innerHTML = "";
       const snap = await getDocs(collection(db, "schools", schoolId, "teachers"));
       snap.forEach(docSnap => {
         const data = docSnap.data();
+        if (searchTerm && !data.name.toLowerCase().includes(searchTerm.toLowerCase())) return;
+
         const col = document.createElement("div");
         col.className = "col-md-4";
         col.innerHTML = `
-          <div class="card">
+          <div class="card shadow-sm">
             <img src="${data.photoURL || 'https://via.placeholder.com/150'}" class="card-img-top" alt="photo">
             <div class="card-body">
               <h5 class="card-title">${data.name}</h5>
-              <p class="card-text">${data.level} - ${data.subjects?.join(", ")}</p>
-              <p>Email: ${data.email || ""}</p>
-              <p>Permissions: ${data.permissions?.medical ? "Medical " : ""}${data.permissions?.fees ? "Fees" : ""}</p>
-              <button class="btn btn-sm btn-info editBtn" data-id="${docSnap.id}">Edit</button>
-              <button class="btn btn-sm btn-danger deleteBtn" data-id="${docSnap.id}">Delete</button>
+              <p class="card-text"><b>${data.level}</b><br>${data.subjects?.join(", ") || ""}</p>
+              <p class="small text-muted">📧 ${data.email || ""}</p>
+              <p>
+                ${data.permissions?.medical ? '<span class="badge bg-danger">Medical</span>' : ""}
+                ${data.permissions?.fees ? '<span class="badge bg-success">Fees</span>' : ""}
+              </p>
+              <button class="btn btn-sm btn-outline-dark editBtn" data-id="${docSnap.id}">Edit</button>
+              <button class="btn btn-sm btn-outline-danger deleteBtn" data-id="${docSnap.id}">Delete</button>
             </div>
           </div>
         `;
@@ -166,7 +203,10 @@
       document.querySelectorAll(".deleteBtn").forEach(btn => btn.addEventListener("click", () => deleteTeacher(btn.dataset.id)));
     }
 
-    // Open Add Teacher
+    document.getElementById("searchInput").addEventListener("input", (e) => {
+      loadTeachers(e.target.value);
+    });
+
     document.getElementById("addTeacherBtn").addEventListener("click", () => {
       document.getElementById("teacherForm").reset();
       document.getElementById("teacherId").value = "";
@@ -174,67 +214,60 @@
       teacherModal.show();
     });
 
-    // Save Teacher
     document.getElementById("saveTeacherBtn").addEventListener("click", async () => {
-      const id = document.getElementById("teacherId").value;
-      const name = document.getElementById("tName").value;
-      const email = document.getElementById("tEmail").value;
-      const password = document.getElementById("tPassword").value;
-      const contact = document.getElementById("tContact").value;
-      const level = document.getElementById("tLevel").value;
-      const subjects = Array.from(document.getElementById("tSubjects").selectedOptions).map(o => o.value);
-      const photoFile = document.getElementById("tPhoto").files[0];
-      const permissions = {
-        medical: document.getElementById("permMedical").checked,
-        fees: document.getElementById("permFees").checked
-      };
+      try {
+        const id = document.getElementById("teacherId").value;
+        const name = document.getElementById("tName").value;
+        const email = document.getElementById("tEmail").value;
+        const password = document.getElementById("tPassword").value;
+        const contact = document.getElementById("tContact").value;
+        const level = document.getElementById("tLevel").value;
+        const subjects = Array.from(document.querySelectorAll(".subjectCheck:checked")).map(c => c.value);
+        const photoFile = document.getElementById("tPhoto").files[0];
+        const permissions = {
+          medical: document.getElementById("permMedical").checked,
+          fees: document.getElementById("permFees").checked
+        };
 
-      let photoURL = null;
-      if (photoFile) {
-        const storageRef = ref(storage, `teachers/${Date.now()}_${photoFile.name}`);
-        await uploadBytes(storageRef, photoFile);
-        photoURL = await getDownloadURL(storageRef);
+        let photoURL = null;
+        if (photoFile) {
+          const storageRef = ref(storage, `teachers/${Date.now()}_${photoFile.name}`);
+          await uploadBytes(storageRef, photoFile);
+          photoURL = await getDownloadURL(storageRef);
+        }
+
+        if (!id) {
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          const teacherUid = cred.user.uid;
+
+          await setDoc(doc(db, "users", teacherUid), {
+            role: "teacher", schoolId, email, name, createdAt: new Date()
+          });
+
+          await setDoc(doc(db, "schools", schoolId, "teachers", teacherUid), {
+            name, email, contact, level, subjects, photoURL, permissions,
+            createdAt: new Date(), createdBy: currentUserId
+          });
+        } else {
+          await updateDoc(doc(db, "schools", schoolId, "teachers", id), {
+            name, email, contact, level, subjects, photoURL, permissions,
+            updatedAt: new Date(), updatedBy: currentUserId
+          });
+        }
+
+        teacherModal.hide();
+        loadTeachers();
+      } catch (err) {
+        alert("Error: " + err.message);
       }
-
-      if (!id) {
-        // Create Auth User
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        const teacherUid = cred.user.uid;
-
-        // Save in users collection
-        await setDoc(doc(db, "users", teacherUid), {
-          role: "teacher",
-          schoolId,
-          email,
-          name,
-          createdAt: new Date()
-        });
-
-        // Save in school teachers
-        await setDoc(doc(db, "schools", schoolId, "teachers", teacherUid), {
-          name, email, contact, level, subjects, photoURL, permissions,
-          createdAt: new Date(),
-          createdBy: currentUserId
-        });
-      } else {
-        await updateDoc(doc(db, "schools", schoolId, "teachers", id), {
-          name, email, contact, level, subjects, photoURL, permissions,
-          updatedAt: new Date(),
-          updatedBy: currentUserId
-        });
-      }
-
-      teacherModal.hide();
-      loadTeachers();
     });
 
-    // Edit Teacher
     async function openEdit(id) {
       const docRef = doc(db, "schools", schoolId, "teachers", id);
-      const snap = await getDocs(collection(db, "schools", schoolId, "teachers"));
-      const teacher = snap.docs.find(d => d.id === id)?.data();
-      if (!teacher) return;
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return alert("Teacher not found");
 
+      const teacher = snap.data();
       document.getElementById("teacherId").value = id;
       document.getElementById("tName").value = teacher.name;
       document.getElementById("tEmail").value = teacher.email;
@@ -243,19 +276,18 @@
       document.getElementById("permMedical").checked = teacher.permissions?.medical || false;
       document.getElementById("permFees").checked = teacher.permissions?.fees || false;
 
-      const subjectSelect = document.getElementById("tSubjects");
-      Array.from(subjectSelect.options).forEach(opt => {
-        opt.selected = teacher.subjects?.includes(opt.value);
+      Array.from(document.querySelectorAll(".subjectCheck")).forEach(opt => {
+        opt.checked = teacher.subjects?.includes(opt.value);
       });
 
       document.getElementById("passwordGroup").style.display = "none";
       teacherModal.show();
     }
 
-    // Delete Teacher
     async function deleteTeacher(id) {
       if (confirm("Delete this teacher?")) {
         await deleteDoc(doc(db, "schools", schoolId, "teachers", id));
+        alert("Teacher deleted");
         loadTeachers();
       }
     }
