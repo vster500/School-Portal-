@@ -101,7 +101,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔹 Load Notifications
+    // 🔹 Load Notifications (with PDF support)
     async function loadNotifications() {
       const notifRef = collection(db, "notifications");
       const snap = await getDocs(notifRef);
@@ -114,7 +114,13 @@
         const n = docSnap.data();
         const div = document.createElement("div");
         div.className = "p-3 border rounded bg-gray-50";
-        div.textContent = n.message;
+
+        let content = "";
+        if(n.image) content += `<img src="${n.image}" class="w-full rounded mb-2">`;
+        content += `<p>${n.message}</p>`;
+        if(n.fileUrl) content += `<a href="${n.fileUrl}" target="_blank" class="mt-2 inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Download PDF</a>`;
+
+        div.innerHTML = content;
         container.appendChild(div);
       });
     }
