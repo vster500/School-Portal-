@@ -2,176 +2,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Student Profile</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js"></script>
+  <style>
+    body { background:#f4f6f9; font-family: "Segoe UI", Tahoma, Verdana, sans-serif; }
+    header { background: #2c3e50; color: #fff; padding: 14px; text-align:center; font-weight:700; }
+    .card { max-width:800px; margin:auto; margin-top:20px; border-radius:10px; overflow:hidden; }
+    .profile-img { width:120px; height:120px; object-fit:cover; border-radius:50%; }
+    .section-title { font-weight:700; margin-top:12px; }
+    .btn-gap { gap:8px; display:flex; flex-wrap:wrap; }
+    body.dark { background:#1e1e1e; color:#eee; }
+    body.dark .card { background:#222; color:#f1c40f; }
+    .hidden { display:none !important; }
+  </style>
 </head>
-<body class="container py-4">
-  <h2 class="text-center mb-4">Student Profile</h2>
+<body>
 
-  <div id="studentProfile" class="card shadow p-3">
+  <header>📖 Student Profile</header>
+
+  <div class="card shadow p-4 bg-white">
     <div class="text-center mb-3">
-      <img id="studentPhoto" class="rounded-circle" style="width:120px;height:120px;object-fit:cover;">
-    </div>
-    <h4 id="studentName" class="text-center"></h4>
-    <p class="text-center text-muted" id="studentClass"></p>
-
-    <!-- Sections -->
-    <div class="mt-3">
-      <h5>General Info</h5>
-      <p><strong>Admission No:</strong> <span id="studentAdm"></span></p>
-      <p><strong>Date of Birth:</strong> <span id="studentDob"></span></p>
+      <img id="studentPhoto" class="profile-img" src="https://via.placeholder.com/120" alt="Student photo">
     </div>
 
-    <div class="mt-3">
-      <h5>Parent Info</h5>
-      <p><strong>Name:</strong> <span id="parentName"></span></p>
-      <p><strong>Contact:</strong> <span id="parentContact"></span></p>
-    </div>
+    <h3 id="studentName" class="text-center mb-0"></h3>
+    <p id="studentClass" class="text-center text-muted small mb-3"></p>
 
-    <div class="mt-3">
-      <h5>Notes</h5>
-      <p><strong>Performance:</strong> <span id="performanceNotes"></span></p>
-      <textarea id="editPerformanceNotes" class="form-control d-none"></textarea>
+    <div id="infoArea">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Admission No:</strong> <span id="studentAdm"></span></p>
+          <p><strong>Date of Birth:</strong> <span id="studentDob"></span></p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Parent Name:</strong> <span id="parentName"></span></p>
+          <p><strong>Parent Contact:</strong> <span id="parentContact"></span></p>
+        </div>
+      </div>
 
-      <div id="medicalSection" class="mt-2">
-        <p><strong>Medical:</strong> <span id="medicalNotes"></span></p>
-        <textarea id="editMedicalNotes" class="form-control d-none"></textarea>
+      <hr>
+
+      <div>
+        <h6 class="section-title">Performance</h6>
+        <p id="performanceNotes">Loading...</p>
+        <textarea id="editPerformanceNotes" class="form-control hidden" rows="3"></textarea>
+      </div>
+
+      <div id="medicalSection" class="mt-3">
+        <h6 class="section-title">Medical</h6>
+        <p id="medicalNotes">Restricted</p>
+        <textarea id="editMedicalNotes" class="form-control hidden" rows="3"></textarea>
+      </div>
+
+      <div class="mt-3 text-muted small">
+        Last Updated: <span id="lastUpdated">N/A</span>
       </div>
     </div>
 
-    <div id="adminActions" class="mt-3 d-none">
-      <button class="btn btn-warning" id="promoteBtn">Promote</button>
+    <!-- Role-based action area -->
+    <div id="actionArea" class="mt-3">
+      <div id="adminActions" class="btn-gap hidden mt-2">
+        <button id="promoteBtn" class="btn btn-warning">⬆️ Promote</button>
+        <button id="editBtn" class="btn btn-secondary">✏️ Edit Profile</button>
+        <button id="deleteBtn" class="btn btn-danger">🗑️ Delete</button>
+      </div>
+
+      <div id="teacherActions" class="btn-gap hidden mt-2">
+        <button id="enableEditPerfBtn" class="btn btn-primary">✍️ Edit Performance</button>
+        <button id="savePerformanceBtn" class="btn btn-success hidden">💾 Save Performance</button>
+      </div>
+
+      <div id="medicalActions" class="btn-gap hidden mt-2">
+        <button id="enableEditMedicalBtn" class="btn btn-outline-danger">🩺 Edit Medical</button>
+        <button id="saveMedicalBtn" class="btn btn-danger hidden">💾 Save Medical</button>
+      </div>
+
+      <div id="parentNotice" class="mt-2 text-muted small hidden">
+        You have read-only access to this profile.
+      </div>
     </div>
 
-    <div id="teacherActions" class="mt-3 d-none">
-      <button class="btn btn-primary" id="savePerformanceBtn">Save Performance</button>
+    <div class="mt-3 text-center">
+      <a href="manage_students.html" class="text-decoration-none">← Back to Manage Students</a>
     </div>
-
-    <div id="medicalActions" class="mt-3 d-none">
-      <button class="btn btn-danger" id="saveMedicalBtn">Save Medical</button>
-    </div>
-
-    <p class="text-muted text-end mt-3"><small>Last Updated: <span id="lastUpdated"></span></small></p>
   </div>
 
-  <script>
+  <!-- Firebase Auth + Firestore Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.firebasestorage.app",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
     };
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
 
-    const params = new URLSearchParams(window.location.search);
-    const studentId = params.get("id");
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    const role = localStorage.getItem("role"); // "admin", "teacher", "medical", "parent"
+    const el = id => document.getElementById(id);
+    const studentName = el("studentName");
+    const studentClass = el("studentClass");
+    const studentAdm = el("studentAdm");
+    const studentDob = el("studentDob");
+    const parentName = el("parentName");
+    const parentContact = el("parentContact");
+    const performanceNotes = el("performanceNotes");
+    const medicalNotes = el("medicalNotes");
+    const studentPhoto = el("studentPhoto");
+    const lastUpdated = el("lastUpdated");
 
-    const studentName = document.getElementById("studentName");
-    const studentClass = document.getElementById("studentClass");
-    const studentAdm = document.getElementById("studentAdm");
-    const studentDob = document.getElementById("studentDob");
-    const parentName = document.getElementById("parentName");
-    const parentContact = document.getElementById("parentContact");
-    const performanceNotes = document.getElementById("performanceNotes");
-    const medicalNotes = document.getElementById("medicalNotes");
-    const studentPhoto = document.getElementById("studentPhoto");
-    const lastUpdated = document.getElementById("lastUpdated");
+    const adminActions = el("adminActions");
+    const teacherActions = el("teacherActions");
+    const medicalActions = el("medicalActions");
+    const parentNotice = el("parentNotice");
 
-    const editPerformanceNotes = document.getElementById("editPerformanceNotes");
-    const editMedicalNotes = document.getElementById("editMedicalNotes");
+    const editPerfArea = el("editPerformanceNotes");
+    const editMedArea = el("editMedicalNotes");
+    const enableEditPerfBtn = el("enableEditPerfBtn");
+    const savePerformanceBtn = el("savePerformanceBtn");
+    const enableEditMedicalBtn = el("enableEditMedicalBtn");
+    const saveMedicalBtn = el("saveMedicalBtn");
+    const promoteBtn = el("promoteBtn");
+    const editBtn = el("editBtn");
+    const deleteBtn = el("deleteBtn");
 
-    const adminActions = document.getElementById("adminActions");
-    const teacherActions = document.getElementById("teacherActions");
-    const medicalActions = document.getElementById("medicalActions");
+    let permissionsDiv = document.createElement("div");
+    permissionsDiv.id = "permissionsList";
+    permissionsDiv.className = "mt-3";
+    el("infoArea").appendChild(permissionsDiv);
 
-    db.collection("students").doc(studentId).get().then(doc => {
-      if (doc.exists) {
-        const data = doc.data();
-        studentName.textContent = data.name;
-        studentClass.textContent = "Class: " + data.class;
-        studentAdm.textContent = data.adm;
-        studentDob.textContent = data.dob;
-        parentName.textContent = data.parentName;
-        parentContact.textContent = data.parentContact;
-        performanceNotes.textContent = data.performanceNotes || "N/A";
-        medicalNotes.textContent = data.medicalNotes || "Restricted";
-        studentPhoto.src = data.photoUrl || "https://via.placeholder.com/120";
-        lastUpdated.textContent = data.updatedAt ? new Date(data.updatedAt.toDate()).toLocaleString() : "Not available";
+    const classOrder = ["PP1","PP2","Class 1","Class 2","Class 3","Class 4","Class 5","Class 6",
+                        "JSS 7","JSS 8","JSS 9","Form 1","Form 2","Form 3","Form 4","Alumni"];
 
-        // Role-based controls
-        if (role === "admin") {
-          adminActions.classList.remove("d-none");
-        }
-        if (role === "teacher") {
-          editPerformanceNotes.classList.remove("d-none");
-          editPerformanceNotes.value = data.performanceNotes || "";
-          teacherActions.classList.remove("d-none");
-        }
-        if (role === "medical") {
-          editMedicalNotes.classList.remove("d-none");
-          editMedicalNotes.value = data.medicalNotes || "";
-          medicalActions.classList.remove("d-none");
-        }
-        if (role === "parent") {
-          document.getElementById("medicalSection").style.display = "none"; // hide medical info
-        }
+    let currentUserId = null;
+    let schoolId = null;
+    let studentId = new URLSearchParams(window.location.search).get("id");
+    let role = "parent";
+    let viewerContact = null;
+
+    async function logUpdate(action){
+      if (!currentUserId || !schoolId || !studentId) return;
+      await addDoc(collection(db, `schools/${schoolId}/logs`), {
+        studentId, userId: currentUserId, action, timestamp: new Date()
+      });
+    }
+
+    async function loadStudent(){
+      if (!schoolId || !studentId) return;
+      const studentRef = doc(db, "schools", schoolId, "students", studentId);
+      const snap = await getDoc(studentRef);
+      if(!snap.exists()){ alert("Student not found"); return; }
+      const data = snap.data();
+
+      if(role==="parent" && viewerContact && data.parentContact!==viewerContact){
+        el("infoArea").innerHTML="<p class='text-danger'>🚫 You can only view your own child's profile.</p>";
+        parentNotice.classList.remove("hidden");
+        return;
       }
+
+      studentName.textContent = data.name||"—";
+      studentClass.textContent = data.classLevel? "Class: "+data.classLevel:"";
+      studentAdm.textContent = data.admission||"";
+      studentDob.textContent = data.dob||"N/A";
+      parentName.textContent = data.parentName||"N/A";
+      parentContact.textContent = data.parentContact||"N/A";
+      performanceNotes.textContent = data.performanceNotes||"No performance notes yet.";
+      medicalNotes.textContent = (data.medicalNotes && (role==="admin"||role==="medical")) ? data.medicalNotes : (role==="parent"?"Restricted":(data.medicalNotes||"No medical notes."));
+      studentPhoto.src = data.photoURL || "https://via.placeholder.com/120";
+      lastUpdated.textContent = data.updatedAt ? new Date(data.updatedAt).toLocaleString() : "Not available";
+
+      adminActions.classList.toggle("hidden", role!=="admin");
+      teacherActions.classList.toggle("hidden", role!=="teacher");
+      medicalActions.classList.toggle("hidden", role!=="medical");
+      parentNotice.classList.toggle("hidden", role!=="parent");
+    }
+
+    async function loadStudentPermissions(){
+      if(!schoolId||!studentId) return;
+      const snap = await getDoc(doc(db,"schools",schoolId,"students",studentId));
+      if(!snap.exists()) return;
+      const assigned = snap.data().assignedTeachers||[];
+      permissionsDiv.innerHTML="<strong>Assigned Teachers:</strong><br/>";
+      for(let tId of assigned){
+        const tSnap = await getDoc(doc(db,"schools",schoolId,"teachers",tId));
+        if(tSnap.exists()) permissionsDiv.innerHTML += tSnap.data().name+" ("+tSnap.data().level+")<br/>";
+      }
+    }
+
+    promoteBtn?.addEventListener("click", async()=>{
+      const studentRef = doc(db,"schools",schoolId,"students",studentId);
+      const snap = await getDoc(studentRef);
+      if(!snap.exists()) return alert("Student not found");
+      const current = snap.data().classLevel||"";
+      const idx = classOrder.indexOf(current);
+      const next = (idx>=0 && idx<classOrder.length-1)? classOrder[idx+1]: current;
+      if(next===current) return alert("No next class defined or already at top level.");
+      await updateDoc(studentRef,{classLevel:next,updatedAt:new Date()});
+      await logUpdate("Promoted to "+next);
+      alert("✅ Promoted to "+next);
+      loadStudent();
     });
 
-    // Promotion logic for admin
-    const classOrder = [
-      "Pre-Primary 1","Pre-Primary 2","Grade 1","Grade 2","Grade 3","Grade 4",
-      "Grade 5","Grade 6","JSS 7","JSS 8","JSS 9","Form 1","Form 2","Form 3","Form 4","Alumni"
-    ];
+    editBtn?.addEventListener("click", ()=>window.location.href=`edit_student.html?id=${encodeURIComponent(studentId)}`);
 
-    document.getElementById("promoteBtn").addEventListener("click", () => {
-      db.collection("students").doc(studentId).get().then(doc => {
-        if (doc.exists) {
-          let currentClass = doc.data().class;
-          let nextIndex = classOrder.indexOf(currentClass) + 1;
-          let nextClass = nextIndex < classOrder.length ? classOrder[nextIndex] : "Alumni";
-          db.collection("students").doc(studentId).update({
-            class: nextClass,
-            updatedAt: new Date()
-          }).then(() => {
-            alert("Student promoted to " + nextClass);
-            location.reload();
-          });
-        }
-      });
+    deleteBtn?.addEventListener("click", async()=>{
+      if(!confirm("Are you sure?")) return;
+      const studentRef = doc(db,"schools",schoolId,"students",studentId);
+      await deleteDoc(studentRef);
+      await logUpdate("Deleted student");
+      alert("✅ Student deleted");
+      window.location.href="manage_students.html";
     });
 
-    // Teacher updates performance
-    document.getElementById("savePerformanceBtn").addEventListener("click", () => {
-      db.collection("students").doc(studentId).update({
-        performanceNotes: editPerformanceNotes.value,
-        updatedAt: new Date()
-      }).then(() => {
-        alert("Performance notes updated");
-        location.reload();
-      });
+    enableEditPerfBtn?.addEventListener("click", ()=>{
+      editPerfArea.classList.remove("hidden");
+      editPerfArea.value = performanceNotes.textContent==="No performance notes yet."?"":performanceNotes.textContent;
+      savePerformanceBtn.classList.remove("hidden");
+      enableEditPerfBtn.classList.add("hidden");
     });
 
-    // Medical teacher updates medical notes
-    document.getElementById("saveMedicalBtn").addEventListener("click", () => {
-      db.collection("students").doc(studentId).update({
-        medicalNotes: editMedicalNotes.value,
-        updatedAt: new Date()
-      }).then(() => {
-        alert("Medical notes updated");
-        location.reload();
-      });
+    savePerformanceBtn?.addEventListener("click", async()=>{
+      const val = editPerfArea.value.trim();
+      const studentRef = doc(db,"schools",schoolId,"students",studentId);
+      await updateDoc(studentRef,{performanceNotes:val,updatedAt:new Date()});
+      await logUpdate("Updated performance notes");
+      editPerfArea.classList.add("hidden");
+      savePerformanceBtn.classList.add("hidden");
+      enableEditPerfBtn.classList.remove("hidden");
+      loadStudent();
     });
-  </script>
-</body>
-</html>
+
+    enableEditMedicalBtn?.addEventListener("click", ()=>{
+      editMedArea.classList.remove("hidden");
+      editMedArea.value = medicalNotes.textContent==="No medical notes."?"":medicalNotes.textContent;
+      saveMedicalBtn.classList.remove("hidden");
+      enableEditMedicalBtn.classList.add("hidden");
+    });
+
+    saveMedicalBtn?.addEventListener("click", async()=>{
+      const val = editMedArea.value.trim();
+      const studentRef = doc(db,"schools",schoolId,"students",studentId);
+      await updateDoc(studentRef,{medicalNotes:val,updatedAt:new Date()});
+      await logUpdate("Updated medical notes");
+      editMedArea.classList.add("hidden");
+      saveMedicalBtn.classList.add("hidden");
+      enableEditMedicalBtn.classList.remove("hidden");
+      loadStudent();
+    });
+
+    // Firebase Auth check
+    onAuthStateChanged(auth, async (user)=>{
+      if(!user) { alert("Sign in required"); window.location.href="login.html"; return; }
+      currentUserId = user.uid;
+      const userDoc = await getDoc(doc(db,"users",currentUserId));
+      if(userDoc.exists()){
+        const u = userDoc.data
