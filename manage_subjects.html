@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Subjects</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    header {
+      background: #2c3e50;
+      color: #fff;
+    }
+    .btn-primary {
+      background: #2c3e50;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #34495e; }
+    .btn-accent {
+      background: #3498db;
+      color: #fff;
+    }
+    .btn-accent:hover { background: #2980b9; }
+    h2 { color: #2c3e50; }
+
+    /* Dark Mode */
+    body.dark { background: #1e1e1e; color: #eee; }
+    body.dark section { background: #2b2b2b; }
+    body.dark h2 { color: #f1c40f; }
+    body.dark header { background: #111; }
+
+    /* Floating Dark Toggle */
+    #darkModeToggle {
+      position: fixed;
+      bottom: 1.2rem;
+      right: 1.2rem;
+      background: #2c3e50;
+      color: #fff;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transition: background 0.3s, transform 0.2s;
+    }
+    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
+    body.dark #darkModeToggle { background: #e67e22; }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- HEADER -->
+  <header class="p-4 flex justify-between items-center shadow">
+    <div class="text-2xl font-bold">📚 Manage Subjects</div>
+  </header>
+
+  <!-- ADD SUBJECT FORM -->
+  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-3">➕ Add / Edit Subject</h2>
+    <input type="hidden" id="subjectId">
+
+    <label class="block mb-1">Subject Name:</label>
+    <input type="text" id="subjectName" placeholder="Enter subject name"
+      class="w-full p-2 border rounded mb-3">
+
+    <label class="block mb-1">Level:</label>
+    <select id="subjectLevel" class="w-full p-2 border rounded mb-3">
+      <option value="">-- Select Level --</option>
+      <option>Pre-Primary</option>
+      <option>Primary</option>
+      <option>JSS</option>
+      <option>Secondary</option>
+    </select>
+
+    <label class="block mb-1">Description:</label>
+    <textarea id="subjectDescription" placeholder="Optional details"
+      class="w-full p-2 border rounded mb-3"></textarea>
+
+    <button onclick="saveSubject()" class="btn-primary px-4 py-2 rounded-lg">Save Subject</button>
+  </section>
+
+  <!-- SUBJECT LIST -->
+  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-3">📖 Subjects List</h2>
+
+    <div class="flex space-x-2 mb-3">
+      <input type="text" id="searchBox" placeholder="Search subjects..."
+        class="flex-1 p-2 border rounded">
+      <select id="filterLevel" onchange="renderSubjects()"
+        class="p-2 border rounded">
+        <option value="">All Levels</option>
+        <option>Pre-Primary</option>
+        <option>Primary</option>
+        <option>JSS</option>
+        <option>Secondary</option>
+      </select>
+    </div>
+
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="p-2 border">Name</th>
+          <th class="p-2 border">Level</th>
+          <th class="p-2 border">Description</th>
+          <th class="p-2 border">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="subjectTable"></tbody>
+    </table>
+  </section>
+
+  <!-- 🌙 Floating Dark Toggle -->
+  <button id="darkModeToggle">🌙</button>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc } 
+      from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    // ✅ Firebase config (your existing config)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.firebasestorage.app",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const schoolId = "school1"; // Adjust if multiple schools
+    const subjectsRef = collection(db, "schools", schoolId, "subjects");
+
+    // Save or Update Subject
+    async function saveSubject() {
+      const id = document.getElementById("subjectId").value;
+      const name = document.getElementById("subjectName").value.trim();
+      const level = document.getElementById("subjectLevel").value;
+      const description = document.getElementById("subjectDescription").value.trim();
+
+      if (!name || !level) {
+        alert("Please fill in all required fields");
+        return;
+      }
+
+      if (id) {
+        const ref = doc(db, "schools", schoolId, "subjects", id);
+        await updateDoc(ref, { name, level, description });
+        alert("Subject updated successfully");
+      } else {
+        await addDoc(subjectsRef, { name, level, description });
+        alert("Subject added successfully");
+      }
+      resetForm();
+      loadSubjects();
+    }
+
+    // Delete Subject
+    async function deleteSubject(id) {
+      if (confirm("Delete this subject?")) {
+        await deleteDoc(doc(db, "schools", schoolId, "subjects", id));
+        loadSubjects();
+      }
+    }
+
+    // Edit Subject
+    function editSubject(id, name, level, description) {
+      document.getElementById("subjectId").value = id;
+      document.getElementById("subjectName").value = name;
+      document.getElementById("subjectLevel").value = level;
+      document.getElementById("subjectDescription").value = description;
+    }
+
+    function resetForm() {
+      document.getElementById("subjectId").value = "";
+      document.getElementById("subjectName").value = "";
+      document.getElementById("subjectLevel").value = "";
+      document.getElementById("subjectDescription").value = "";
+    }
+
+    // Load Subjects
+    let allSubjects = [];
+    async function loadSubjects() {
+      allSubjects = [];
+      const snapshot = await getDocs(subjectsRef);
+      snapshot.forEach(docSnap => {
+        allSubjects.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      renderSubjects();
+    }
+
+    // Render Table
+    function renderSubjects() {
+      const search = document.getElementById("searchBox").value.toLowerCase();
+      const filter = document.getElementById("filterLevel").value;
+      const tbody = document.getElementById("subjectTable");
+      tbody.innerHTML = "";
+
+      allSubjects
+        .filter(s => 
+          (s.name.toLowerCase().includes(search) || (s.description || "").toLowerCase().includes(search)) &&
+          (!filter || s.level === filter)
+        )
+        .forEach(s => {
+          tbody.innerHTML += `
+            <tr>
+              <td class="p-2 border">${s.name}</td>
+              <td class="p-2 border">${s.level}</td>
+              <td class="p-2 border">${s.description || ""}</td>
+              <td class="p-2 border space-x-2">
+                <button onclick="editSubject('${s.id}', '${s.name}', '${s.level}', '${s.description || ""}')" 
+                  class="btn-accent px-2 py-1 rounded">Edit</button>
+                <button onclick="deleteSubject('${s.id}')" 
+                  class="btn-primary px-2 py-1 rounded">Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+    }
+
+    window.saveSubject = saveSubject;
+    window.editSubject = editSubject;
+    window.deleteSubject = deleteSubject;
+
+    // 🌙 Dark Mode Toggle
+    const darkToggle = document.getElementById("darkModeToggle");
+    darkToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    });
+
+    // Load saved dark mode
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark");
+      document.getElementById("darkModeToggle").textContent = "☀️";
+    }
+
+    // Initial load
+    loadSubjects();
+  </script>
+</body>
+</html>
