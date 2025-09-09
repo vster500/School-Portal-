@@ -116,53 +116,57 @@
     }
 
     function renderStudents(students) {
-      studentsList.innerHTML = "";
-      students.forEach(docSnap => {
-        const s = docSnap.data();
-        const div = document.createElement("div");
-        div.className = "p-3 border rounded flex justify-between items-center";
-        div.innerHTML = `
-          <span>${s.name} (${s.admission}) - ${s.classLevel}</span>
-          <div class="flex gap-2">
-            <button class="btn yellow" data-action="edit" data-id="${docSnap.id}">Edit</button>
-            <button class="btn green" data-action="promote" data-id="${docSnap.id}" data-class="${s.classLevel}">Promote</button>
-            <button class="btn" data-action="repeat" data-id="${docSnap.id}">Repeat</button>
-            <button class="btn danger" data-action="delete" data-id="${docSnap.id}">Delete</button>
-          </div>
-        `;
-        studentsList.appendChild(div);
+  studentsList.innerHTML = "";
+  students.forEach(docSnap => {
+    const s = docSnap.data();
+    const div = document.createElement("div");
+    div.className = "p-3 border rounded flex justify-between items-center";
+    div.innerHTML = `
+      <span>
+        <a href="student_profile.html?schoolId=${schoolId}&id=${docSnap.id}" class="text-blue-600 hover:underline font-medium">
+  ${s.name} (${s.admission})
+</a> - ${s.classLevel}
+      </span>
+      <div class="flex gap-2">
+        <button class="btn yellow" data-action="edit" data-id="${docSnap.id}">Edit</button>
+        <button class="btn green" data-action="promote" data-id="${docSnap.id}" data-class="${s.classLevel}">Promote</button>
+        <button class="btn" data-action="repeat" data-id="${docSnap.id}">Repeat</button>
+        <button class="btn danger" data-action="delete" data-id="${docSnap.id}">Delete</button>
+      </div>
+    `;
+    studentsList.appendChild(div);
 
-        // Action buttons
-        div.querySelectorAll("button").forEach(btn => {
-          btn.addEventListener("click", async () => {
-            const id = btn.dataset.id;
-            const action = btn.dataset.action;
+    // Action buttons
+    div.querySelectorAll("button").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        const action = btn.dataset.action;
 
-            if (action === "delete") {
-              await deleteDoc(doc(db, "schools", schoolId, "students", id));
-              alert("❌ Student deleted");
-            } else if (action === "repeat") {
-              await updateDoc(doc(db, "schools", schoolId, "students", id), { repeated: true });
-              alert("🔄 Student marked to repeat");
-            } else if (action === "promote") {
-              const nextClass = getNextClass(btn.dataset.class);
-              await updateDoc(doc(db, "schools", schoolId, "students", id), { classLevel: nextClass });
-              alert(`⬆️ Promoted to ${nextClass}`);
-            } else if (action === "edit") {
-              const snap = await getDoc(doc(db, "schools", schoolId, "students", id));
-              if (snap.exists()) {
-                const data = snap.data();
-                document.getElementById("editId").value = id;
-                document.getElementById("editName").value = data.name;
-                document.getElementById("editAdmission").value = data.admission;
-                document.getElementById("editClass").value = data.classLevel;
-                editModal.classList.remove("hidden");
-              }
-            }
-          });
-        });
+        if (action === "delete") {
+          await deleteDoc(doc(db, "schools", schoolId, "students", id));
+          alert("❌ Student deleted");
+        } else if (action === "repeat") {
+          await updateDoc(doc(db, "schools", schoolId, "students", id), { repeated: true });
+          alert("🔄 Student marked to repeat");
+        } else if (action === "promote") {
+          const nextClass = getNextClass(btn.dataset.class);
+          await updateDoc(doc(db, "schools", schoolId, "students", id), { classLevel: nextClass });
+          alert(`⬆️ Promoted to ${nextClass}`);
+        } else if (action === "edit") {
+          const snap = await getDoc(doc(db, "schools", schoolId, "students", id));
+          if (snap.exists()) {
+            const data = snap.data();
+            document.getElementById("editId").value = id;
+            document.getElementById("editName").value = data.name;
+            document.getElementById("editAdmission").value = data.admission;
+            document.getElementById("editClass").value = data.classLevel;
+            editModal.classList.remove("hidden");
+          }
+        }
       });
-    }
+    });
+  });
+}
 
     // Live updates
     function fetchStudents() {
