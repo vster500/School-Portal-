@@ -114,7 +114,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import { getFirestore, doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // ✅ Firebase config
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
       authDomain: "school-portal-233f5.firebaseapp.com",
@@ -127,123 +127,30 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Example: Get schoolId from URL ?id=school1
     const urlParams = new URLSearchParams(window.location.search);
     const schoolId = urlParams.get("id") || "school1";
 
     // Load school info
-    async function loadSchool() {
-      const schoolRef = doc(db, "schools", schoolId);
-      const snap = await getDoc(schoolRef);
-      if (snap.exists()) {
-        const data = snap.data();
-        document.getElementById("schoolHeader").textContent = data.name || "School Portal";
-        document.getElementById("schoolInfo").innerHTML = `
-          <p><strong>Motto:</strong> ${data.motto || "Not set"}</p>
-          <p><strong>Location:</strong> ${data.location || "Not set"}</p>
-          <p><strong>Contact:</strong> ${data.contact || "Not set"}</p>
-        `;
-      }
-    }
-
+    async function loadSchool() { /* your existing code */ }
     // Load announcements
-    async function loadNotifications() {
-      const notifRef = collection(db, "schools", schoolId, "notifications");
-      const snap = await getDocs(notifRef);
-      const container = document.getElementById("notifications");
-      container.innerHTML = "";
-      if (snap.empty) {
-        container.innerHTML = "<p class='text-gray-500'>No announcements yet</p>";
-      }
-      snap.forEach(docSnap => {
-        const n = docSnap.data();
-        const div = document.createElement("div");
-        div.className = "p-3 border rounded bg-gray-50";
-        if (n.image) {
-          div.innerHTML = `<img src="${n.image}" class="w-full rounded mb-2"><p>${n.message}</p>`;
-        } else {
-          div.textContent = n.message;
-        }
-        container.appendChild(div);
-      });
-    }
-
-    // Lookup student
-    document.getElementById("lookupBtn").addEventListener("click", async () => {
-      const admission = document.getElementById("admissionInput").value.trim();
-      if (!admission) return;
-      const q = query(collection(db, "schools", schoolId, "students"), where("admission", "==", admission));
-      const snap = await getDocs(q);
-      const resultDiv = document.getElementById("studentResult");
-      resultDiv.innerHTML = "";
-      if (snap.empty) {
-        resultDiv.textContent = "No student found.";
-      } else {
-        snap.forEach(s => {
-          const d = s.data();
-          resultDiv.innerHTML = `
-            <p><strong>Name:</strong> ${d.name}</p>
-            <p><strong>Admission:</strong> ${d.admission}</p>
-            <p><strong>Class:</strong> ${d.class || "N/A"}</p>
-            <p><strong>Fee Balance:</strong> ${d.fees || "N/A"}</p>
-            <p><strong>Last Results:</strong> ${d.results || "N/A"}</p>
-          `;
-        });
-      }
-    });
-
-    // Search across notifications + students
-    document.getElementById("searchBox").addEventListener("input", async (e) => {
-      const term = e.target.value.toLowerCase();
-      if (!term) {
-        loadNotifications();
-        return;
-      }
-      const notifRef = collection(db, "schools", schoolId, "notifications");
-      const notifSnap = await getDocs(notifRef);
-      const container = document.getElementById("notifications");
-      container.innerHTML = "";
-      notifSnap.forEach(n => {
-        const d = n.data();
-        if ((d.message && d.message.toLowerCase().includes(term))) {
-          const div = document.createElement("div");
-          div.className = "p-3 border rounded bg-gray-50";
-          div.textContent = d.message;
-          container.appendChild(div);
-        }
-      });
-      const studentRef = collection(db, "schools", schoolId, "students");
-      const studentSnap = await getDocs(studentRef);
-      studentSnap.forEach(s => {
-        const d = s.data();
-        if ((d.admission && d.admission.toLowerCase().includes(term)) || (d.name && d.name.toLowerCase().includes(term))) {
-          const resultDiv = document.getElementById("studentResult");
-          resultDiv.innerHTML = `
-            <p><strong>Name:</strong> ${d.name}</p>
-            <p><strong>Admission:</strong> ${d.admission}</p>
-            <p><strong>Class:</strong> ${d.class || "N/A"}</p>
-          `;
-        }
-      });
-    });
-
-    // 🌙 Dark Mode Toggle
-    const darkToggle = document.getElementById("darkModeToggle");
-    darkToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
-      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-    });
-
-    // Load saved dark mode
-    if (localStorage.getItem("darkMode") === "true") {
-      document.body.classList.add("dark");
-      document.getElementById("darkModeToggle").textContent = "☀️";
-    }
+    async function loadNotifications() { /* your existing code */ }
+    // Lookup student and search
+    /* your existing code */
+    // Dark mode toggle
+    /* your existing code */
 
     // Init
     loadSchool();
     loadNotifications();
+  </script>
+
+  <script>
+    // Teacher Login button
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const schoolId = urlParams.get("id") || "school1";
+      window.location.href = `login.html?schoolId=${schoolId}`;
+    });
   </script>
 </body>
 </html>
