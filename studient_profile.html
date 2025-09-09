@@ -5,143 +5,173 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    body { background: #f4f6f9; font-family: "Segoe UI", sans-serif; }
-    header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
-    .card { background: white; padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 700px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .btn { background: #2c3e50; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; }
-    .btn:hover { background: #1a242f; }
-    .danger { background: #dc3545; }
-    .danger:hover { background: #a71d2a; }
-    .yellow { background: #ffc107; color: #333; }
-    .yellow:hover { background: #e0a800; }
-    .green { background: #28a745; }
-    .green:hover { background: #1e7e34; }
-  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js"></script>
 </head>
-<body>
+<body class="container py-4">
+  <h2 class="text-center mb-4">Student Profile</h2>
 
-  <header>📖 Student Profile</header>
-
-  <div class="card">
-    <div id="studentInfo" class="space-y-3"></div>
-
-    <!-- Action buttons -->
-    <div id="actions" class="mt-4 flex gap-2"></div>
-
-    <!-- Back Link -->
-    <div class="mt-4 text-center">
-      <a href="manage_students.html" class="text-blue-600 hover:underline">← Back to Manage Students</a>
+  <div id="studentProfile" class="card shadow p-3">
+    <div class="text-center mb-3">
+      <img id="studentPhoto" class="rounded-circle" style="width:120px;height:120px;object-fit:cover;">
     </div>
+    <h4 id="studentName" class="text-center"></h4>
+    <p class="text-center text-muted" id="studentClass"></p>
+
+    <!-- Sections -->
+    <div class="mt-3">
+      <h5>General Info</h5>
+      <p><strong>Admission No:</strong> <span id="studentAdm"></span></p>
+      <p><strong>Date of Birth:</strong> <span id="studentDob"></span></p>
+    </div>
+
+    <div class="mt-3">
+      <h5>Parent Info</h5>
+      <p><strong>Name:</strong> <span id="parentName"></span></p>
+      <p><strong>Contact:</strong> <span id="parentContact"></span></p>
+    </div>
+
+    <div class="mt-3">
+      <h5>Notes</h5>
+      <p><strong>Performance:</strong> <span id="performanceNotes"></span></p>
+      <textarea id="editPerformanceNotes" class="form-control d-none"></textarea>
+
+      <div id="medicalSection" class="mt-2">
+        <p><strong>Medical:</strong> <span id="medicalNotes"></span></p>
+        <textarea id="editMedicalNotes" class="form-control d-none"></textarea>
+      </div>
+    </div>
+
+    <div id="adminActions" class="mt-3 d-none">
+      <button class="btn btn-warning" id="promoteBtn">Promote</button>
+    </div>
+
+    <div id="teacherActions" class="mt-3 d-none">
+      <button class="btn btn-primary" id="savePerformanceBtn">Save Performance</button>
+    </div>
+
+    <div id="medicalActions" class="mt-3 d-none">
+      <button class="btn btn-danger" id="saveMedicalBtn">Save Medical</button>
+    </div>
+
+    <p class="text-muted text-end mt-3"><small>Last Updated: <span id="lastUpdated"></span></small></p>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-    // Firebase config
+  <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-      authDomain: "school-portal-233f5.firebaseapp.com",
-      projectId: "school-portal-233f5",
-      storageBucket: "school-portal-233f5.appspot.com",
-      messagingSenderId: "314984934331",
-      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Get student ID from query string
     const params = new URLSearchParams(window.location.search);
     const studentId = params.get("id");
 
-    // Get logged in user role and contact
-    const role = localStorage.getItem("role"); // "admin", "teacher", "parent"
-    const userContact = localStorage.getItem("contact"); // parent's phone/email
+    const role = localStorage.getItem("role"); // "admin", "teacher", "medical", "parent"
 
-    async function loadStudent() {
-      if (!studentId) return;
+    const studentName = document.getElementById("studentName");
+    const studentClass = document.getElementById("studentClass");
+    const studentAdm = document.getElementById("studentAdm");
+    const studentDob = document.getElementById("studentDob");
+    const parentName = document.getElementById("parentName");
+    const parentContact = document.getElementById("parentContact");
+    const performanceNotes = document.getElementById("performanceNotes");
+    const medicalNotes = document.getElementById("medicalNotes");
+    const studentPhoto = document.getElementById("studentPhoto");
+    const lastUpdated = document.getElementById("lastUpdated");
 
-      const docRef = doc(db, "students", studentId);
-      const snap = await getDoc(docRef);
+    const editPerformanceNotes = document.getElementById("editPerformanceNotes");
+    const editMedicalNotes = document.getElementById("editMedicalNotes");
 
-      if (!snap.exists()) {
-        document.getElementById("studentInfo").innerHTML = "<p>❌ Student not found.</p>";
-        return;
-      }
+    const adminActions = document.getElementById("adminActions");
+    const teacherActions = document.getElementById("teacherActions");
+    const medicalActions = document.getElementById("medicalActions");
 
-      const s = snap.data();
+    db.collection("students").doc(studentId).get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        studentName.textContent = data.name;
+        studentClass.textContent = "Class: " + data.class;
+        studentAdm.textContent = data.adm;
+        studentDob.textContent = data.dob;
+        parentName.textContent = data.parentName;
+        parentContact.textContent = data.parentContact;
+        performanceNotes.textContent = data.performanceNotes || "N/A";
+        medicalNotes.textContent = data.medicalNotes || "Restricted";
+        studentPhoto.src = data.photoUrl || "https://via.placeholder.com/120";
+        lastUpdated.textContent = data.updatedAt ? new Date(data.updatedAt.toDate()).toLocaleString() : "Not available";
 
-      // Check parent restriction
-      if (role === "parent" && s.parentContact !== userContact) {
-        document.getElementById("studentInfo").innerHTML = "<p>🚫 You can only view your own child’s profile.</p>";
-        return;
-      }
-
-      // Render profile
-      document.getElementById("studentInfo").innerHTML = `
-        <p><b>Name:</b> ${s.name}</p>
-        <p><b>Admission:</b> ${s.admission}</p>
-        <p><b>Level:</b> ${s.level}</p>
-        <p><b>Class:</b> ${s.classLevel}</p>
-        <p><b>Parent Contact:</b> ${s.parentContact}</p>
-        <p><b>Notes:</b> ${s.notes || "None"}</p>
-        ${s.photoURL ? `<img src="${s.photoURL}" class="w-32 h-32 rounded border mt-2">` : ""}
-      `;
-
-      const actions = document.getElementById("actions");
-
-      // Role-based buttons
-      if (role === "admin" || role === "teacher") {
-        actions.innerHTML = `
-          <button class="btn yellow" id="repeatBtn">Repeat</button>
-          <button class="btn green" id="promoteBtn">Promote</button>
-        `;
+        // Role-based controls
         if (role === "admin") {
-          actions.innerHTML += `
-            <button class="btn" id="editBtn">Edit</button>
-            <button class="btn danger" id="deleteBtn">Delete</button>
-          `;
+          adminActions.classList.remove("d-none");
         }
-
-        // Attach actions
-        if (document.getElementById("repeatBtn")) {
-          document.getElementById("repeatBtn").onclick = async () => {
-            await updateDoc(docRef, { repeated: true });
-            alert("🔄 Marked to repeat");
-          };
+        if (role === "teacher") {
+          editPerformanceNotes.classList.remove("d-none");
+          editPerformanceNotes.value = data.performanceNotes || "";
+          teacherActions.classList.remove("d-none");
         }
-        if (document.getElementById("promoteBtn")) {
-          document.getElementById("promoteBtn").onclick = async () => {
-            let nextClass = "Graduated"; // TODO: implement real promotion logic
-            await updateDoc(docRef, { classLevel: nextClass });
-            alert(`⬆️ Promoted to ${nextClass}`);
-          };
+        if (role === "medical") {
+          editMedicalNotes.classList.remove("d-none");
+          editMedicalNotes.value = data.medicalNotes || "";
+          medicalActions.classList.remove("d-none");
         }
-        if (document.getElementById("editBtn")) {
-          document.getElementById("editBtn").onclick = () => {
-            window.location.href = `edit_student.html?id=${studentId}`;
-          };
+        if (role === "parent") {
+          document.getElementById("medicalSection").style.display = "none"; // hide medical info
         }
-        if (document.getElementById("deleteBtn")) {
-          document.getElementById("deleteBtn").onclick = async () => {
-            if (confirm("Are you sure you want to delete this student?")) {
-              await deleteDoc(docRef);
-              alert("❌ Student deleted");
-              window.location.href = "manage_students.html";
-            }
-          };
-        }
-      } else if (role === "parent") {
-        actions.innerHTML = `<p class="text-gray-500">👀 Read-only access</p>`;
       }
-    }
+    });
 
-    loadStudent();
+    // Promotion logic for admin
+    const classOrder = [
+      "Pre-Primary 1","Pre-Primary 2","Grade 1","Grade 2","Grade 3","Grade 4",
+      "Grade 5","Grade 6","JSS 7","JSS 8","JSS 9","Form 1","Form 2","Form 3","Form 4","Alumni"
+    ];
+
+    document.getElementById("promoteBtn").addEventListener("click", () => {
+      db.collection("students").doc(studentId).get().then(doc => {
+        if (doc.exists) {
+          let currentClass = doc.data().class;
+          let nextIndex = classOrder.indexOf(currentClass) + 1;
+          let nextClass = nextIndex < classOrder.length ? classOrder[nextIndex] : "Alumni";
+          db.collection("students").doc(studentId).update({
+            class: nextClass,
+            updatedAt: new Date()
+          }).then(() => {
+            alert("Student promoted to " + nextClass);
+            location.reload();
+          });
+        }
+      });
+    });
+
+    // Teacher updates performance
+    document.getElementById("savePerformanceBtn").addEventListener("click", () => {
+      db.collection("students").doc(studentId).update({
+        performanceNotes: editPerformanceNotes.value,
+        updatedAt: new Date()
+      }).then(() => {
+        alert("Performance notes updated");
+        location.reload();
+      });
+    });
+
+    // Medical teacher updates medical notes
+    document.getElementById("saveMedicalBtn").addEventListener("click", () => {
+      db.collection("students").doc(studentId).update({
+        medicalNotes: editMedicalNotes.value,
+        updatedAt: new Date()
+      }).then(() => {
+        alert("Medical notes updated");
+        location.reload();
+      });
+    });
   </script>
 </body>
 </html>
