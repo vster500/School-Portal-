@@ -1,0 +1,164 @@
+<!-- Save as add_student.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Student</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { background: #f4f6f9; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
+    .card { background: white; padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 600px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .btn { background: #2c3e50; color: white; padding: 10px; border-radius: 6px; font-size: 16px; cursor: pointer; width: 100%; }
+    .btn:hover { background: #1a242f; }
+    #darkModeToggle { position: fixed; bottom: 1.2rem; right: 1.2rem; background: #2c3e50; color: #fff; border-radius: 50%; width: 50px; height: 50px; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: 0.3s; z-index: 50; }
+    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
+    body.dark { background: #1e1e1e; color: #eee; }
+    body.dark header { background: #111; }
+    body.dark .card { background: #2b2b2b; color: #eee; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>➕ Add New Student</header>
+
+  <!-- Form Card -->
+  <div class="card">
+    <form id="studentForm" class="space-y-4">
+      <input type="text" id="name" placeholder="Full Name" class="w-full border rounded-lg p-2" required>
+
+      <div class="flex gap-2">
+        <input type="text" id="admission" placeholder="Admission No." class="flex-1 border rounded-lg p-2">
+        <button type="button" id="generateAdmission" class="px-4 bg-gray-300 rounded">Auto</button>
+      </div>
+
+      <!-- Level & Class Dropdowns -->
+      <select id="level" class="w-full border rounded-lg p-2" required>
+        <option value="">Select Level</option>
+        <option value="Pre-Primary">Pre-Primary</option>
+        <option value="Primary">Primary</option>
+        <option value="Junior Secondary">Junior Secondary</option>
+        <option value="Secondary">Secondary</option>
+      </select>
+
+      <select id="class" class="w-full border rounded-lg p-2" required>
+        <option value="">Select Class</option>
+      </select>
+
+      <!-- Parent Contact -->
+      <input type="text" id="parentContact" placeholder="Parent Contact" class="w-full border rounded-lg p-2" required>
+
+      <!-- Notes -->
+      <textarea id="notes" placeholder="Notes (optional)" class="w-full border rounded-lg p-2"></textarea>
+
+      <!-- Photo Upload -->
+      <input type="file" id="photo" accept="image/*" class="w-full border rounded-lg p-2">
+
+      <!-- Submit -->
+      <button type="submit" class="btn">Save Student</button>
+    </form>
+
+    <!-- Back Link -->
+    <div class="mt-4 text-center">
+      <a href="manage_students.html" class="text-blue-600 hover:underline">← Back to Manage Students</a>
+    </div>
+  </div>
+
+  <!-- 🌙 Dark Mode Button -->
+  <button id="darkModeToggle">🌙</button>
+
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.appspot.com",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Class options by level
+    const classOptions = {
+      "Pre-Primary": ["PP1", "PP2"],
+      "Primary": ["Grade 1","Grade 2","Grade 3","Grade 4","Grade 5","Grade 6"],
+      "Junior Secondary": ["Grade 7","Grade 8","Grade 9"],
+      "Secondary": ["Form 1","Form 2","Form 3","Form 4"]
+    };
+
+    document.getElementById("level").addEventListener("change", (e) => {
+      const classSelect = document.getElementById("class");
+      classSelect.innerHTML = "<option value=''>Select Class</option>";
+      (classOptions[e.target.value] || []).forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        classSelect.appendChild(opt);
+      });
+    });
+
+    // Auto-generate admission
+    document.getElementById("generateAdmission").addEventListener("click", () => {
+      document.getElementById("admission").value = "ADM" + Math.floor(Math.random() * 100000);
+    });
+
+    // Save student
+    document.getElementById("studentForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const admission = document.getElementById("admission").value || "ADM" + Math.floor(Math.random() * 100000);
+      const level = document.getElementById("level").value;
+      const studentClass = document.getElementById("class").value;
+      const parentContact = document.getElementById("parentContact").value;
+      const notes = document.getElementById("notes").value;
+      const photoFile = document.getElementById("photo").files[0];
+
+      let photoURL = "";
+      try {
+        if (photoFile) {
+          const photoRef = ref(storage, `students/${admission}_${photoFile.name}`);
+          await uploadBytes(photoRef, photoFile);
+          photoURL = await getDownloadURL(photoRef);
+        }
+
+        await addDoc(collection(db, "students"), {
+          name, admission, level, classLevel: studentClass,
+          parentContact, notes, photoURL, createdAt: new Date()
+        });
+
+        alert("✅ Student added successfully!");
+        e.target.reset();
+      } catch (err) {
+        console.error(err);
+        alert("❌ Failed to add student");
+      }
+    });
+
+    // Dark mode toggle
+    const toggle = document.getElementById("darkModeToggle");
+    toggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      toggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    });
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark");
+      toggle.textContent = "☀️";
+    }
+  </script>
+</body>
+</html>
