@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Post / Edit Results</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
+<style>
+body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #f9f9f9; color: #333; transition: background 0.3s, color 0.3s; }
+header { background: #2c3e50; color: #fff; }
+.btn-primary { background: #2c3e50; color: #fff; }
+.btn-primary:hover { background: #34495e; }
+.btn-accent { background: #3498db; color: #fff; }
+.btn-accent:hover { background: #2980b9; }
+h2 { color: #2c3e50; }
+body.dark { background: #1e1e1e; color: #eee; }
+body.dark section { background: #2b2b2b; }
+body.dark h2 { color: #f1c40f; }
+body.dark header { background: #111; }
+#darkModeToggle { position: fixed; bottom: 1.2rem; right: 1.2rem; background: #2c3e50; color: #fff; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: background 0.3s, transform 0.2s; }
+#darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
+body.dark #darkModeToggle { background: #e67e22; }
+.bulk-btn-bar { background: #3498db; color: #fff; display:flex; justify-content:flex-end; align-items:center; padding:0.5rem 1rem; }
+.bulk-btn-bar button { background:#fff; color:#3498db; font-weight:bold; padding:0.5rem 1rem; border-radius:5px; }
+.bulk-btn-bar button:hover { background:#e0e0e0; }
+</style>
+</head>
+<body class="text-gray-800">
+
+<header class="p-4 flex justify-between items-center shadow">
+  <div class="text-2xl font-bold">📊 Post / Edit Results</div>
+</header>
+
+<!-- BULK UPLOAD BUTTON TOP-RIGHT -->
+<div class="bulk-btn-bar">
+  <button onclick="window.location.href='bulk_upload.html'">Bulk Excel Upload</button>
+</div>
+
+<!-- FILTERS -->
+<section class="max-w-5xl mx-auto mt-4 bg-white p-4 rounded-lg shadow space-y-4">
+  <h2 class="text-xl font-bold mb-3">Filter / Select Class & Subject</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+    <select id="levelSelect" class="p-2 border rounded" onchange="populateGrades()">
+      <option value="">Select Level</option>
+      <option>Pre-Primary</option>
+      <option>Primary</option>
+      <option>JSS</option>
+      <option>Secondary</option>
+    </select>
+
+    <select id="gradeSelect" class="p-2 border rounded" onchange="populateSubjects()">
+      <option value="">Select Grade</option>
+    </select>
+
+    <select id="subjectSelect" class="p-2 border rounded">
+      <option value="">Select Subject</option>
+    </select>
+
+    <select id="termSelect" class="p-2 border rounded">
+      <option value="">Select Term</option>
+      <option>Term 1</option>
+      <option>Term 2</option>
+      <option>Term 3</option>
+    </select>
+
+    <select id="examTypeSelect" class="p-2 border rounded">
+      <option value="">Select Exam Type</option>
+      <option>Opening</option>
+      <option>Mid</option>
+      <option>End</option>
+    </select>
+
+    <select id="yearSelect" class="p-2 border rounded"></select>
+  </div>
+  <button onclick="loadStudents()" class="btn-primary px-4 py-2 rounded mt-2">Load Students</button>
+</section>
+
+<!-- RESULTS TABLE -->
+<section class="max-w-5xl mx-auto mt-6 bg-white p-4 rounded-lg shadow" id="resultsSection" style="display:none;">
+  <h2 class="text-xl font-bold mb-3">Enter / Edit Results</h2>
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="p-2 border">Admission Number</th>
+          <th class="p-2 border">Student Name</th>
+          <th class="p-2 border">Mark</th>
+        </tr>
+      </thead>
+      <tbody id="resultsTable"></tbody>
+    </table>
+  </div>
+  <button onclick="saveAllResults()" class="btn-primary px-4 py-2 mt-3 rounded">Save All Results</button>
+</section>
+
+<button id="darkModeToggle">🌙</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+  authDomain: "school-portal-233f5.firebaseapp.com",
+  projectId: "school-portal-233f5",
+  storageBucket: "school-portal-233f5.firebasestorage.app",
+  messagingSenderId: "314984934331",
+  appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const schoolId = "school1";
+
+// Populate Year Dropdown
+const yearSelect = document.getElementById("yearSelect");
+const currentYear = new Date().getFullYear();
+for(let y=currentYear; y>=currentYear-5; y++){
+  const opt=document.createElement("option");
+  opt.value=y; opt.textContent=y;
+  if(y===currentYear) opt.selected=true;
+  yearSelect.appendChild(opt);
+}
+
+// Grade mapping
+const gradeOptions = {
+  "Pre-Primary":["PP1","PP2"],
+  "Primary":["Grade 1","Grade 2","Grade 3","Grade 4","Grade 5","Grade 6"],
+  "JSS":["Grade 7","Grade 8","Grade 9"],
+  "Secondary":["Form 1","Form 2","Form 3","Form 4"]
+};
+
+// Load subjects added by admin
+let allSubjects = [];
+async function loadSubjectsFromAdmin(){
+  const snapshot = await getDocs(collection(db,"schools",schoolId,"subjects"));
+  allSubjects=[];
+  snapshot.forEach(snap=>allSubjects.push(snap.data()));
+}
+await loadSubjectsFromAdmin();
+
+function populateGrades(){
+  const level=document.getElementById("levelSelect").value;
+  const gradeSelect=document.getElementById("gradeSelect");
+  gradeSelect.innerHTML="<option value=''>Select Grade</option>";
+  if(level && gradeOptions[level]){
+    gradeOptions[level].forEach(g=>{
+      const opt=document.createElement("option");
+      opt.value=g; opt.textContent=g;
+      gradeSelect.appendChild(opt);
+    });
+  }
+  populateSubjects();
+}
+
+function populateSubjects(){
+  const level=document.getElementById("levelSelect").value;
+  const subjectSelect=document.getElementById("subjectSelect");
+  subjectSelect.innerHTML="<option value=''>Select Subject</option>";
+  allSubjects.forEach(sub=>{
+    if(sub.level===level){
+      const opt=document.createElement("option");
+      opt.value=sub.name; opt.textContent=sub.name;
+      subjectSelect.appendChild(opt);
+    }
+  });
+}
+
+async function loadStudents(){
+  const grade=document.getElementById("gradeSelect").value;
+  const subject=document.getElementById("subjectSelect").value;
+  const term=document.getElementById("termSelect").value;
+  const examType=document.getElementById("examTypeSelect").value;
+  const year=document.getElementById("yearSelect").value;
+  if(!grade || !subject || !term || !examType || !year
