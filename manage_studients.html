@@ -7,12 +7,13 @@
   <title>Manage Students</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     body { background: #f4f6f9; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
     header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
     .card { background: white; padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 1000px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .btn { background: #007bff; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+    .btn { background: #007bff; color: white; padding: 6px 10px; border-radius: 6px; font-size: 14px; cursor: pointer; }
     .btn:hover { background: #0056b3; }
     .danger { background: #dc3545; }
     .danger:hover { background: #a71d2a; }
@@ -40,8 +41,9 @@
       <select id="filterClass" class="p-2 border rounded">
         <option value="">All Classes</option>
         <option>Pre-Primary</option>
+        <option>Primary</option>
         <option>Junior Secondary</option>
-        <option>Secondary</option>
+        <option>Form One</option>
       </select>
     </div>
   </div>
@@ -52,10 +54,34 @@
     <div id="studentsList" class="space-y-2"></div>
   </div>
 
+  <!-- Edit Modal -->
+  <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">✏️ Edit Student</h2>
+      <form id="editForm" class="space-y-3">
+        <input type="hidden" id="editId">
+        <input type="text" id="editName" placeholder="Full Name" class="w-full p-2 border rounded" required>
+        <input type="text" id="editAdmission" placeholder="Admission No" class="w-full p-2 border rounded" required>
+        <select id="editClass" class="w-full p-2 border rounded">
+          <option>Pre-Primary</option>
+          <option>Primary</option>
+          <option>Junior Secondary</option>
+          <option>Form One</option>
+        </select>
+        <input type="file" id="editPhoto" class="w-full">
+        <div class="flex justify-end gap-2">
+          <button type="button" id="closeModal" class="btn danger">Cancel</button>
+          <button type="submit" class="btn green">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
     // Firebase config
     const firebaseConfig = {
@@ -69,13 +95,20 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const schoolId = localStorage.getItem("schoolId");
 
     const studentsList = document.getElementById("studentsList");
     const searchInput = document.getElementById("search");
     const filterClass = document.getElementById("filterClass");
 
+    const editModal = document.getElementById("editModal");
+    const editForm = document.getElementById("editForm");
+    const closeModal = document.getElementById("closeModal");
+
     // All classes in order for promotion
-    const classOrder = ["Pre-Primary", "Junior Secondary", "Secondary"];
+    const classOrder = ["Pre-Primary", "Primary", "Junior Secondary", "Form One"];
 
     function getNextClass(current) {
       const idx = classOrder.indexOf(current);
@@ -91,9 +124,10 @@
         div.innerHTML = `
           <span>${s.name} (${s.admission}) - ${s.classLevel}</span>
           <div class="flex gap-2">
-            <button class="btn danger" data-action="delete" data-id="${docSnap.id}">Delete</button>
-            <button class="btn yellow" data-action="repeat" data-id="${docSnap.id}">Repeat</button>
+            <button class="btn yellow" data-action="edit" data-id="${docSnap.id}">Edit</button>
             <button class="btn green" data-action="promote" data-id="${docSnap.id}" data-class="${s.classLevel}">Promote</button>
+            <button class="btn" data-action="repeat" data-id="${docSnap.id}">Repeat</button>
+            <button class="btn danger" data-action="delete" data-id="${docSnap.id}">Delete</button>
           </div>
         `;
         studentsList.appendChild(div);
@@ -105,15 +139,25 @@
             const action = btn.dataset.action;
 
             if (action === "delete") {
-              await deleteDoc(doc(db, "students", id));
+              await deleteDoc(doc(db, "schools", schoolId, "students", id));
               alert("❌ Student deleted");
             } else if (action === "repeat") {
-              await updateDoc(doc(db, "students", id), { repeated: true });
+              await updateDoc(doc(db, "schools", schoolId, "students", id), { repeated: true });
               alert("🔄 Student marked to repeat");
             } else if (action === "promote") {
               const nextClass = getNextClass(btn.dataset.class);
-              await updateDoc(doc(db, "students", id), { classLevel: nextClass });
+              await updateDoc(doc(db, "schools", schoolId, "students", id), { classLevel: nextClass });
               alert(`⬆️ Promoted to ${nextClass}`);
+            } else if (action === "edit") {
+              const snap = await getDoc(doc(db, "schools", schoolId, "students", id));
+              if (snap.exists()) {
+                const data = snap.data();
+                document.getElementById("editId").value = id;
+                document.getElementById("editName").value = data.name;
+                document.getElementById("editAdmission").value = data.admission;
+                document.getElementById("editClass").value = data.classLevel;
+                editModal.classList.remove("hidden");
+              }
             }
           });
         });
@@ -121,25 +165,8 @@
     }
 
     // Live updates
-    onSnapshot(collection(db, "students"), (snap) => {
-      let results = [];
-      snap.forEach(docSnap => {
-        const s = docSnap.data();
-        const searchText = searchInput.value.toLowerCase();
-        const classFilter = filterClass.value;
-        if (
-          (s.name.toLowerCase().includes(searchText) || s.admission.toLowerCase().includes(searchText)) &&
-          (classFilter === "" || s.classLevel === classFilter)
-        ) {
-          results.push(docSnap);
-        }
-      });
-      renderStudents(results);
-    });
-
-    // Trigger search and filter re-render
-    searchInput.addEventListener("input", () => {
-      onSnapshot(collection(db, "students"), (snap) => {
+    function fetchStudents() {
+      onSnapshot(collection(db, "schools", schoolId, "students"), (snap) => {
         let results = [];
         snap.forEach(docSnap => {
           const s = docSnap.data();
@@ -154,8 +181,40 @@
         });
         renderStudents(results);
       });
+    }
+    fetchStudents();
+
+    // Trigger search/filter refresh
+    searchInput.addEventListener("input", fetchStudents);
+    filterClass.addEventListener("change", fetchStudents);
+
+    // Close modal
+    closeModal.addEventListener("click", () => editModal.classList.add("hidden"));
+
+    // Save edits
+    editForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = document.getElementById("editId").value;
+      const name = document.getElementById("editName").value;
+      const admission = document.getElementById("editAdmission").value;
+      const classLevel = document.getElementById("editClass").value;
+      const photoFile = document.getElementById("editPhoto").files[0];
+
+      let photoUrl;
+      if (photoFile) {
+        const photoRef = ref(storage, `students/${schoolId}/${id}/${photoFile.name}`);
+        await uploadBytes(photoRef, photoFile);
+        photoUrl = await getDownloadURL(photoRef);
+      }
+
+      const updateData = { name, admission, classLevel };
+      if (photoUrl) updateData.photoUrl = photoUrl;
+
+      await updateDoc(doc(db, "schools", schoolId, "students", id), updateData);
+
+      alert("✅ Student updated");
+      editModal.classList.add("hidden");
     });
-    filterClass.addEventListener("change", () => searchInput.dispatchEvent(new Event("input")));
   </script>
 </body>
 </html>
