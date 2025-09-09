@@ -1,0 +1,212 @@
+<!-- Save as edit_student.html --><!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Student</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 20px; font-weight: bold; }
+    .form { background: white; max-width: 800px; margin: 20px auto; padding: 20px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; margin-top: 5px; }
+    .btn { background: #2c3e50; color: white; padding: 10px 15px; border-radius: 6px; margin-top: 10px; cursor: pointer; }
+    .btn:hover { background: #1a242f; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>  <header>✏️ Edit Student</header>  <div class="form">
+    <form id="editForm">
+      <!-- General Info -->
+      <label>Name</label>
+      <input type="text" id="name" class="input" required><label>Admission No.</label>
+  <input type="text" id="admission" class="input" required>
+
+  <label>Level</label>
+  <select id="level" class="input">
+    <option>Pre-Primary</option>
+    <option>Primary</option>
+    <option>Junior Secondary</option>
+    <option>Form One</option>
+  </select>
+
+  <label>Class</label>
+  <input type="text" id="classLevel" class="input" required>
+
+  <label>Date of Birth</label>
+  <input type="date" id="dob" class="input">
+
+  <label>Gender</label>
+  <select id="gender" class="input">
+    <option>Male</option>
+    <option>Female</option>
+  </select>
+
+  <!-- Parent Info -->
+  <label>Parent/Guardian Name</label>
+  <input type="text" id="guardian" class="input">
+
+  <label>Parent Contact</label>
+  <input type="text" id="parentContact" class="input">
+
+  <!-- Performance (Admin + Teacher) -->
+  <div id="performanceSection" class="hidden">
+    <label>Performance Notes</label>
+    <textarea id="performance" class="input"></textarea>
+  </div>
+
+  <!-- Medical (Admin + Medical Teacher only) -->
+  <div id="medicalSection" class="hidden">
+    <label>Medical Notes</label>
+    <textarea id="medical" class="input"></textarea>
+  </div>
+
+  <!-- Status -->
+  <label>Status</label>
+  <select id="status" class="input">
+    <option>Active</option>
+    <option>Transferred</option>
+    <option>Dropped</option>
+  </select>
+
+  <!-- Extra Notes -->
+  <label>Notes</label>
+  <textarea id="notes" class="input"></textarea>
+
+  <!-- Photo -->
+  <label>Photo (optional)</label>
+  <input type="file" id="photo" accept="image/*" class="input">
+
+  <button type="submit" class="btn w-full">💾 Save Changes</button>
+</form>
+
+<div class="mt-4 text-center">
+  <a href="manage_students.html" class="text-blue-600 hover:underline">← Back</a>
+</div>
+
+  </div>  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.appspot.com",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const params = new URLSearchParams(window.location.search);
+    const studentId = params.get("id");
+
+    let currentRole = "viewer"; // default if not logged in
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          currentRole = userDoc.data().role || "viewer";
+        }
+        applyRolePermissions();
+        loadStudent();
+      } else {
+        alert("You must log in to edit students.");
+        window.location.href = "login.html";
+      }
+    });
+
+    function applyRolePermissions() {
+      if (currentRole === "admin" || currentRole === "teacher") {
+        document.getElementById("performanceSection").classList.remove("hidden");
+      }
+      if (currentRole === "admin" || currentRole === "medical_teacher") {
+        document.getElementById("medicalSection").classList.remove("hidden");
+      }
+
+      // If not admin or assigned teacher → make inputs readonly
+      if (!(currentRole === "admin" || currentRole === "teacher" || currentRole === "medical_teacher")) {
+        document.querySelectorAll("#editForm input, #editForm select, #editForm textarea, #editForm button").forEach(el => {
+          el.setAttribute("disabled", "true");
+        });
+      }
+    }
+
+    async function loadStudent() {
+      if (!studentId) return;
+      const docRef = doc(db, "students", studentId);
+      const snap = await getDoc(docRef);
+
+      if (snap.exists()) {
+        const s = snap.data();
+        document.getElementById("name").value = s.name || "";
+        document.getElementById("admission").value = s.admission || "";
+        document.getElementById("level").value = s.level || "";
+        document.getElementById("classLevel").value = s.classLevel || "";
+        document.getElementById("dob").value = s.dob || "";
+        document.getElementById("gender").value = s.gender || "";
+        document.getElementById("guardian").value = s.guardian || "";
+        document.getElementById("parentContact").value = s.parentContact || "";
+        document.getElementById("performance").value = s.performance || "";
+        document.getElementById("medical").value = s.medical || "";
+        document.getElementById("status").value = s.status || "Active";
+        document.getElementById("notes").value = s.notes || "";
+      }
+    }
+
+    document.getElementById("editForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!(currentRole === "admin" || currentRole === "teacher" || currentRole === "medical_teacher")) {
+        alert("❌ You don’t have permission to edit this student.");
+        return;
+      }
+
+      const docRef = doc(db, "students", studentId);
+
+      let photoURL = null;
+      const file = document.getElementById("photo").files[0];
+      if (file) {
+        const storageRef = ref(storage, "students/" + Date.now() + "-" + file.name);
+        await uploadBytes(storageRef, file);
+        photoURL = await getDownloadURL(storageRef);
+      }
+
+      const updateData = {
+        name: document.getElementById("name").value,
+        admission: document.getElementById("admission").value,
+        level: document.getElementById("level").value,
+        classLevel: document.getElementById("classLevel").value,
+        dob: document.getElementById("dob").value,
+        gender: document.getElementById("gender").value,
+        guardian: document.getElementById("guardian").value,
+        parentContact: document.getElementById("parentContact").value,
+        status: document.getElementById("status").value,
+        notes: document.getElementById("notes").value,
+      };
+
+      if (currentRole === "admin" || currentRole === "teacher") {
+        updateData.performance = document.getElementById("performance").value;
+      }
+      if (currentRole === "admin" || currentRole === "medical_teacher") {
+        updateData.medical = document.getElementById("medical").value;
+      }
+      if (photoURL) updateData.photoURL = photoURL;
+
+      await updateDoc(docRef, updateData);
+
+      alert("✅ Student updated!");
+      window.location.href = `student_profile.html?id=${studentId}`;
+    });
+  </script></body>
+</html>
