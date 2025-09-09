@@ -1,0 +1,161 @@
+<!-- Save as manage_students.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Students</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { background: #f4f6f9; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
+    .card { background: white; padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 1000px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .btn { background: #007bff; color: white; padding: 8px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+    .btn:hover { background: #0056b3; }
+    .danger { background: #dc3545; }
+    .danger:hover { background: #a71d2a; }
+    .green { background: #28a745; }
+    .green:hover { background: #1e7e34; }
+    .yellow { background: #ffc107; color: #333; }
+    .yellow:hover { background: #e0a800; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>👨‍🎓 Manage Students</header>
+
+  <!-- Add Student Button -->
+  <div class="card text-center">
+    <a href="add_student.html" class="btn green">➕ Add Student</a>
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="card">
+    <h2 class="text-lg font-bold mb-3">🔍 Search & Filter</h2>
+    <div class="flex gap-2">
+      <input type="text" id="search" placeholder="Search by name or admission no" class="flex-1 p-2 border rounded">
+      <select id="filterClass" class="p-2 border rounded">
+        <option value="">All Classes</option>
+        <option>Pre-Primary</option>
+        <option>Junior Secondary</option>
+        <option>Secondary</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Student List -->
+  <div class="card">
+    <h2 class="text-lg font-bold mb-3">📋 Student List</h2>
+    <div id="studentsList" class="space-y-2"></div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+      authDomain: "school-portal-233f5.firebaseapp.com",
+      projectId: "school-portal-233f5",
+      storageBucket: "school-portal-233f5.appspot.com",
+      messagingSenderId: "314984934331",
+      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const studentsList = document.getElementById("studentsList");
+    const searchInput = document.getElementById("search");
+    const filterClass = document.getElementById("filterClass");
+
+    // All classes in order for promotion
+    const classOrder = ["Pre-Primary", "Junior Secondary", "Secondary"];
+
+    function getNextClass(current) {
+      const idx = classOrder.indexOf(current);
+      return idx >= 0 && idx < classOrder.length - 1 ? classOrder[idx + 1] : current;
+    }
+
+    function renderStudents(students) {
+      studentsList.innerHTML = "";
+      students.forEach(docSnap => {
+        const s = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "p-3 border rounded flex justify-between items-center";
+        div.innerHTML = `
+          <span>${s.name} (${s.admission}) - ${s.classLevel}</span>
+          <div class="flex gap-2">
+            <button class="btn danger" data-action="delete" data-id="${docSnap.id}">Delete</button>
+            <button class="btn yellow" data-action="repeat" data-id="${docSnap.id}">Repeat</button>
+            <button class="btn green" data-action="promote" data-id="${docSnap.id}" data-class="${s.classLevel}">Promote</button>
+          </div>
+        `;
+        studentsList.appendChild(div);
+
+        // Action buttons
+        div.querySelectorAll("button").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const id = btn.dataset.id;
+            const action = btn.dataset.action;
+
+            if (action === "delete") {
+              await deleteDoc(doc(db, "students", id));
+              alert("❌ Student deleted");
+            } else if (action === "repeat") {
+              await updateDoc(doc(db, "students", id), { repeated: true });
+              alert("🔄 Student marked to repeat");
+            } else if (action === "promote") {
+              const nextClass = getNextClass(btn.dataset.class);
+              await updateDoc(doc(db, "students", id), { classLevel: nextClass });
+              alert(`⬆️ Promoted to ${nextClass}`);
+            }
+          });
+        });
+      });
+    }
+
+    // Live updates
+    onSnapshot(collection(db, "students"), (snap) => {
+      let results = [];
+      snap.forEach(docSnap => {
+        const s = docSnap.data();
+        const searchText = searchInput.value.toLowerCase();
+        const classFilter = filterClass.value;
+        if (
+          (s.name.toLowerCase().includes(searchText) || s.admission.toLowerCase().includes(searchText)) &&
+          (classFilter === "" || s.classLevel === classFilter)
+        ) {
+          results.push(docSnap);
+        }
+      });
+      renderStudents(results);
+    });
+
+    // Trigger search and filter re-render
+    searchInput.addEventListener("input", () => {
+      onSnapshot(collection(db, "students"), (snap) => {
+        let results = [];
+        snap.forEach(docSnap => {
+          const s = docSnap.data();
+          const searchText = searchInput.value.toLowerCase();
+          const classFilter = filterClass.value;
+          if (
+            (s.name.toLowerCase().includes(searchText) || s.admission.toLowerCase().includes(searchText)) &&
+            (classFilter === "" || s.classLevel === classFilter)
+          ) {
+            results.push(docSnap);
+          }
+        });
+        renderStudents(results);
+      });
+    });
+    filterClass.addEventListener("change", () => searchInput.dispatchEvent(new Event("input")));
+  </script>
+</body>
+</html>
