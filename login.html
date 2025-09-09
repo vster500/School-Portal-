@@ -7,7 +7,6 @@
   <title>Login - School Portal</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
   <style>
     body {
@@ -79,10 +78,6 @@
     const passwordInput = document.getElementById("password");
     const errorMsg = document.getElementById("errorMsg");
 
-    // Get schoolId from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const schoolId = urlParams.get("schoolId") || "school1";
-
     loginBtn.addEventListener("click", async () => {
       const email = emailInput.value.trim();
       const password = passwordInput.value.trim();
@@ -93,9 +88,9 @@
         return;
       }
 
-      // === Main admin login ===
+      // === Super Admin login ===
       if (email === "levisbonventure@gmail.com" && password === "wamalwa1") {
-        window.location.href = "main_admin_dashboard.html";
+        window.location.href = "main_admin.html"; // redirect to Main Admin dashboard
         return;
       }
 
@@ -113,7 +108,7 @@
           const data = docSnap.data();
           if (data.password === password) {
             loggedIn = true;
-            window.location.href = `teacher_dashboard.html?schoolId=${schoolId}&teacherId=${docSnap.id}`;
+            window.location.href = `teacher_dashboard.html?teacherId=${docSnap.id}`;
           }
         });
 
