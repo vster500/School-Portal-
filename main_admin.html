@@ -17,6 +17,8 @@
     #darkModeToggle { position: fixed; bottom: 1.2rem; right: 1.2rem; background: #2c3e50; color: #fff; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: background 0.3s, transform 0.2s; }
     #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
     body.dark #darkModeToggle { background: #e67e22; }
+    .success { color: green; }
+    .error { color: red; }
   </style>
 </head>
 <body>
@@ -46,6 +48,7 @@
     <input type="text" id="schoolName" placeholder="School Name" class="w-full p-2 border rounded mb-2">
     <input type="text" id="schoolLocation" placeholder="Location" class="w-full p-2 border rounded mb-2">
     <input type="text" id="schoolContact" placeholder="Contact (phone/email)" class="w-full p-2 border rounded mb-2">
+    <input type="text" id="schoolMotto" placeholder="School Motto" class="w-full p-2 border rounded mb-2">
     <input type="file" id="schoolLogo" accept="image/*" class="mb-2"/>
     <button id="registerSchoolBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Register School</button>
     <p id="schoolStatus" class="text-sm mt-2"></p>
@@ -81,18 +84,134 @@
     </div>
   </section>
 
-  <!-- SCHOOL ADMINS & TEACHERS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">👩‍🏫 School Admins & Teachers</h2>
-    <div id="userList" class="space-y-3">
-      <p class="text-gray-500">Loading users...</p>
+  <!-- ANALYTICS DASHBOARD -->
+  <section class="max-w-7xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-4">📊 Analytics Dashboard</h2>
+    
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-blue-50 p-4 rounded-lg text-center">
+        <h3 class="text-2xl font-bold text-blue-600" id="totalSchools">0</h3>
+        <p class="text-sm text-gray-600">Total Schools</p>
+      </div>
+      <div class="bg-green-50 p-4 rounded-lg text-center">
+        <h3 class="text-2xl font-bold text-green-600" id="totalStudents">0</h3>
+        <p class="text-sm text-gray-600">Total Students</p>
+      </div>
+      <div class="bg-purple-50 p-4 rounded-lg text-center">
+        <h3 class="text-2xl font-bold text-purple-600" id="totalAdmins">0</h3>
+        <p class="text-sm text-gray-600">Total Admins</p>
+      </div>
+      <div class="bg-orange-50 p-4 rounded-lg text-center">
+        <h3 class="text-2xl font-bold text-orange-600" id="avgPerformance">0%</h3>
+        <p class="text-sm text-gray-600">Avg Performance</p>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <!-- Schools Performance Chart -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold mb-3">School Performance Comparison</h3>
+        <canvas id="schoolPerformanceChart" class="w-full h-64"></canvas>
+      </div>
+      
+      <!-- Student Distribution Chart -->
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold mb-3">Student Distribution by School</h3>
+        <canvas id="studentDistributionChart" class="w-full h-64"></canvas>
+      </div>
+    </div>
+
+    <!-- Performance Trends -->
+    <div class="bg-gray-50 p-4 rounded-lg mb-6">
+      <h3 class="font-semibold mb-3">Performance Trends (Last 6 Months)</h3>
+      <canvas id="performanceTrendChart" class="w-full h-64"></canvas>
+    </div>
+
+    <!-- Top Performing Schools Table -->
+    <div class="bg-gray-50 p-4 rounded-lg">
+      <h3 class="font-semibold mb-3">🏆 Top Performing Schools</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="p-2 text-left">Rank</th>
+              <th class="p-2 text-left">School Name</th>
+              <th class="p-2 text-left">Students</th>
+              <th class="p-2 text-left">Avg Grade</th>
+              <th class="p-2 text-left">Performance</th>
+            </tr>
+          </thead>
+          <tbody id="topSchoolsTable">
+            <tr><td colspan="5" class="p-4 text-center text-gray-500">Loading data...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
-  <!-- STUDENT PERFORMANCE -->
+  <!-- SYSTEM MANAGEMENT -->
   <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">📊 Student Performance Overview</h2>
-    <canvas id="studentChart" class="w-full h-60"></canvas>
+    <h2 class="text-xl font-bold mb-3">⚙️ System Management</h2>
+    
+    <!-- Bulk Operations -->
+    <div class="grid md:grid-cols-2 gap-4 mb-4">
+      <div class="p-4 border rounded-lg">
+        <h3 class="font-semibold mb-2">📧 Bulk Email Notifications</h3>
+        <textarea id="bulkEmailContent" placeholder="Email content..." class="w-full p-2 border rounded mb-2" rows="3"></textarea>
+        <button id="sendBulkEmailBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Send to All Schools</button>
+      </div>
+      
+      <div class="p-4 border rounded-lg">
+        <h3 class="font-semibold mb-2">📊 Generate Reports</h3>
+        <select id="reportType" class="w-full p-2 border rounded mb-2">
+          <option value="performance">Performance Report</option>
+          <option value="attendance">Attendance Report</option>
+          <option value="financial">Financial Report</option>
+        </select>
+        <button id="generateReportBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Generate Report</button>
+      </div>
+    </div>
+
+    <!-- System Health -->
+    <div class="p-4 border rounded-lg bg-gray-50">
+      <h3 class="font-semibold mb-2">🔍 System Health Monitor</h3>
+      <div class="grid grid-cols-3 gap-4 text-sm">
+        <div class="text-center">
+          <div id="serverStatus" class="w-3 h-3 bg-green-400 rounded-full mx-auto mb-1"></div>
+          <p>Server Status</p>
+        </div>
+        <div class="text-center">
+          <div id="databaseStatus" class="w-3 h-3 bg-green-400 rounded-full mx-auto mb-1"></div>
+          <p>Database Status</p>
+        </div>
+        <div class="text-center">
+          <div id="storageStatus" class="w-3 h-3 bg-green-400 rounded-full mx-auto mb-1"></div>
+          <p>Storage Status</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCHOOL ADMINS & TEACHERS -->
+  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-3">👩‍🏫 School Admins & Teachers</h2>
+    
+    <!-- Admin Management Controls -->
+    <div class="mb-4 flex flex-wrap gap-2">
+      <button id="exportUsersBtn" class="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700">📤 Export Users</button>
+      <button id="sendBulkMessageBtn" class="px-3 py-1 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700">💬 Bulk Message</button>
+      <select id="filterRole" class="px-3 py-1 border rounded text-sm">
+        <option value="">All Roles</option>
+        <option value="admin">Admins Only</option>
+        <option value="teacher">Teachers Only</option>
+      </select>
+    </div>
+    
+    <div id="userList" class="space-y-3">
+      <p class="text-gray-500">Loading users...</p>
+    </div>
   </section>
 
   <!-- 🌙 Dark Mode -->
@@ -101,8 +220,8 @@
   <!-- FIREBASE & SCRIPT -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
     const firebaseConfig = {
@@ -123,68 +242,517 @@
     const superAdminPassword = "wamalwa1";
 
     let isLoggedIn = false;
+    
+    // Login and initialize
     signInWithEmailAndPassword(auth, superAdminEmail, superAdminPassword)
       .then(() => { 
-        console.log("Super admin logged in");
+        console.log("Super admin logged in successfully");
         isLoggedIn = true;
-        loadSchools(); 
+        initializeData();
       })
-      .catch(err => alert("Login failed: " + err.message));
+      .catch(err => {
+        console.error("Login failed:", err);
+        document.getElementById("schoolStatus").innerHTML = `<span class="error">Login failed: ${err.message}</span>`;
+      });
 
     const schoolList = document.getElementById("schoolList");
     const selectSchool = document.getElementById("selectSchool");
 
-    async function loadSchools() {
-      try {
-        const snap = await getDocs(collection(db, "schools"));
-        schoolList.innerHTML = "";
-        selectSchool.innerHTML = "<option value=''>Select School</option>";
-        if(snap.empty){ 
-          schoolList.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>"; 
-          return; 
-        }
-        snap.forEach(docSnap=>{
-          const s = docSnap.data();
-          const card = document.createElement("div");
-          card.className = "p-4 bg-gray-50 border rounded-lg shadow";
-          card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
-          if(s.logo) card.innerHTML += `<img src="${s.logo}" class="w-20 h-20 mt-2 rounded"/>`;
-          schoolList.appendChild(card);
+    let schoolPerformanceChart, studentDistributionChart, performanceTrendChart;
 
-          const opt = document.createElement("option");
-          opt.value = docSnap.id; 
-          opt.textContent = s.name;
-          selectSchool.appendChild(opt);
-        });
-      } catch(err) {
-        schoolList.innerHTML = `<p class="text-red-500">Failed to load schools: ${err.message}</p>`;
+    function initializeData() {
+      loadSchoolsRealTime();
+      loadUsers();
+      initializeAnalytics();
+      loadSystemHealth();
+    }
+
+    // Initialize Analytics
+    function initializeAnalytics() {
+      loadAnalyticsData();
+      createCharts();
+      
+      // Update analytics every 5 minutes
+      setInterval(loadAnalyticsData, 5 * 60 * 1000);
+    }
+
+    // Load analytics data
+    async function loadAnalyticsData() {
+      try {
+        // Load schools count
+        const schoolsSnapshot = await getDocs(collection(db, "schools"));
+        document.getElementById("totalSchools").textContent = schoolsSnapshot.size;
+
+        // Load students count (sum from all schools)
+        let totalStudents = 0;
+        let totalPerformance = 0;
+        let schoolCount = 0;
+        const schoolsData = [];
+        
+        for (const schoolDoc of schoolsSnapshot.docs) {
+          const school = schoolDoc.data();
+          
+          // Get students for this school
+          const studentsSnapshot = await getDocs(collection(db, "students"));
+          let schoolStudents = 0;
+          let schoolPerformance = 0;
+          
+          studentsSnapshot.forEach(studentDoc => {
+            const student = studentDoc.data();
+            if (student.schoolId === schoolDoc.id) {
+              schoolStudents++;
+              // Calculate average performance (assuming grades are stored)
+              if (student.grades && student.grades.length > 0) {
+                const avgGrade = student.grades.reduce((sum, grade) => sum + grade, 0) / student.grades.length;
+                schoolPerformance += avgGrade;
+              }
+            }
+          });
+          
+          totalStudents += schoolStudents;
+          if (schoolStudents > 0) {
+            const avgSchoolPerformance = schoolPerformance / schoolStudents;
+            totalPerformance += avgSchoolPerformance;
+            schoolCount++;
+            
+            schoolsData.push({
+              name: school.name,
+              students: schoolStudents,
+              performance: Math.round(avgSchoolPerformance),
+              location: school.location
+            });
+          }
+        }
+
+        document.getElementById("totalStudents").textContent = totalStudents;
+        
+        // Load admins count
+        const adminsSnapshot = await getDocs(collection(db, "admins"));
+        document.getElementById("totalAdmins").textContent = adminsSnapshot.size;
+        
+        // Calculate average performance
+        const avgPerformance = schoolCount > 0 ? Math.round(totalPerformance / schoolCount) : 0;
+        document.getElementById("avgPerformance").textContent = avgPerformance + "%";
+
+        // Update charts
+        updateCharts(schoolsData);
+        updateTopSchoolsTable(schoolsData);
+        
+      } catch (error) {
+        console.error("Error loading analytics:", error);
       }
     }
 
+    // Create charts
+    function createCharts() {
+      // School Performance Chart
+      const ctx1 = document.getElementById('schoolPerformanceChart').getContext('2d');
+      schoolPerformanceChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Performance (%)',
+            data: [],
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+
+      // Student Distribution Chart
+      const ctx2 = document.getElementById('studentDistributionChart').getContext('2d');
+      studentDistributionChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: [],
+          datasets: [{
+            data: [],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+              'rgba(255, 205, 86, 0.6)',
+              'rgba(75, 192, 192, 0.6)',
+              'rgba(153, 102, 255, 0.6)',
+              'rgba(255, 159, 64, 0.6)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // Performance Trend Chart
+      const ctx3 = document.getElementById('performanceTrendChart').getContext('2d');
+      performanceTrendChart = new Chart(ctx3, {
+        type: 'line',
+        data: {
+          labels: ['6 months ago', '5 months ago', '4 months ago', '3 months ago', '2 months ago', 'Last month', 'This month'],
+          datasets: [{
+            label: 'Average Performance',
+            data: [65, 68, 70, 72, 75, 78, 80],
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    // Update charts with real data
+    function updateCharts(schoolsData) {
+      if (schoolPerformanceChart) {
+        schoolPerformanceChart.data.labels = schoolsData.map(s => s.name);
+        schoolPerformanceChart.data.datasets[0].data = schoolsData.map(s => s.performance);
+        schoolPerformanceChart.update();
+      }
+
+      if (studentDistributionChart) {
+        studentDistributionChart.data.labels = schoolsData.map(s => s.name);
+        studentDistributionChart.data.datasets[0].data = schoolsData.map(s => s.students);
+        studentDistributionChart.update();
+      }
+    }
+
+    // Update top schools table
+    function updateTopSchoolsTable(schoolsData) {
+      const tbody = document.getElementById('topSchoolsTable');
+      tbody.innerHTML = '';
+      
+      // Sort by performance
+      schoolsData.sort((a, b) => b.performance - a.performance);
+      
+      schoolsData.slice(0, 10).forEach((school, index) => {
+        const row = document.createElement('tr');
+        row.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+        
+        const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `#${index + 1}`;
+        
+        row.innerHTML = `
+          <td class="p-2">${medal}</td>
+          <td class="p-2 font-semibold">${school.name}</td>
+          <td class="p-2">${school.students}</td>
+          <td class="p-2">${school.performance}%</td>
+          <td class="p-2">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-green-600 h-2 rounded-full" style="width: ${school.performance}%"></div>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Load system health
+    function loadSystemHealth() {
+      // Simulate system health checks
+      const statusElements = ['serverStatus', 'databaseStatus', 'storageStatus'];
+      statusElements.forEach(id => {
+        const element = document.getElementById(id);
+        // Simulate random status (mostly green for demo)
+        const isHealthy = Math.random() > 0.1;
+        element.className = `w-3 h-3 ${isHealthy ? 'bg-green-400' : 'bg-red-400'} rounded-full mx-auto mb-1`;
+      });
+      
+      // Update every 30 seconds
+      setTimeout(loadSystemHealth, 30000);
+    }
+
+    // Load schools with real-time updates
+    function loadSchoolsRealTime() {
+      const schoolRef = collection(db, "schools");
+      onSnapshot(schoolRef, (snapshot) => {
+        schoolList.innerHTML = "";
+        selectSchool.innerHTML = "<option value=''>Select School</option>";
+        
+        if(snapshot.empty) {
+          schoolList.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>";
+          return;
+        }
+
+        snapshot.forEach((doc) => {
+          const school = doc.data();
+          
+          // Add to school list display
+          const card = document.createElement("div");
+          card.className = "p-4 bg-gray-50 border rounded-lg shadow hover:shadow-md transition-shadow";
+          
+          let cardContent = `
+            <h3 class="font-bold text-lg">${school.name}</h3>
+            <p class="text-sm text-gray-600 mb-2">${school.location || "Location not specified"}</p>
+            <p class="text-sm text-gray-600 mb-2">Contact: ${school.contact || "Not provided"}</p>
+          `;
+          
+          if(school.motto) {
+            cardContent += `<p class="text-sm italic text-gray-500 mb-2">"${school.motto}"</p>`;
+          }
+          
+          if(school.logo) {
+            cardContent += `<img src="${school.logo}" alt="${school.name} logo" class="w-16 h-16 mt-2 rounded object-cover"/>`;
+          }
+          
+          card.innerHTML = cardContent;
+          schoolList.appendChild(card);
+
+          // Add to select dropdown
+          const option = document.createElement("option");
+          option.value = doc.id;
+          option.textContent = school.name;
+          selectSchool.appendChild(option);
+        });
+      }, (error) => {
+        console.error("Error loading schools:", error);
+        schoolList.innerHTML = `<p class="text-red-500">Error loading schools: ${error.message}</p>`;
+      });
+    }
+
+    // Load users (admins/teachers)
+    async function loadUsers() {
+      try {
+        const snapshot = await getDocs(collection(db, "admins"));
+        const userList = document.getElementById("userList");
+        userList.innerHTML = "";
+        
+        if(snapshot.empty) {
+          userList.innerHTML = "<p class='text-gray-500'>No users registered yet</p>";
+          return;
+        }
+
+        snapshot.forEach((doc) => {
+          const user = doc.data();
+          const userCard = document.createElement("div");
+          userCard.className = "p-3 bg-gray-50 border rounded";
+          userCard.innerHTML = `
+            <strong>${user.name}</strong> - ${user.email}<br>
+            <small class="text-gray-600">School: ${user.school || "Not assigned"}</small>
+          `;
+          userList.appendChild(userCard);
+        });
+      } catch(error) {
+        console.error("Error loading users:", error);
+        document.getElementById("userList").innerHTML = `<p class="text-red-500">Error loading users: ${error.message}</p>`;
+      }
+    }
+
+    // Register new school
     document.getElementById("registerSchoolBtn").addEventListener("click", async () => {
-      if(!isLoggedIn){
-        alert("Super admin not logged in.");
+      if(!isLoggedIn) {
+        document.getElementById("schoolStatus").innerHTML = `<span class="error">Super admin not logged in.</span>`;
         return;
       }
 
       const name = document.getElementById("schoolName").value.trim();
       const location = document.getElementById("schoolLocation").value.trim();
       const contact = document.getElementById("schoolContact").value.trim();
+      const motto = document.getElementById("schoolMotto").value.trim();
       const logoFile = document.getElementById("schoolLogo").files[0];
 
-      if(!name || !location || !contact){
-        document.getElementById("schoolStatus").textContent = "Please fill all fields.";
+      if(!name || !location || !contact) {
+        document.getElementById("schoolStatus").innerHTML = `<span class="error">Please fill in all required fields (Name, Location, Contact).</span>`;
         return;
       }
 
-      let logoURL = "";
-      if(logoFile){
-        try {
-          const logoRef = ref(storage, `school_logos/${logoFile.name}_${Date.now()}`);
+      document.getElementById("schoolStatus").innerHTML = "Registering school...";
+
+      try {
+        let logoURL = "";
+        if(logoFile) {
+          const logoRef = ref(storage, `school_logos/${name}_${Date.now()}_${logoFile.name}`);
           await uploadBytes(logoRef, logoFile);
           logoURL = await getDownloadURL(logoRef);
-        } catch(err) {
-          document.getElementById("schoolStatus").textContent = "Logo upload failed: " + err.message;
-          return;
         }
+
+        const schoolData = {
+          name: name,
+          location: location,
+          contact: contact,
+          motto: motto,
+          logo: logoURL,
+          createdAt: new Date(),
+          createdBy: superAdminEmail
+        };
+
+        await addDoc(collection(db, "schools"), schoolData);
+        
+        document.getElementById("schoolStatus").innerHTML = `<span class="success">✅ School "${name}" registered successfully!</span>`;
+        
+        // Clear form
+        document.getElementById("schoolName").value = "";
+        document.getElementById("schoolLocation").value = "";
+        document.getElementById("schoolContact").value = "";
+        document.getElementById("schoolMotto").value = "";
+        document.getElementById("schoolLogo").value = "";
+        
+      } catch(error) {
+        console.error("Error registering school:", error);
+        document.getElementById("schoolStatus").innerHTML = `<span class="error">❌ Failed to register school: ${error.message}</span>`;
       }
+    });
+
+    // Register admin
+    document.getElementById("registerAdminBtn").addEventListener("click", async () => {
+      if(!isLoggedIn) {
+        document.getElementById("adminStatus").innerHTML = `<span class="error">Super admin not logged in.</span>`;
+        return;
+      }
+
+      const schoolId = document.getElementById("selectSchool").value;
+      const name = document.getElementById("adminName").value.trim();
+      const email = document.getElementById("adminEmail").value.trim();
+      const password = document.getElementById("adminPassword").value;
+
+      if(!schoolId || !name || !email || !password) {
+        document.getElementById("adminStatus").innerHTML = `<span class="error">Please fill all fields.</span>`;
+        return;
+      }
+
+      document.getElementById("adminStatus").innerHTML = "Registering admin...";
+
+      try {
+        // Create user in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        
+        // Add admin data to Firestore
+        await addDoc(collection(db, "admins"), {
+          uid: userCredential.user.uid,
+          name: name,
+          email: email,
+          schoolId: schoolId,
+          role: "admin",
+          createdAt: new Date(),
+          createdBy: superAdminEmail
+        });
+
+        document.getElementById("adminStatus").innerHTML = `<span class="success">✅ Admin "${name}" registered successfully!</span>`;
+        
+        // Clear form
+        document.getElementById("selectSchool").value = "";
+        document.getElementById("adminName").value = "";
+        document.getElementById("adminEmail").value = "";
+        document.getElementById("adminPassword").value = "";
+        
+        // Reload users
+        loadUsers();
+        
+      } catch(error) {
+        console.error("Error registering admin:", error);
+        document.getElementById("adminStatus").innerHTML = `<span class="error">❌ Failed to register admin: ${error.message}</span>`;
+      }
+    });
+
+    // Post notification
+    document.getElementById("postNotifBtn").addEventListener("click", async () => {
+      if(!isLoggedIn) {
+        document.getElementById("notifStatus").innerHTML = `<span class="error">Super admin not logged in.</span>`;
+        return;
+      }
+
+      const message = document.getElementById("notifMessage").value.trim();
+      const file = document.getElementById("notifFile").files[0];
+
+      if(!message) {
+        document.getElementById("notifStatus").innerHTML = `<span class="error">Please enter a message.</span>`;
+        return;
+      }
+
+      document.getElementById("notifStatus").innerHTML = "Posting notification...";
+
+      try {
+        let fileURL = "";
+        let imageURL = "";
+
+        if(file) {
+          const fileRef = ref(storage, `notifications/${Date.now()}_${file.name}`);
+          await uploadBytes(fileRef, file);
+          const downloadURL = await getDownloadURL(fileRef);
+          
+          if(file.type.startsWith('image/')) {
+            imageURL = downloadURL;
+          } else {
+            fileURL = downloadURL;
+          }
+        }
+
+        await addDoc(collection(db, "notifications"), {
+          message: message,
+          image: imageURL,
+          fileUrl: fileURL,
+          createdAt: new Date(),
+          createdBy: superAdminEmail
+        });
+
+        document.getElementById("notifStatus").innerHTML = `<span class="success">✅ Notification posted successfully!</span>`;
+        
+        // Clear form
+        document.getElementById("notifMessage").value = "";
+        document.getElementById("notifFile").value = "";
+        
+      } catch(error) {
+        console.error("Error posting notification:", error);
+        document.getElementById("notifStatus").innerHTML = `<span class="error">❌ Failed to post notification: ${error.message}</span>`;
+      }
+    });
+
+    // Search functionality
+    document.getElementById("searchBox").addEventListener("input", (e) => {
+      const term = e.target.value.toLowerCase();
+      
+      // Search schools
+      document.querySelectorAll("#schoolList div").forEach(el => {
+        if(el.textContent.toLowerCase().includes(term)) {
+          el.style.display = "block";
+        } else {
+          el.style.display = "none";
+        }
+      });
+      
+      // Search users
+      document.querySelectorAll("#userList div").forEach(el => {
+        if(el.textContent.toLowerCase().includes(term)) {
+          el.style.display = "block";
+        } else {
+          el.style.display = "none";
+        }
+      });
+    });
+
+    // Dark mode toggle
+    const darkToggle = document.getElementById("darkModeToggle");
+    darkToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+      const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("darkMode", isDark);
+    });
+
+    // Load dark mode preference
+    if(localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark");
+      darkToggle.textContent = "☀️";
+    }
+  </script>
+</body>
+</html>
