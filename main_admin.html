@@ -1,171 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Main Admin Dashboard - School Portal</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
-  <style>
-    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #f9f9f9; color: #333; transition: background 0.3s, color 0.3s; }
-    header { background: #2c3e50; color: #fff; }
-    h2 { color: #2c3e50; }
-    body.dark { background: #1e1e1e; color: #eee; }
-    body.dark section { background: #2b2b2b; }
-    body.dark h2 { color: #f1c40f; }
-    body.dark header { background: #111; }
-    #darkModeToggle { position: fixed; bottom: 1.2rem; right: 1.2rem; background: #2c3e50; color: #fff; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: background 0.3s, transform 0.2s; }
-    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
-    body.dark #darkModeToggle { background: #e67e22; }
-  </style>
-</head>
-<body>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-  <!-- HEADER -->
-  <header class="p-4 text-center shadow">
-    <h1 class="text-2xl font-bold">🛠️ Main Admin Dashboard</h1>
-    <p class="text-sm mt-1">Welcome, Super Admin</p>
-  </header>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
 
-  <!-- SEARCH BAR -->
-  <div class="max-w-4xl mx-auto mt-6">
-    <input type="text" id="searchBox" placeholder="Search schools, admins, or students..."
-      class="w-full p-3 border rounded-lg shadow focus:ring focus:ring-blue-300">
-  </div>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
 
-  <!-- REGISTER NEW SCHOOL -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">🏫 Register New School</h2>
-    <input type="text" id="schoolName" placeholder="School Name" class="w-full p-2 border rounded mb-2">
-    <input type="text" id="schoolLocation" placeholder="Location" class="w-full p-2 border rounded mb-2">
-    <input type="text" id="schoolContact" placeholder="Contact (phone/email)" class="w-full p-2 border rounded mb-2">
-    <input type="file" id="schoolLogo" accept="image/*" class="mb-2"/>
-    <button id="registerSchoolBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Register School</button>
-    <p id="schoolStatus" class="text-sm mt-2"></p>
-  </section>
+  const superAdminEmail = "levisbonventure@gmail.com";
+  const superAdminPassword = "wamalwa1";
 
-  <!-- REGISTER SCHOOL ADMIN -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">👩‍💼 Register School Admin</h2>
-    <select id="selectSchool" class="w-full p-2 border rounded mb-2">
-      <option value="">Select School</option>
-    </select>
-    <input type="text" id="adminName" placeholder="Admin Name" class="w-full p-2 border rounded mb-2">
-    <input type="email" id="adminEmail" placeholder="Admin Email" class="w-full p-2 border rounded mb-2">
-    <input type="password" id="adminPassword" placeholder="Password" class="w-full p-2 border rounded mb-2">
-    <button id="registerAdminBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Register Admin</button>
-    <p id="adminStatus" class="text-sm mt-2"></p>
-  </section>
+  // Super admin login
+  let isLoggedIn = false;
+  signInWithEmailAndPassword(auth, superAdminEmail, superAdminPassword)
+    .then(() => { 
+      console.log("Super admin logged in");
+      isLoggedIn = true;
+      loadSchools(); // Load schools after login
+    })
+    .catch(err => alert("Login failed: " + err.message));
 
-  <!-- POST NOTIFICATION -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">📢 Post Notification</h2>
-    <textarea id="notifMessage" placeholder="Write notification here..." class="w-full p-2 border rounded mb-2"></textarea>
-    <input type="file" id="notifFile" accept="image/*,application/pdf" class="mb-2"/>
-    <button id="postNotifBtn" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Post Notification</button>
-    <p id="notifStatus" class="text-sm mt-2"></p>
-  </section>
+  const schoolList = document.getElementById("schoolList");
+  const selectSchool = document.getElementById("selectSchool");
 
-  <!-- REGISTERED SCHOOLS LIST -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">🏫 Registered Schools</h2>
-    <div id="schoolList" class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-      <p class="text-gray-500">Loading schools...</p>
-    </div>
-  </section>
+  // Load schools
+  async function loadSchools() {
+    const snap = await getDocs(collection(db, "schools"));
+    schoolList.innerHTML = "";
+    selectSchool.innerHTML = "<option value=''>Select School</option>";
+    if(snap.empty){ 
+      schoolList.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>"; 
+      return; 
+    }
+    snap.forEach(docSnap=>{
+      const s = docSnap.data();
+      const card = document.createElement("div");
+      card.className = "p-4 bg-gray-50 border rounded-lg shadow";
+      card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
+      if(s.logo) card.innerHTML += `<img src="${s.logo}" class="w-20 h-20 mt-2 rounded"/>`;
+      schoolList.appendChild(card);
 
-  <!-- SCHOOL ADMINS & TEACHERS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">👩‍🏫 School Admins & Teachers</h2>
-    <div id="userList" class="space-y-3">
-      <p class="text-gray-500">Loading users...</p>
-    </div>
-  </section>
+      const opt = document.createElement("option");
+      opt.value = docSnap.id; 
+      opt.textContent = s.name;
+      selectSchool.appendChild(opt);
+    });
+  }
 
-  <!-- STUDENT PERFORMANCE -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">📊 Student Performance Overview</h2>
-    <canvas id="studentChart" class="w-full h-60"></canvas>
-  </section>
-
-  <!-- 🌙 Dark Mode -->
-  <button id="darkModeToggle">🌙</button>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-      authDomain: "school-portal-233f5.firebaseapp.com",
-      projectId: "school-portal-233f5",
-      storageBucket: "school-portal-233f5.firebasestorage.app",
-      messagingSenderId: "314984934331",
-      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    const storage = getStorage(app);
-
-    const superAdminEmail = "levisbonventure@gmail.com";
-    const superAdminPassword = "wamalwa1";
-    signInWithEmailAndPassword(auth, superAdminEmail, superAdminPassword)
-      .then(() => console.log("Super admin logged in"))
-      .catch(err => alert("Login failed: "+err.message));
-
-    const schoolList = document.getElementById("schoolList");
-    const selectSchool = document.getElementById("selectSchool");
-    const userList = document.getElementById("userList");
-
-    // Load schools
-    async function loadSchools() {
-      const snap = await getDocs(collection(db, "schools"));
-      schoolList.innerHTML = "";
-      selectSchool.innerHTML = "<option value=''>Select School</option>";
-      if(snap.empty){ schoolList.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>"; return; }
-      snap.forEach(docSnap=>{
-        const s = docSnap.data();
-        const card = document.createElement("div");
-        card.className = "p-4 bg-gray-50 border rounded-lg shadow";
-        card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
-        if(s.logo) card.innerHTML += `<img src="${s.logo}" class="w-20 h-20 mt-2 rounded"/>`;
-        schoolList.appendChild(card);
-        const opt = document.createElement("option");
-        opt.value = docSnap.id; opt.textContent = s.name;
-        selectSchool.appendChild(opt);
-      });
+  // Register new school
+  document.getElementById("registerSchoolBtn").addEventListener("click", async () => {
+    if(!isLoggedIn){
+      alert("Super admin not logged in.");
+      return;
     }
 
-    // Register new school
-    document.getElementById("registerSchoolBtn").addEventListener("click", async () => {
-      const name = document.getElementById("schoolName").value.trim();
-      const location = document.getElementById("schoolLocation").value.trim();
-      const contact = document.getElementById("schoolContact").value.trim();
-      const logoFile = document.getElementById("schoolLogo").files[0];
+    const name = document.getElementById("schoolName").value.trim();
+    const location = document.getElementById("schoolLocation").value.trim();
+    const contact = document.getElementById("schoolContact").value.trim();
+    const logoFile = document.getElementById("schoolLogo").files[0];
 
-      if(!name || !location || !contact){
-        document.getElementById("schoolStatus").textContent = "Please fill all fields.";
-        return;
-      }
+    if(!name || !location || !contact){
+      document.getElementById("schoolStatus").textContent = "Please fill all fields.";
+      return;
+    }
 
-      let logoURL = "";
-      if(logoFile){
+    let logoURL = "";
+    if(logoFile){
+      try {
         const logoRef = ref(storage, `school_logos/${logoFile.name}_${Date.now()}`);
         await uploadBytes(logoRef, logoFile);
         logoURL = await getDownloadURL(logoRef);
+      } catch(err) {
+        document.getElementById("schoolStatus").textContent = "Logo upload failed: " + err.message;
+        return;
       }
+    }
 
+    try {
       await addDoc(collection(db, "schools"), { name, location, contact, logo: logoURL });
       document.getElementById("schoolStatus").textContent = "School registered successfully!";
+      // Clear input fields
       document.getElementById("schoolName").value = "";
       document.getElementById("schoolLocation").value = "";
       document.getElementById("schoolContact").value = "";
-      document.getElementById
+      document.getElementById("schoolLogo").value = "";
+      // Refresh school list
+      loadSchools();
+    } catch(err) {
+      document.getElementById("schoolStatus").textContent = "Failed to register: " + err.message;
+    }
+  });
+</script>
