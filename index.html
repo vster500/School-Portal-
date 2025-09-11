@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>School Portal</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
   <style>
     body {
@@ -16,14 +14,10 @@
     }
     header { background: #2c3e50; color: #fff; }
     h2 { color: #2c3e50; }
-
-    /* Dark Mode */
     body.dark { background: #1e1e1e; color: #eee; }
     body.dark section { background: #2b2b2b; }
     body.dark h2 { color: #f1c40f; }
     body.dark header { background: #111; }
-
-    /* Floating Dark Toggle */
     #darkModeToggle {
       position: fixed;
       bottom: 1.2rem;
@@ -86,14 +80,13 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // ✅ Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
       authDomain: "school-portal-233f5.firebaseapp.com",
       projectId: "school-portal-233f5",
-      storageBucket: "school-portal-233f5.firebasestorage.app",
+      storageBucket: "school-portal-233f5.appspot.com",
       messagingSenderId: "314984934331",
       appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
     };
@@ -101,38 +94,40 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔹 Load Notifications (with PDF support)
+    // 🔹 Load Notifications
     async function loadNotifications() {
-      const notifRef = collection(db, "notifications");
-      const snap = await getDocs(notifRef);
-      const container = document.getElementById("notifications");
-      container.innerHTML = "";
-      if (snap.empty) {
-        container.innerHTML = "<p class='text-gray-500'>No notifications yet</p>";
+      try {
+        const snap = await getDocs(collection(db, "notifications"));
+        const container = document.getElementById("notifications");
+        container.innerHTML = "";
+        if(snap.empty) {
+          container.innerHTML = "<p class='text-gray-500'>No notifications yet</p>";
+          return;
+        }
+        snap.forEach(docSnap => {
+          const n = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "p-3 border rounded bg-gray-50";
+          let content = "";
+          if(n.image) content += `<img src="${n.image}" class="w-full rounded mb-2">`;
+          content += `<p>${n.message}</p>`;
+          if(n.fileUrl) content += `<a href="${n.fileUrl}" target="_blank" class="mt-2 inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Download PDF</a>`;
+          div.innerHTML = content;
+          container.appendChild(div);
+        });
+      } catch(err) {
+        document.getElementById("notifications").innerHTML = `<p class="text-red-500">Failed to load notifications: ${err.message}</p>`;
       }
-      snap.forEach(docSnap => {
-        const n = docSnap.data();
-        const div = document.createElement("div");
-        div.className = "p-3 border rounded bg-gray-50";
-
-        let content = "";
-        if(n.image) content += `<img src="${n.image}" class="w-full rounded mb-2">`;
-        content += `<p>${n.message}</p>`;
-        if(n.fileUrl) content += `<a href="${n.fileUrl}" target="_blank" class="mt-2 inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Download PDF</a>`;
-
-        div.innerHTML = content;
-        container.appendChild(div);
-      });
     }
 
-    // 🔹 Load Schools
-    async function loadSchools() {
-      const schoolRef = collection(db, "schools");
-      const snap = await getDocs(schoolRef);
+    // 🔹 Load Schools in real-time
+    const schoolRef = collection(db, "schools");
+    onSnapshot(schoolRef, (snap) => {
       const list = document.getElementById("schoolList");
       list.innerHTML = "";
-      if (snap.empty) {
+      if(snap.empty){
         list.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>";
+        return;
       }
       snap.forEach(docSnap => {
         const s = docSnap.data();
@@ -142,27 +137,27 @@
         card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
         list.appendChild(card);
       });
-    }
+    });
 
     // 🔹 Load Saved Students
     function loadSavedStudents() {
       const saved = JSON.parse(localStorage.getItem("savedStudents")) || [];
       const container = document.getElementById("savedStudents");
       container.innerHTML = "";
-      if (saved.length === 0) {
+      if(saved.length === 0){
         container.innerHTML = "<p class='text-gray-500'>No saved students yet.</p>";
-      } else {
-        saved.forEach(stu => {
-          const div = document.createElement("div");
-          div.className = "p-3 border rounded bg-gray-50";
-          div.innerHTML = `<strong>${stu.name}</strong> - Admission: ${stu.admission} <br> School: ${stu.school}`;
-          container.appendChild(div);
-        });
+        return;
       }
+      saved.forEach(stu => {
+        const div = document.createElement("div");
+        div.className = "p-3 border rounded bg-gray-50";
+        div.innerHTML = `<strong>${stu.name}</strong> - Admission: ${stu.admission} <br> School: ${stu.school}`;
+        container.appendChild(div);
+      });
     }
 
-    // 🔹 Search (school names + saved students)
-    document.getElementById("searchBox").addEventListener("input", (e) => {
+    // 🔹 Search functionality
+    document.getElementById("searchBox").addEventListener("input", (e)=>{
       const term = e.target.value.toLowerCase();
       document.querySelectorAll("#schoolList a").forEach(el => {
         el.style.display = el.innerText.toLowerCase().includes(term) ? "block" : "none";
@@ -174,20 +169,18 @@
 
     // 🌙 Dark Mode
     const darkToggle = document.getElementById("darkModeToggle");
-    darkToggle.addEventListener("click", () => {
+    darkToggle.addEventListener("click", ()=>{
       document.body.classList.toggle("dark");
       darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
       localStorage.setItem("darkMode", document.body.classList.contains("dark"));
     });
-
-    if (localStorage.getItem("darkMode") === "true") {
+    if(localStorage.getItem("darkMode") === "true"){
       document.body.classList.add("dark");
       darkToggle.textContent = "☀️";
     }
 
     // Run
     loadNotifications();
-    loadSchools();
     loadSavedStudents();
   </script>
 </body>
