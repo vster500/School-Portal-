@@ -122,44 +122,45 @@
     const superAdminEmail = "levisbonventure@gmail.com";
     const superAdminPassword = "wamalwa1";
 
-    // Super admin login
     let isLoggedIn = false;
     signInWithEmailAndPassword(auth, superAdminEmail, superAdminPassword)
       .then(() => { 
         console.log("Super admin logged in");
         isLoggedIn = true;
-        loadSchools(); // Load schools after login
+        loadSchools(); 
       })
       .catch(err => alert("Login failed: " + err.message));
 
     const schoolList = document.getElementById("schoolList");
     const selectSchool = document.getElementById("selectSchool");
 
-    // Load schools
     async function loadSchools() {
-      const snap = await getDocs(collection(db, "schools"));
-      schoolList.innerHTML = "";
-      selectSchool.innerHTML = "<option value=''>Select School</option>";
-      if(snap.empty){ 
-        schoolList.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>"; 
-        return; 
-      }
-      snap.forEach(docSnap=>{
-        const s = docSnap.data();
-        const card = document.createElement("div");
-        card.className = "p-4 bg-gray-50 border rounded-lg shadow";
-        card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
-        if(s.logo) card.innerHTML += `<img src="${s.logo}" class="w-20 h-20 mt-2 rounded"/>`;
-        schoolList.appendChild(card);
+      try {
+        const snap = await getDocs(collection(db, "schools"));
+        schoolList.innerHTML = "";
+        selectSchool.innerHTML = "<option value=''>Select School</option>";
+        if(snap.empty){ 
+          schoolList.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>"; 
+          return; 
+        }
+        snap.forEach(docSnap=>{
+          const s = docSnap.data();
+          const card = document.createElement("div");
+          card.className = "p-4 bg-gray-50 border rounded-lg shadow";
+          card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
+          if(s.logo) card.innerHTML += `<img src="${s.logo}" class="w-20 h-20 mt-2 rounded"/>`;
+          schoolList.appendChild(card);
 
-        const opt = document.createElement("option");
-        opt.value = docSnap.id; 
-        opt.textContent = s.name;
-        selectSchool.appendChild(opt);
-      });
+          const opt = document.createElement("option");
+          opt.value = docSnap.id; 
+          opt.textContent = s.name;
+          selectSchool.appendChild(opt);
+        });
+      } catch(err) {
+        schoolList.innerHTML = `<p class="text-red-500">Failed to load schools: ${err.message}</p>`;
+      }
     }
 
-    // Register new school
     document.getElementById("registerSchoolBtn").addEventListener("click", async () => {
       if(!isLoggedIn){
         alert("Super admin not logged in.");
@@ -187,23 +188,3 @@
           return;
         }
       }
-
-      try {
-        await addDoc(collection(db, "schools"), { name, location, contact, logo: logoURL });
-        document.getElementById("schoolStatus").textContent = "School registered successfully!";
-        document.getElementById("schoolName").value = "";
-        document.getElementById("schoolLocation").value = "";
-        document.getElementById("schoolContact").value = "";
-        document.getElementById("schoolLogo").value = "";
-        loadSchools();
-      } catch(err) {
-        document.getElementById("schoolStatus").textContent = "Failed to register: " + err.message;
-      }
-    });
-
-    // Dark mode toggle
-    const darkBtn = document.getElementById("darkModeToggle");
-    darkBtn.addEventListener("click", () => document.body.classList.toggle("dark"));
-  </script>
-</body>
-</html>
