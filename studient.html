@@ -1,0 +1,583 @@
+<!-- Save as student.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Profile</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+  <style>
+    body { font-family: "Segoe UI", Tahoma, Verdana, sans-serif; background:#f4f6f9; color:#222; }
+    header { background: #2c3e50; color: #fff; padding: 12px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .logo { display:flex; align-items:center; gap:12px; }
+    .logo img { height:40px; width:40px; object-fit:cover; border-radius:6px; background:#fff; padding:2px; }
+    .bell { position:relative; cursor:pointer; }
+    .badge-count { position:absolute; top:-6px; right:-6px; background:#e53e3e; color:#fff; font-size:12px; width:20px; height:20px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+    .card { background:#fff; border-radius:10px; box-shadow:0 6px 18px rgba(20,20,20,0.06); padding:18px; }
+    .dark { background:#1e1e1e; color:#eee; }
+    .hidden { display:none; }
+    @media (max-width:768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      header { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <img id="schoolLogo" src="" alt="School logo" />
+      <div>
+        <div id="schoolName" class="text-xl font-semibold">Loading school...</div>
+        <div id="schoolLevel" class="text-sm opacity-80"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="bell" id="bellBtn" title="Notifications">
+        🔔
+        <div id="notifCount" class="badge-count hidden">0</div>
+      </div>
+
+      <button id="downloadPdfBtn" class="px-3 py-2 rounded text-white" style="background:#2c3e50">Download PDF</button>
+
+      <button id="chatBtn" class="px-3 py-2 rounded text-white" style="background:#20c997">Chat</button>
+
+      <button id="darkModeToggle" class="px-2 py-2 rounded" style="background:#2c3e50; color:white">🌙</button>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto mt-6 space-y-6 px-4">
+    <!-- Profile + Fee -->
+    <section class="card flex gap-6 items-center">
+      <img id="studentPhoto" src="" alt="Photo" class="w-28 h-28 rounded object-cover border" />
+      <div class="flex-1">
+        <h2 id="studentName" class="text-2xl font-bold">Student Name</h2>
+        <p id="studentClass" class="text-sm text-gray-600">Class</p>
+        <p id="studentAdmission" class="text-sm text-gray-600 mt-1">Admission: </p>
+        <p id="studentDob" class="text-sm text-gray-600">DOB: </p>
+      </div>
+      <div class="text-right">
+        <div class="text-sm text-gray-600">Fee Balance</div>
+        <div id="feeBalance" class="text-2xl font-semibold text-red-600">0.00</div>
+        <div class="mt-2">
+          <button id="payBtn" class="px-3 py-1 rounded" style="background:#3490dc;color:#fff">Pay</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance -->
+    <section class="card">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-bold">📈 Performance</h3>
+        <div class="flex gap-2">
+          <select id="examType" class="p-2 border rounded"></select>
+          <select id="examYear" class="p-2 border rounded"></select>
+        </div>
+      </div>
+
+      <canvas id="perfChart" height="140"></canvas>
+      <div id="chartEmpty" class="text-center text-gray-500 mt-4 hidden">No performance data for selected exam/year</div>
+    </section>
+
+    <!-- Notifications dropdown (hidden until clicked) -->
+    <div id="notifDropdown" class="card hidden">
+      <h4 class="font-semibold mb-2">🔔 Notifications</h4>
+      <div id="notifList" class="space-y-2"></div>
+    </div>
+
+    <!-- Extra: Fee history + downloads -->
+    <section class="card">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold">📂 Reports & History</h3>
+        <div>
+          <label class="text-sm mr-2">Select year</label>
+          <select id="reportYear" class="p-2 border rounded"></select>
+          <select id="reportType" class="p-2 border rounded">
+            <option value="term">Term Report</option>
+            <option value="exam">Exam Report</option>
+            <option value="annual">Annual Report</option>
+          </select>
+          <button id="downloadReportBtn" class="px-3 py-1 rounded" style="background:#2c3e50;color:white">Download</button>
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-1 gap-2">
+        <div id="historyList" class="text-sm text-gray-700"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Chat modal -->
+  <div id="chatModal" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center">
+    <div class="bg-white w-full max-w-md rounded p-4">
+      <h3 class="font-bold mb-2">Chat with School Assistant</h3>
+      <div id="chatLog" class="h-56 overflow-auto border p-2 mb-2"></div>
+      <textarea id="chatInput" class="w-full border p-2 mb-2" rows="3" placeholder="Ask something (e.g. performance summary)"></textarea>
+      <div class="flex justify-end gap-2">
+        <button id="closeChat" class="px-3 py-1 rounded border">Close</button>
+        <button id="sendChat" class="px-3 py-1 rounded" style="background:#2c3e50;color:#fff">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+  // ========== FIREBASE INITIALIZATION ==========
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  import { getStorage, ref as sRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+  import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js";
+
+  // YOUR FIREBASE CONFIG (you asked me to use your config)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.firebasestorage.app",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const messaging = getMessaging ? getMessaging(app) : null; // may be undefined in some contexts
+
+  // URL params
+  const params = new URLSearchParams(window.location.search);
+  const schoolId = params.get("schoolId") || localStorage.getItem("schoolId") || "school1";
+  const studentId = params.get("id");
+
+  // role and userId — prefer Auth, fallback to localStorage
+  let currentUser = null;
+  let currentRole = localStorage.getItem("role") || "parent";
+  let currentUserId = localStorage.getItem("userId") || "anonymous";
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      currentUser = user;
+      currentUserId = user.uid;
+      // load user's role & schoolId from users collection if needed
+      (async () => {
+        try {
+          const uDoc = await getDoc(doc(db, "users", user.uid));
+          if (uDoc.exists()) {
+            const u = uDoc.data();
+            if (u.role) currentRole = u.role;
+            if (u.schoolId) localStorage.setItem("schoolId", u.schoolId);
+          }
+        } catch (e) { console.warn(e); }
+      })();
+    }
+  });
+
+  // UI refs
+  const schoolNameEl = document.getElementById("schoolName");
+  const schoolLogoEl = document.getElementById("schoolLogo");
+  const schoolLevelEl = document.getElementById("schoolLevel");
+  const studentPhotoEl = document.getElementById("studentPhoto");
+  const studentNameEl = document.getElementById("studentName");
+  const studentClassEl = document.getElementById("studentClass");
+  const studentAdmissionEl = document.getElementById("studentAdmission");
+  const studentDobEl = document.getElementById("studentDob");
+  const feeBalanceEl = document.getElementById("feeBalance");
+
+  const examTypeSel = document.getElementById("examType");
+  const examYearSel = document.getElementById("examYear");
+  const perfChartCtx = document.getElementById("perfChart").getContext("2d");
+  const chartEmpty = document.getElementById("chartEmpty");
+
+  const notifBtn = document.getElementById("bellBtn");
+  const notifCountEl = document.getElementById("notifCount");
+  const notifDropdown = document.getElementById("notifDropdown");
+  const notifList = document.getElementById("notifList");
+
+  const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+  const reportYearSel = document.getElementById("reportYear");
+  const reportTypeSel = document.getElementById("reportType");
+  const downloadReportBtn = document.getElementById("downloadReportBtn");
+  const historyList = document.getElementById("historyList");
+
+  const chatBtn = document.getElementById("chatBtn");
+  const chatModal = document.getElementById("chatModal");
+  const chatLog = document.getElementById("chatLog");
+  const chatInput = document.getElementById("chatInput");
+  const sendChat = document.getElementById("sendChat");
+  const closeChat = document.getElementById("closeChat");
+
+  // small in-memory chart
+  let perfChart = null;
+
+  // ---------- Helpers ----------
+  function showToast(msg) { alert(msg); } // replace with nicer toast if desired
+
+  function formatCurrency(n) {
+    return Number(n).toLocaleString(undefined, { minimumFractionDigits:2, maximumFractionDigits:2 });
+  }
+
+  // Logger: record actions to schools/{schoolId}/logs
+  async function logAction(action, meta = {}) {
+    try {
+      await addDoc(collection(db, "schools", schoolId, "logs"), {
+        action,
+        meta,
+        userId: currentUserId || "anonymous",
+        role: currentRole || "parent",
+        ts: new Date()
+      });
+    } catch (e) {
+      console.warn("logAction error", e);
+    }
+  }
+
+  // ---------- Load school and student ----------
+  async function loadSchool() {
+    try {
+      const sdoc = await getDoc(doc(db, "schools", schoolId));
+      if (!sdoc.exists()) {
+        schoolNameEl.textContent = "School";
+        return;
+      }
+      const s = sdoc.data();
+      schoolNameEl.textContent = s.name || schoolId;
+      schoolLevelEl.textContent = s.level || "";
+      if (s.logo) schoolLogoEl.src = s.logo;
+      else schoolLogoEl.src = "https://via.placeholder.com/80x80?text=Logo";
+    } catch (e) { console.error(e); }
+  }
+
+  async function loadStudent() {
+    if (!studentId) {
+      document.querySelector("main").innerHTML = "<div class='max-w-4xl mx-auto mt-12 text-center'>Student ID missing in URL.</div>";
+      return;
+    }
+
+    try {
+      const sDocRef = doc(db, "schools", schoolId, "students", studentId);
+      const snap = await getDoc(sDocRef);
+      if (!snap.exists()) {
+        document.querySelector("main").innerHTML = "<div class='max-w-4xl mx-auto mt-12 text-center'>Student not found.</div>";
+        return;
+      }
+      const s = snap.data();
+
+      // Basic profile
+      studentNameEl.textContent = s.name || "—";
+      studentClassEl.textContent = s.classLevel || (s.class || "—");
+      studentAdmissionEl.textContent = "Admission: " + (s.admission || s.adm || "—");
+      studentDobEl.textContent = (s.dob || "DOB: —");
+      feeBalanceEl.textContent = "Ksh " + formatCurrency(s.feeBalance || s.fees || 0);
+
+      studentPhotoEl.src = s.photoURL || "https://via.placeholder.com/160?text=No+Photo";
+
+      // Do not show medical info here (explicit)
+      // Load performance options and data
+      await loadExamOptions();
+      await loadPerformanceData(); // default selection
+      await loadHistory();
+
+      logAction("view_student", { studentId });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // ---------- Notifications (in-app + FCM) ----------
+  let notifSnapshotUnsub = null;
+  async function loadNotifications() {
+    try {
+      // get latest 10 notifications for school or student specific
+      const notRef = collection(db, "schools", schoolId, "notifications");
+      // simple get (not real-time here)
+      const snap = await getDocs(query(notRef, orderBy("timestamp", "desc")));
+      notifList.innerHTML = "";
+      let count = 0;
+      snap.forEach(d => {
+        const n = d.data();
+        const el = document.createElement("div");
+        el.className = "p-2 border-b";
+        el.innerHTML = `<div class="font-semibold">${n.title || "Announcement"}</div>
+                        <div class="text-sm text-gray-700">${n.message || ""}</div>
+                        <div class="text-xs text-gray-500">${n.timestamp ? new Date(n.timestamp.toMillis ? n.timestamp.toMillis() : n.timestamp).toLocaleString() : ""}</div>`;
+        notifList.appendChild(el);
+        count++;
+      });
+      if (count) {
+        notifCountEl.textContent = count; notifCountEl.classList.remove("hidden");
+      } else { notifCountEl.classList.add("hidden"); }
+    } catch (e) { console.warn(e); }
+  }
+
+  notifBtn.addEventListener("click", () => {
+    notifDropdown.classList.toggle("hidden");
+    if (!notifDropdown.classList.contains("hidden")) {
+      notifCountEl.classList.add("hidden");
+    }
+  });
+
+  // FCM: request permission & get token (service worker required)
+  async function registerFCM() {
+    if (!messaging) return;
+    try {
+      // You must add your public VAPID key from Firebase Cloud Messaging console
+      const vapidKey = localStorage.getItem("fcmVapidKey") || ""; // set in config/console
+      if (!vapidKey) {
+        console.warn("No FCM VAPID key set in localStorage.fcmVapidKey — FCM token will not be retrieved.");
+        return;
+      }
+
+      // IMPORTANT: create firebase-messaging-sw.js in your site root. Minimal example:
+      // importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js');
+      // importScripts('https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js');
+      // firebase.initializeApp({ /* same firebaseConfig */ });
+      // const messaging = firebase.messaging();
+      // messaging.onBackgroundMessage(payload => { console.log('BG msg', payload); });
+
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        console.warn("Notifications permission not granted");
+        return;
+      }
+      const token = await getToken(messaging, { vapidKey });
+      if (token) {
+        // Save token for this parent / browser
+        await addDoc(collection(db, "schools", schoolId, "fcmTokens"), {
+          token,
+          userId: currentUserId || "anonymous",
+          ts: new Date()
+        });
+      }
+      onMessage(messaging, payload => {
+        // Show simple in-app alert or append to notif list
+        console.log("Message received", payload);
+        // optionally re-load notifications
+        loadNotifications();
+      });
+    } catch (e) {
+      console.warn("FCM registration failed", e);
+    }
+  }
+
+  // ---------- Performance data ----------
+  // Data model assumption: results stored under schools/{schoolId}/results with fields:
+  // { studentId, examType, year, subject, score }
+  // exam types example: "Term 1", "Term 2", "Final", "Midterm"
+  async function loadExamOptions() {
+    // gather unique exam types and years for this student
+    const resultsRef = collection(db, "schools", schoolId, "results");
+    const q = query(resultsRef, where("studentId", "==", studentId));
+    const snap = await getDocs(q);
+    const types = new Set();
+    const years = new Set();
+    snap.forEach(d => {
+      const r = d.data();
+      if (r.examType) types.add(r.examType);
+      if (r.year) years.add(String(r.year));
+    });
+
+    // populate selects
+    examTypeSel.innerHTML = "";
+    if (types.size === 0) {
+      examTypeSel.innerHTML = `<option value="">All Types</option>`;
+    } else {
+      examTypeSel.innerHTML = Array.from(types).map(t => `<option value="${t}">${t}</option>`).join("");
+    }
+
+    examYearSel.innerHTML = "";
+    const yearsArr = Array.from(years).sort((a,b)=>b-a);
+    if (yearsArr.length === 0) {
+      examYearSel.innerHTML = `<option value="">All Years</option>`;
+    } else {
+      examYearSel.innerHTML = yearsArr.map(y => `<option value="${y}">${y}</option>`).join("");
+    }
+
+    // Report year options
+    reportYearSel.innerHTML = yearsArr.length ? yearsArr.map(y => `<option value="${y}">${y}</option>`).join("") : `<option>${new Date().getFullYear()}</option>`;
+  }
+
+  async function loadPerformanceData() {
+    chartEmpty.classList.add("hidden");
+    // query results for selected examType & year
+    const examType = examTypeSel.value || null;
+    const year = examYearSel.value || null;
+    const resultsRef = collection(db, "schools", schoolId, "results");
+
+    // Build simple query by studentId, optionally examType & year
+    let q = query(resultsRef, where("studentId", "==", studentId));
+    if (examType) q = query(resultsRef, where("studentId", "==", studentId), where("examType", "==", examType));
+    if (year) q = query(resultsRef, where("studentId", "==", studentId), where("year", "==", Number(year)));
+    // NOTE: Firestore compound queries require composite indexes when multiple where clauses used.
+    // For simplicity we'll fetch all student's results and filter client-side.
+    const snap = await getDocs(query(resultsRef, where("studentId", "==", studentId)));
+    const subjects = {};
+    snap.forEach(d => {
+      const r = d.data();
+      if (examType && r.examType !== examType) return;
+      if (year && String(r.year) !== String(year)) return;
+      if (!subjects[r.subject]) subjects[r.subject] = [];
+      subjects[r.subject].push(Number(r.score || 0));
+    });
+
+    const labels = Object.keys(subjects);
+    if (!labels.length) {
+      if (perfChart) { perfChart.destroy(); perfChart = null; }
+      chartEmpty.classList.remove("hidden");
+      return;
+    }
+
+    const averages = labels.map(l => {
+      const arr = subjects[l];
+      return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length * 10)/10;
+    });
+
+    // draw chart
+    if (perfChart) perfChart.destroy();
+    perfChart = new Chart(perfChartCtx, {
+      type: "bar",
+      data: { labels, datasets: [{ label: 'Avg Score', data: averages }] },
+      options: { responsive:true, scales: { y: { beginAtZero:true, max:100 }}, plugins:{legend:{display:false}}}
+    });
+  }
+
+  examTypeSel.addEventListener("change", loadPerformanceData);
+  examYearSel.addEventListener("change", loadPerformanceData);
+
+  // ---------- History (basic list of results/documents/fees) ----------
+  async function loadHistory() {
+    historyList.innerHTML = "";
+    // example: fetch last 10 results and fee transactions
+    const resultsRef = collection(db, "schools", schoolId, "results");
+    const snap = await getDocs(query(resultsRef, where("studentId","==",studentId), orderBy("createdAt","desc")));
+    const recent = [];
+    snap.forEach(d => recent.push(d.data()));
+    if (recent.length) {
+      historyList.innerHTML = recent.slice(0,6).map(r => `<div>${r.examType || ""} - ${r.subject || ""}: ${r.score || ""} (${r.year || ""})</div>`).join("");
+    } else {
+      historyList.innerHTML = `<div class="text-gray-500">No recent results</div>`;
+    }
+  }
+
+  // ---------- Download PDF (jsPDF) ----------
+  async function downloadPDF(reportType = null, reportYear = null) {
+    // gather info
+    const studentName = studentNameEl.textContent;
+    const classText = studentClassEl.textContent;
+    const admission = studentAdmissionEl.textContent;
+    const schoolName = schoolNameEl.textContent;
+    const examType = examTypeSel.value || reportType || "All";
+    const year = examYearSel.value || reportYear || (new Date()).getFullYear();
+    const date = new Date().toLocaleString();
+
+    // render chart to image if exists
+    let chartDataUrl = null;
+    if (perfChart) {
+      chartDataUrl = perfChart.toBase64Image();
+    }
+
+    // create pdf
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+
+    // Header
+    pdf.setFontSize(14);
+    pdf.text(schoolName, 40, 50);
+    pdf.setFontSize(11);
+    pdf.text(`Report: ${examType} / ${year}`, 40, 70);
+    pdf.text(`Generated: ${date}`, 40, 86);
+
+    // Student info
+    pdf.setFontSize(12);
+    pdf.text(`Student: ${studentName}`, 40, 120);
+    pdf.text(`${classText}`, 40, 136);
+    pdf.text(`${admission}`, 40, 152);
+
+    // Chart
+    if (chartDataUrl) {
+      // draw chart scaled
+      pdf.addImage(chartDataUrl, 'PNG', 40, 180, 500, 260);
+    } else {
+      pdf.setFontSize(10);
+      pdf.text("No chart data available for selected exam/year", 40, 200);
+    }
+
+    // Footer
+    pdf.setFontSize(10);
+    pdf.text("Powered by Vster", 40, 780);
+
+    // Save & log
+    pdf.save(`${studentName.replace(/\s+/g,'_')}_${examType}_${year}.pdf`);
+
+    await logAction("download_pdf", { studentId, examType, year });
+  }
+
+  downloadPdfBtn.addEventListener("click", () => downloadPDF());
+
+  downloadReportBtn.addEventListener("click", () => {
+    const rYear = reportYearSel.value || new Date().getFullYear();
+    const rType = reportTypeSel.value;
+    downloadPDF(rType, rYear);
+  });
+
+  // ---------- Chat (client triggers a server route) ----------
+  chatBtn.addEventListener("click", () => {
+    chatModal.classList.remove("hidden");
+    chatLog.innerHTML = "";
+  });
+  closeChat.addEventListener("click", () => chatModal.classList.add("hidden"));
+
+  sendChat.addEventListener("click", async () => {
+    const q = chatInput.value.trim();
+    if (!q) return;
+    chatLog.innerHTML += `<div><b>You:</b> ${q}</div>`;
+    chatInput.value = "";
+    // send to your backend endpoint which calls OpenAI securely
+    try {
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ prompt: q, studentId, schoolId, userId: currentUserId })
+      });
+      const data = await resp.json();
+      const reply = data?.reply || "No reply";
+      chatLog.innerHTML += `<div><b>Assistant:</b> ${reply}</div>`;
+      chatLog.scrollTop = chatLog.scrollHeight;
+      await logAction("chat", { prompt: q, replyLength: reply.length });
+    } catch (e) {
+      chatLog.innerHTML += `<div class="text-red-600">Error contacting assistant</div>`;
+    }
+  });
+
+  // ---------- Initialization ----------
+  await loadSchool();
+  await loadNotifications();
+  await loadStudent();
+  // attempt FCM registration in background (requires VAPID key & service worker)
+  registerFCM().catch(()=>{});
+
+  // show exam/year selects change handlers
+  examTypeSel.addEventListener("change", loadPerformanceData);
+  examYearSel.addEventListener("change", loadPerformanceData);
+
+  // toggle dark mode
+  const darkToggle = document.getElementById("darkModeToggle");
+  darkToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+  });
+  if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark");
+    darkToggle.textContent = "☀️";
+  }
+
+  </script>
+</body>
+</html>
