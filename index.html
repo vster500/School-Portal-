@@ -3,81 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>School Portal - Parent Dashboard</title>
+  <title>School Portal</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
   <style>
-    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; transition: all 0.3s ease; }
-    .glass-effect { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-    body.dark { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #eee; }
-    body.dark .glass-effect { background: rgba(30, 30, 46, 0.95); }
-    header { background: rgba(44, 62, 80, 0.95); color: #fff; }
-    .floating-btn { position: fixed; bottom: 1.2rem; right: 1.2rem; background: #2c3e50; color: #fff;
-      border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .school-card { padding: 1rem; border-radius: 12px; background: #f9fafb; transition: all 0.3s; cursor: pointer; }
-    .school-card:hover { transform: translateY(-5px); background: #eef2ff; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    header { background: #2c3e50; color: #fff; }
+    h2 { color: #2c3e50; }
+    body.dark { background: #1e1e1e; color: #eee; }
+    body.dark section { background: #2b2b2b; }
+    body.dark h2 { color: #f1c40f; }
+    body.dark header { background: #111; }
+    #darkModeToggle {
+      position: fixed;
+      bottom: 1.2rem;
+      right: 1.2rem;
+      background: #2c3e50;
+      color: #fff;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      transition: background 0.3s, transform 0.2s;
+    }
+    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
+    body.dark #darkModeToggle { background: #e67e22; }
   </style>
 </head>
 <body>
+
   <!-- HEADER -->
-  <header class="p-6 text-center shadow-lg sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
-      <h1 class="text-3xl font-bold">📚 School Portal</h1>
-      <button id="loginBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white">🔐 Login</button>
-    </div>
+  <header class="p-4 text-center shadow">
+    <h1 class="text-2xl font-bold">📚 Welcome to School Portal</h1>
   </header>
 
+  <!-- SEARCH BAR -->
+  <div class="max-w-4xl mx-auto mt-6">
+    <input type="text" id="searchBox" placeholder="Search school by name or student by admission..."
+      class="w-full p-3 border rounded-lg shadow focus:ring focus:ring-blue-300">
+  </div>
+
   <!-- NOTIFICATIONS -->
-  <section class="max-w-6xl mx-auto mt-6 px-4">
-    <div class="glass-effect rounded-xl p-6 shadow-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold">📢 Notifications</h2>
-      </div>
-      <div id="notifications" class="space-y-4 max-h-64 overflow-y-auto text-gray-700">
-        <p class="text-gray-500 text-center py-4">Loading notifications...</p>
-      </div>
+  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-3">📢 General Notifications</h2>
+    <div id="notifications" class="space-y-4">
+      <p class="text-gray-500">Loading notifications...</p>
     </div>
   </section>
 
-  <!-- SCHOOLS DIRECTORY -->
-  <section class="max-w-6xl mx-auto mt-6 px-4">
-    <div class="glass-effect rounded-xl p-6 shadow-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold">🏫 All Registered Schools</h2>
-        <input type="text" id="schoolSearch" placeholder="🔍 Search schools..." 
-          class="border rounded-lg px-3 py-2 text-sm w-64"/>
-      </div>
-
-      <!-- School Count -->
-      <p id="schoolCount" class="text-sm text-gray-600 mb-4">Total Schools: 0</p>
-
-      <div id="schoolList" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <p class="text-gray-500 text-center col-span-full">Loading schools...</p>
-      </div>
+  <!-- SCHOOLS -->
+  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-3">🏫 Registered Schools</h2>
+    <div id="schoolList" class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+      <p class="text-gray-500">Loading schools...</p>
     </div>
   </section>
 
-  <!-- CHILD MANAGEMENT -->
-  <section class="max-w-6xl mx-auto mt-6 px-4">
-    <div class="glass-effect rounded-xl p-6 shadow-lg">
-      <h2 class="text-2xl font-bold mb-4">👨‍👩‍👧 Manage Your Children</h2>
-      <div class="flex space-x-3 mb-4">
-        <input type="text" id="childAdmission" placeholder="Enter Admission No." 
-          class="border rounded-lg px-3 py-2 flex-1"/>
-        <button id="addChildBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">➕ Add Child</button>
-      </div>
-      <ul id="savedChildren" class="space-y-2 text-gray-700"></ul>
+  <!-- SAVED STUDENTS -->
+  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
+    <h2 class="text-xl font-bold mb-3">⭐ Saved Students</h2>
+    <div id="savedStudents" class="space-y-3">
+      <p class="text-gray-500">No saved students yet.</p>
     </div>
   </section>
 
-  <!-- FLOATING BUTTON -->
-  <button id="darkModeToggle" class="floating-btn">🌙</button>
+  <!-- 🌙 Dark Mode -->
+  <button id="darkModeToggle">🌙</button>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, orderBy, query, addDoc, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // ✅ Your Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
       authDomain: "school-portal-233f5.firebaseapp.com",
@@ -90,89 +94,94 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔔 Notifications
-    function loadNotifications() {
-      const notifRef = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
-      onSnapshot(notifRef, (snap) => {
+    // 🔹 Load Notifications
+    async function loadNotifications() {
+      try {
+        const snap = await getDocs(collection(db, "notifications"));
         const container = document.getElementById("notifications");
         container.innerHTML = "";
-        if (snap.empty) {
-          container.innerHTML = "<p class='text-gray-500 text-center py-4'>No notifications yet</p>";
+        if(snap.empty) {
+          container.innerHTML = "<p class='text-gray-500'>No notifications yet</p>";
           return;
         }
-        snap.forEach(doc => {
-          const n = doc.data();
+        snap.forEach(docSnap => {
+          const n = docSnap.data();
           const div = document.createElement("div");
-          div.className = "p-4 border rounded-lg bg-blue-50 hover:bg-blue-100";
-          div.innerHTML = `
-            <p class="font-medium">${n.message || "No message"}</p>
-            <p class="text-xs text-gray-500">${n.createdAt?.toDate().toLocaleString() || ""}</p>
-          `;
+          div.className = "p-3 border rounded bg-gray-50";
+          let content = "";
+          if(n.image) content += `<img src="${n.image}" class="w-full rounded mb-2">`;
+          content += `<p>${n.message}</p>`;
+          if(n.fileUrl) content += `<a href="${n.fileUrl}" target="_blank" class="mt-2 inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Download PDF</a>`;
+          div.innerHTML = content;
           container.appendChild(div);
         });
-      });
+      } catch(err) {
+        document.getElementById("notifications").innerHTML = `<p class="text-red-500">Failed to load notifications: ${err.message}</p>`;
+      }
     }
 
-    // 🏫 Schools
-    function loadSchools() {
-      const schoolsRef = query(collection(db, "schools"), orderBy("name", "asc"));
-      onSnapshot(schoolsRef, (snap) => {
-        const container = document.getElementById("schoolList");
-        const count = document.getElementById("schoolCount");
-        container.innerHTML = "";
-        count.textContent = "Total Schools: " + snap.size;
-
-        if (snap.empty) {
-          container.innerHTML = "<p class='text-gray-500 text-center col-span-full'>No schools available</p>";
-          return;
-        }
-
-        snap.forEach(doc => {
-          const s = doc.data();
-          const card = document.createElement("div");
-          card.className = "school-card";
-          card.innerHTML = `
-            <h3 class="text-xl font-bold">${s.name || "Unnamed School"}</h3>
-            <p>${s.location || "Location not set"}</p>
-            <p class="text-sm text-gray-500">${s.type || "Type not set"}</p>
-          `;
-          container.appendChild(card);
-        });
-
-        // 🔍 Live Search
-        document.getElementById("schoolSearch").addEventListener("input", (e) => {
-          const val = e.target.value.toLowerCase();
-          Array.from(container.children).forEach(card => {
-            card.style.display = card.textContent.toLowerCase().includes(val) ? "" : "none";
-          });
-        });
+    // 🔹 Load Schools in real-time
+    const schoolRef = collection(db, "schools");
+    onSnapshot(schoolRef, (snap) => {
+      const list = document.getElementById("schoolList");
+      list.innerHTML = "";
+      if(snap.empty){
+        list.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>";
+        return;
+      }
+      snap.forEach(docSnap => {
+        const s = docSnap.data();
+        const card = document.createElement("a");
+        card.href = `school.html?id=${docSnap.id}`;
+        card.className = "p-4 bg-gray-50 border rounded-lg shadow hover:bg-gray-100 block";
+        card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
+        list.appendChild(card);
       });
-    }
-
-    // 👨‍👩‍👧 Save Children
-    async function addChild() {
-      const admission = document.getElementById("childAdmission").value.trim();
-      if (!admission) return alert("Enter admission number");
-
-      await addDoc(collection(db, "children"), {
-        admissionNo: admission,
-        addedAt: new Date()
-      });
-
-      document.getElementById("childAdmission").value = "";
-      alert("Child added successfully!");
-    }
-
-    // Dark Mode
-    document.getElementById("darkModeToggle").addEventListener("click", () => {
-      document.body.classList.toggle("dark");
     });
 
-    document.getElementById("addChildBtn").addEventListener("click", addChild);
+    // 🔹 Load Saved Students
+    function loadSavedStudents() {
+      const saved = JSON.parse(localStorage.getItem("savedStudents")) || [];
+      const container = document.getElementById("savedStudents");
+      container.innerHTML = "";
+      if(saved.length === 0){
+        container.innerHTML = "<p class='text-gray-500'>No saved students yet.</p>";
+        return;
+      }
+      saved.forEach(stu => {
+        const div = document.createElement("div");
+        div.className = "p-3 border rounded bg-gray-50";
+        div.innerHTML = `<strong>${stu.name}</strong> - Admission: ${stu.admission} <br> School: ${stu.school}`;
+        container.appendChild(div);
+      });
+    }
 
-    // Init
+    // 🔹 Search functionality
+    document.getElementById("searchBox").addEventListener("input", (e)=>{
+      const term = e.target.value.toLowerCase();
+      document.querySelectorAll("#schoolList a").forEach(el => {
+        el.style.display = el.innerText.toLowerCase().includes(term) ? "block" : "none";
+      });
+      document.querySelectorAll("#savedStudents div").forEach(el => {
+        el.style.display = el.innerText.toLowerCase().includes(term) ? "block" : "none";
+      });
+    });
+
+    // 🌙 Dark Mode
+    const darkToggle = document.getElementById("darkModeToggle");
+    darkToggle.addEventListener("click", ()=>{
+      document.body.classList.toggle("dark");
+      darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+    });
+    if(localStorage.getItem("darkMode") === "true"){
+      document.body.classList.add("dark");
+      darkToggle.textContent = "☀️";
+    }
+
+    // Run
     loadNotifications();
-    loadSchools();
+    loadSavedStudents();
   </script>
 </body>
 </html>
