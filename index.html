@@ -3,84 +3,411 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>School Portal</title>
+  <title>School Portal - Parent Dashboard</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
   <style>
     body {
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f9f9f9;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       color: #333;
-      transition: background 0.3s, color 0.3s;
+      transition: all 0.3s ease;
     }
-    header { background: #2c3e50; color: #fff; }
-    h2 { color: #2c3e50; }
-    body.dark { background: #1e1e1e; color: #eee; }
-    body.dark section { background: #2b2b2b; }
+    
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    body.dark {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #eee;
+    }
+    
+    body.dark .glass-effect {
+      background: rgba(30, 30, 46, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
     body.dark h2 { color: #f1c40f; }
-    body.dark header { background: #111; }
-    #darkModeToggle {
+    
+    header {
+      background: rgba(44, 62, 80, 0.95);
+      backdrop-filter: blur(15px);
+      color: #fff;
+    }
+    
+    body.dark header {
+      background: rgba(17, 17, 17, 0.95);
+    }
+    
+    .floating-btn {
       position: fixed;
       bottom: 1.2rem;
       right: 1.2rem;
       background: #2c3e50;
       color: #fff;
       border-radius: 50%;
-      width: 45px;
-      height: 45px;
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      transition: background 0.3s, transform 0.2s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      z-index: 1000;
     }
-    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
-    body.dark #darkModeToggle { background: #e67e22; }
+    
+    .floating-btn:hover {
+      background: #34495e;
+      transform: scale(1.1) rotate(180deg);
+    }
+    
+    body.dark .floating-btn { background: #e67e22; }
+    
+    .school-card {
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .school-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .add-child-form {
+      background: linear-gradient(135deg, rgba(34, 193, 195, 0.1) 0%, rgba(253, 187, 45, 0.1) 100%);
+      border: 2px dashed #10b981;
+      transition: all 0.3s ease;
+    }
+    
+    .add-child-form:hover {
+      border-color: #059669;
+      background: linear-gradient(135deg, rgba(34, 193, 195, 0.15) 0%, rgba(253, 187, 45, 0.15) 100%);
+    }
+    
+    body.dark .add-child-form {
+      background: linear-gradient(135deg, rgba(34, 193, 195, 0.1) 0%, rgba(253, 187, 45, 0.1) 100%);
+      border-color: #10b981;
+    }
+    
+    .child-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .child-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.5s;
+    }
+    
+    .child-card:hover::before {
+      animation: shine 1.5s ease-in-out;
+    }
+    
+    @keyframes shine {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
   </style>
 </head>
 <body>
 
   <!-- HEADER -->
-  <header class="p-4 text-center shadow">
-    <h1 class="text-2xl font-bold">📚 Welcome to School Portal</h1>
+  <header class="p-6 text-center shadow-lg sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-bold mb-1">📚 School Portal</h1>
+        <p class="text-sm opacity-90">Your gateway to your child's education</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="loginBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-all">
+          🔐 Login
+        </button>
+      </div>
+    </div>
   </header>
 
+  <!-- NOTIFICATIONS (TOP PRIORITY) -->
+  <section class="max-w-6xl mx-auto mt-6 px-4">
+    <div class="glass-effect rounded-xl p-6 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">📢 Important Notifications</h2>
+        <div class="flex gap-2">
+          <button id="markAllReadBtn" class="px-3 py-1 bg-gray-500 text-white rounded-lg text-sm hover:bg-gray-600 transition-all">
+            Mark All Read
+          </button>
+          <button id="notifSettingsBtn" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-all">
+            ⚙️ Settings
+          </button>
+        </div>
+      </div>
+      <div id="notifications" class="space-y-4 max-h-64 overflow-y-auto">
+        <p class="text-gray-500 text-center py-4">Loading notifications...</p>
+      </div>
+    </div>
+  </section>
+
   <!-- SEARCH BAR -->
-  <div class="max-w-4xl mx-auto mt-6">
-    <input type="text" id="searchBox" placeholder="Search school by name or student by admission..."
-      class="w-full p-3 border rounded-lg shadow focus:ring focus:ring-blue-300">
+  <div class="max-w-6xl mx-auto mt-6 px-4">
+    <div class="glass-effect rounded-xl p-4 shadow-lg">
+      <div class="relative">
+        <input type="text" id="searchBox" 
+          placeholder="Search for schools, students, or admission numbers..."
+          class="w-full p-4 pr-12 border-0 rounded-xl text-lg focus:ring-4 focus:ring-blue-300 focus:outline-none shadow-inner">
+        <button id="searchBtn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-500 transition-colors">
+          🔍
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-2 mt-3">
+        <button class="filter-btn px-3 py-1 bg-gray-200 rounded-full text-sm hover:bg-blue-200 transition-colors" data-filter="all">
+          All Schools
+        </button>
+        <button class="filter-btn px-3 py-1 bg-gray-200 rounded-full text-sm hover:bg-blue-200 transition-colors" data-filter="primary">
+          Primary Schools
+        </button>
+        <button class="filter-btn px-3 py-1 bg-gray-200 rounded-full text-sm hover:bg-blue-200 transition-colors" data-filter="secondary">
+          Secondary Schools
+        </button>
+        <button class="filter-btn px-3 py-1 bg-gray-200 rounded-full text-sm hover:bg-blue-200 transition-colors" data-filter="private">
+          Private Schools
+        </button>
+        <button id="exportDataBtn" class="px-3 py-1 bg-orange-500 text-white rounded-full text-sm hover:bg-orange-600 transition-all">
+          📤 Export My Data
+        </button>
+      </div>
+    </div>
   </div>
 
+  <!-- SCHOOLS DIRECTORY -->
+  <section class="max-w-6xl mx-auto mt-6 px-4">
+    <div class="glass-effect rounded-xl p-6 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">🏫 All Registered Schools</h2>
+        <div class="flex gap-2">
+          <select id="sortSchools" class="px-3 py-1 border rounded-lg text-sm">
+            <option value="name">Sort by Name</option>
+            <option value="location">Sort by Location</option>
+            <option value="students">Sort by Students</option>
+            <option value="rating">Sort by Rating</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="schoolStats" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <div class="text-2xl font-bold text-blue-600" id="totalSchoolsCount">0</div>
+          <div class="text-sm text-gray-600">Total Schools</div>
+        </div>
+        <div class="text-center p-3 bg-green-50 rounded-lg">
+          <div class="text-2xl font-bold text-green-600" id="publicSchoolsCount">0</div>
+          <div class="text-sm text-gray-600">Public Schools</div>
+        </div>
+        <div class="text-center p-3 bg-purple-50 rounded-lg">
+          <div class="text-2xl font-bold text-purple-600" id="privateSchoolsCount">0</div>
+          <div class="text-sm text-gray-600">Private Schools</div>
+        </div>
+        <div class="text-center p-3 bg-orange-50 rounded-lg">
+          <div class="text-2xl font-bold text-orange-600" id="avgRating">0.0</div>
+          <div class="text-sm text-gray-600">Avg Rating</div>
+        </div>
+      </div>
+
+      <div id="schoolList" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="text-center py-8 text-gray-500 col-span-full">
+          <div class="text-4xl mb-2 pulse">🏫</div>
+          <p>Loading schools...</p>
+        </div>
+      </div>
+      
+      <div id="loadMoreBtn" class="text-center mt-6 hidden">
+        <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+          Load More Schools
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MY CHILDREN DASHBOARD -->
+  <section class="max-w-6xl mx-auto mt-6 px-4">
+    <div class="glass-effect rounded-xl p-6 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">👨‍👩‍👧‍👦 My Children</h2>
+        <div class="flex gap-2">
+          <button id="bulkSearchBtn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all">
+            🔍 Bulk Search
+          </button>
+          <button id="refreshChildrenBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+      
+      <!-- Add Child Form (Inline) -->
+      <div id="addChildForm" class="mb-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-2 border-dashed border-green-300">
+        <h3 class="text-lg font-semibold mb-3 text-green-700">➕ Add Your Child</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <input type="text" id="childName" placeholder="Child's Full Name" class="p-2 border rounded-lg">
+          <input type="text" id="childAdmission" placeholder="Admission Number" class="p-2 border rounded-lg">
+          <select id="childSchool" class="p-2 border rounded-lg">
+            <option value="">Select School</option>
+          </select>
+          <input type="date" id="childDOB" class="p-2 border rounded-lg">
+          <select id="childClass" class="p-2 border rounded-lg">
+            <option value="">Select Class</option>
+            <option value="Nursery">Nursery</option>
+            <option value="PP1">PP1</option>
+            <option value="PP2">PP2</option>
+            <option value="Grade 1">Grade 1</option>
+            <option value="Grade 2">Grade 2</option>
+            <option value="Grade 3">Grade 3</option>
+            <option value="Grade 4">Grade 4</option>
+            <option value="Grade 5">Grade 5</option>
+            <option value="Grade 6">Grade 6</option>
+            <option value="Grade 7">Grade 7</option>
+            <option value="Grade 8">Grade 8</option>
+            <option value="Form 1">Form 1</option>
+            <option value="Form 2">Form 2</option>
+            <option value="Form 3">Form 3</option>
+            <option value="Form 4">Form 4</option>
+          </select>
+          <button id="saveChildBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-medium">
+            💾 Add Child
+          </button>
+        </div>
+        <p id="addChildStatus" class="text-sm mt-2"></p>
+      </div>
+      
+      <div id="myChildren" class="space-y-4">
+        <div class="text-center py-8 text-gray-500">
+          <div class="text-6xl mb-4">👶</div>
+          <p class="text-lg">No children added yet</p>
+          <p class="text-sm">Fill the form above to add your children</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- NOTIFICATIONS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">📢 General Notifications</h2>
-    <div id="notifications" class="space-y-4">
-      <p class="text-gray-500">Loading notifications...</p>
+  <section class="max-w-6xl mx-auto mt-6 px-4">
+    <div class="glass-effect rounded-xl p-6 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">📢 Important Notifications</h2>
+        <div class="flex gap-2">
+          <button id="markAllReadBtn" class="px-3 py-1 bg-gray-500 text-white rounded-lg text-sm hover:bg-gray-600 transition-all">
+            Mark All Read
+          </button>
+          <button id="notifSettingsBtn" class="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-all">
+            ⚙️ Settings
+          </button>
+        </div>
+      </div>
+      <div id="notifications" class="space-y-4 max-h-64 overflow-y-auto">
+        <p class="text-gray-500 text-center py-4">Loading notifications...</p>
+      </div>
     </div>
   </section>
 
-  <!-- SCHOOLS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">🏫 Registered Schools</h2>
-    <div id="schoolList" class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-      <p class="text-gray-500">Loading schools...</p>
+  <!-- SCHOOLS DIRECTORY -->
+  <section class="max-w-6xl mx-auto mt-6 px-4">
+    <div class="glass-effect rounded-xl p-6 shadow-lg">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">🏫 Schools Directory</h2>
+        <div class="flex gap-2">
+          <select id="sortSchools" class="px-3 py-1 border rounded-lg text-sm">
+            <option value="name">Sort by Name</option>
+            <option value="location">Sort by Location</option>
+            <option value="students">Sort by Students</option>
+            <option value="rating">Sort by Rating</option>
+          </select>
+          <button id="mapViewBtn" class="px-3 py-1 bg-indigo-500 text-white rounded-lg text-sm hover:bg-indigo-600 transition-all">
+            🗺️ Map View
+          </button>
+        </div>
+      </div>
+      
+      <div id="schoolStats" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="text-center p-3 bg-blue-50 rounded-lg">
+          <div class="text-2xl font-bold text-blue-600" id="totalSchoolsCount">0</div>
+          <div class="text-sm text-gray-600">Total Schools</div>
+        </div>
+        <div class="text-center p-3 bg-green-50 rounded-lg">
+          <div class="text-2xl font-bold text-green-600" id="publicSchoolsCount">0</div>
+          <div class="text-sm text-gray-600">Public Schools</div>
+        </div>
+        <div class="text-center p-3 bg-purple-50 rounded-lg">
+          <div class="text-2xl font-bold text-purple-600" id="privateSchoolsCount">0</div>
+          <div class="text-sm text-gray-600">Private Schools</div>
+        </div>
+        <div class="text-center p-3 bg-orange-50 rounded-lg">
+          <div class="text-2xl font-bold text-orange-600" id="avgRating">0.0</div>
+          <div class="text-sm text-gray-600">Avg Rating</div>
+        </div>
+      </div>
+
+      <div id="schoolList" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="text-center py-8 text-gray-500 col-span-full">
+          <div class="text-4xl mb-2 pulse">🏫</div>
+          <p>Loading schools...</p>
+        </div>
+      </div>
+      
+      <div id="loadMoreBtn" class="text-center mt-6 hidden">
+        <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+          Load More Schools
+        </button>
+      </div>
     </div>
   </section>
 
-  <!-- SAVED STUDENTS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">⭐ Saved Students</h2>
-    <div id="savedStudents" class="space-y-3">
-      <p class="text-gray-500">No saved students yet.</p>
+  <!-- RECENT SEARCHES -->
+  <section class="max-w-6xl mx-auto mt-6 px-4">
+    <div class="glass-effect rounded-xl p-6 shadow-lg">
+      <h2 class="text-2xl font-bold mb-4">🔍 Recent Searches</h2>
+      <div id="recentSearches" class="flex flex-wrap gap-2">
+        <p class="text-gray-500">No recent searches</p>
+      </div>
     </div>
   </section>
 
-  <!-- 🌙 Dark Mode -->
-  <button id="darkModeToggle">🌙</button>
+  <!-- FLOATING ACTION BUTTONS -->
+  <div class="fixed bottom-4 right-4 flex flex-col gap-3">
+    <button id="helpBtn" class="floating-btn bg-blue-600 hover:bg-blue-700" title="Help & Support">
+      ❓
+    </button>
+    <button id="darkModeToggle" class="floating-btn" title="Toggle Dark Mode">
+      🌙
+    </button>
+  </div>
+
+
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
@@ -94,94 +421,95 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // 🔹 Load Notifications
+    let allSchools = [];
+    let myChildren = JSON.parse(localStorage.getItem("myChildren")) || [];
+    let recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
+
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', function() {
+      loadNotifications();
+      loadSchoolsRealTime();
+      loadMyChildren();
+      loadRecentSearches();
+      setupEventListeners();
+      loadDarkModePreference();
+    });
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Search functionality
+      document.getElementById("searchBox").addEventListener("input", handleSearch);
+      document.getElementById("searchBtn").addEventListener("click", performAdvancedSearch);
+      
+      // Filter buttons
+      document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => filterSchools(e.target.dataset.filter));
+      });
+      
+      // Action buttons - simplified
+      document.getElementById("loginBtn").addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
+      
+      document.getElementById("exportDataBtn").addEventListener("click", exportUserData);
+      
+      document.getElementById("bulkSearchBtn").addEventListener("click", () => alert("Bulk search feature - coming soon!"));
+      document.getElementById("refreshChildrenBtn").addEventListener("click", () => {
+        loadMyChildren();
+        showSuccessMessage("Children list refreshed! 🔄");
+      });
+      
+      document.getElementById("helpBtn").addEventListener("click", showHelp);
+      
+      // Dark mode toggle
+      document.getElementById("darkModeToggle").addEventListener("click", toggleDarkMode);
+      
+      // Sort schools
+      document.getElementById("sortSchools").addEventListener("change", (e) => sortSchools(e.target.value));
+    }
+
+    // Load notifications
     async function loadNotifications() {
       try {
         const snap = await getDocs(collection(db, "notifications"));
         const container = document.getElementById("notifications");
         container.innerHTML = "";
+        
         if(snap.empty) {
-          container.innerHTML = "<p class='text-gray-500'>No notifications yet</p>";
+          container.innerHTML = "<p class='text-gray-500 text-center py-4'>No notifications available</p>";
           return;
         }
+        
         snap.forEach(docSnap => {
-          const n = docSnap.data();
+          const notification = docSnap.data();
           const div = document.createElement("div");
-          div.className = "p-3 border rounded bg-gray-50";
-          let content = "";
-          if(n.image) content += `<img src="${n.image}" class="w-full rounded mb-2">`;
-          content += `<p>${n.message}</p>`;
-          if(n.fileUrl) content += `<a href="${n.fileUrl}" target="_blank" class="mt-2 inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Download PDF</a>`;
-          div.innerHTML = content;
-          container.appendChild(div);
-        });
-      } catch(err) {
-        document.getElementById("notifications").innerHTML = `<p class="text-red-500">Failed to load notifications: ${err.message}</p>`;
-      }
-    }
-
-    // 🔹 Load Schools in real-time
-    const schoolRef = collection(db, "schools");
-    onSnapshot(schoolRef, (snap) => {
-      const list = document.getElementById("schoolList");
-      list.innerHTML = "";
-      if(snap.empty){
-        list.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>";
-        return;
-      }
-      snap.forEach(docSnap => {
-        const s = docSnap.data();
-        const card = document.createElement("a");
-        card.href = `school.html?id=${docSnap.id}`;
-        card.className = "p-4 bg-gray-50 border rounded-lg shadow hover:bg-gray-100 block";
-        card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
-        list.appendChild(card);
-      });
-    });
-
-    // 🔹 Load Saved Students
-    function loadSavedStudents() {
-      const saved = JSON.parse(localStorage.getItem("savedStudents")) || [];
-      const container = document.getElementById("savedStudents");
-      container.innerHTML = "";
-      if(saved.length === 0){
-        container.innerHTML = "<p class='text-gray-500'>No saved students yet.</p>";
-        return;
-      }
-      saved.forEach(stu => {
-        const div = document.createElement("div");
-        div.className = "p-3 border rounded bg-gray-50";
-        div.innerHTML = `<strong>${stu.name}</strong> - Admission: ${stu.admission} <br> School: ${stu.school}`;
-        container.appendChild(div);
-      });
-    }
-
-    // 🔹 Search functionality
-    document.getElementById("searchBox").addEventListener("input", (e)=>{
-      const term = e.target.value.toLowerCase();
-      document.querySelectorAll("#schoolList a").forEach(el => {
-        el.style.display = el.innerText.toLowerCase().includes(term) ? "block" : "none";
-      });
-      document.querySelectorAll("#savedStudents div").forEach(el => {
-        el.style.display = el.innerText.toLowerCase().includes(term) ? "block" : "none";
-      });
-    });
-
-    // 🌙 Dark Mode
-    const darkToggle = document.getElementById("darkModeToggle");
-    darkToggle.addEventListener("click", ()=>{
-      document.body.classList.toggle("dark");
-      darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
-      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-    });
-    if(localStorage.getItem("darkMode") === "true"){
-      document.body.classList.add("dark");
-      darkToggle.textContent = "☀️";
-    }
-
-    // Run
-    loadNotifications();
-    loadSavedStudents();
-  </script>
-</body>
-</html>
+          div.className = "p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all cursor-pointer";
+          
+          let content = `
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+              <div class="flex-grow">
+          `;
+          
+          if(notification.image) {
+            content += `<img src="${notification.image}" class="w-full max-w-xs rounded-lg mb-3" alt="Notification image">`;
+          }
+          
+          content += `<p class="text-gray-800 mb-2">${notification.message}</p>`;
+          
+          if(notification.fileUrl) {
+            content += `<a href="${notification.fileUrl}" target="_blank" 
+              class="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm transition-all">
+              📄 Download Attachment
+            </a>`;
+          }
+          
+          content += `
+                <div class="text-xs text-gray-500 mt-2">
+                  ${notification.createdAt ? new Date(notification.createdAt.seconds * 1000).toLocaleDateString() : 'Recently'}
+                </div>
+              </div>
+            </div>
+          `;
+          
+          div.innerHTM
