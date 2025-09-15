@@ -1,139 +1,222 @@
-<!-- Save as login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - School Portal</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f9f9f9;
-      color: #333;
-      transition: background 0.3s, color 0.3s;
-    }
-    body.dark { background: #1e1e1e; color: #eee; }
-    .btn-primary {
-      background: #2c3e50;
-      color: #fff;
-    }
-    .btn-primary:hover { background: #34495e; }
-    #darkModeToggle {
-      position: fixed;
-      bottom: 1.2rem;
-      right: 1.2rem;
-      background: #2c3e50;
-      color: #fff;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      transition: background 0.3s, transform 0.2s;
-    }
-    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
-    body.dark #darkModeToggle { background: #e67e22; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>School Portal - Login / Register</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 420px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0, 122, 204, 0.4);
+    color: #003366;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 900;
+    color: #004f80;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  label {
+    font-weight: 700;
+    margin: 0.8rem 0 0.3rem 0;
+  }
+  input {
+    padding: 0.45rem 0.7rem;
+    font-size: 1rem;
+    border-radius: 20px;
+    border: 1.8px solid #007acc;
+    transition: box-shadow 0.25s ease;
+  }
+  input:focus {
+    box-shadow: 0 0 8px #0099ff;
+    outline: none;
+  }
+  button {
+    margin-top: 1rem;
+    background-color: #007acc;
+    color: white;
+    font-weight: 700;
+    border: none;
+    border-radius: 30px;
+    padding: 0.6rem 0;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 122, 204, 0.5);
+  }
+  button:hover {
+    background-color: #005f99;
+  }
+  .toggle-link {
+    margin-top: 1rem;
+    color: #004f80;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    text-align: center;
+  }
+  .error-msg, .success-msg {
+    margin-top: 0.5rem;
+    font-weight: 700;
+  }
+  .error-msg {
+    color: #cc0000;
+  }
+  .success-msg {
+    color: #006600;
+  }
+</style>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="flex items-center justify-center h-screen">
+<body>
 
-  <div class="bg-white dark:bg-gray-800 p-8 rounded shadow w-full max-w-sm text-center transition-colors duration-300">
-    <h1 class="text-3xl font-bold mb-4 dark:text-yellow-400">Welcome to School Portal</h1>
-    <p class="mb-6 dark:text-gray-300">Login as Teacher or Admin to continue</p>
+<h1>School Portal</h1>
 
-    <input type="email" id="email" placeholder="Email" class="w-full p-3 border rounded mb-4 dark:bg-gray-700 dark:text-white dark:border-gray-600">
-    <input type="password" id="password" placeholder="Password" class="w-full p-3 border rounded mb-6 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+<!-- Login Form -->
+<form id="loginForm">
+  <label for="loginEmail">Email</label>
+  <input type="email" id="loginEmail" autocomplete="username" required />
+  <label for="loginPassword">Password</label>
+  <input type="password" id="loginPassword" autocomplete="current-password" required />
+  <button type="submit">Login</button>
+  <div id="loginError" class="error-msg"></div>
+  <div class="toggle-link" id="showRegister">Don't have an account? Register as Parent here</div>
+</form>
 
-    <button id="loginBtn" class="btn-primary w-full py-3 rounded mb-2">Login</button>
+<!-- Register Form (hidden initially) -->
+<form id="registerForm" style="display:none;">
+  <label for="regEmail">Email</label>
+  <input type="email" id="regEmail" autocomplete="email" required />
+  <label for="regPassword">Password</label>
+  <input type="password" id="regPassword" autocomplete="new-password" required minlength="6" />
+  <label for="regConfirmPassword">Confirm Password</label>
+  <input type="password" id="regConfirmPassword" required minlength="6" />
+  <button type="submit">Create Parent Account</button>
+  <div id="registerError" class="error-msg"></div>
+  <div id="registerSuccess" class="success-msg"></div>
+  <div class="toggle-link" id="showLogin">Already have an account? Login here</div>
+</form>
 
-    <p id="errorMsg" class="text-red-500 mt-4"></p>
-  </div>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-  <button id="darkModeToggle">🌙</button>
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const showRegister = document.getElementById('showRegister');
+  const showLogin = document.getElementById('showLogin');
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  const loginEmail = document.getElementById('loginEmail');
+  const loginPassword = document.getElementById('loginPassword');
+  const loginError = document.getElementById('loginError');
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-      authDomain: "school-portal-233f5.firebaseapp.com",
-      projectId: "school-portal-233f5",
-      storageBucket: "school-portal-233f5.firebasestorage.app",
-      messagingSenderId: "314984934331",
-      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-    };
+  const regEmail = document.getElementById('regEmail');
+  const regPassword = document.getElementById('regPassword');
+  const regConfirmPassword = document.getElementById('regConfirmPassword');
+  const registerError = document.getElementById('registerError');
+  const registerSuccess = document.getElementById('registerSuccess');
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const mainAdminEmail = "levisbonventure@gmail.com";
 
-    const loginBtn = document.getElementById("loginBtn");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const errorMsg = document.getElementById("errorMsg");
+  showRegister.onclick = () => {
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'block';
+    loginError.textContent = '';
+    registerError.textContent = '';
+    registerSuccess.textContent = '';
+  };
 
-    loginBtn.addEventListener("click", async () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-      errorMsg.textContent = "";
+  showLogin.onclick = () => {
+    registerForm.style.display = 'none';
+    loginForm.style.display = 'block';
+    loginError.textContent = '';
+    registerError.textContent = '';
+    registerSuccess.textContent = '';
+  };
 
-      if (!email || !password) {
-        errorMsg.textContent = "Please enter email and password.";
+  loginForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    loginError.textContent = '';
+    try {
+      const userCredential = await auth.signInWithEmailAndPassword(loginEmail.value.trim(), loginPassword.value.trim());
+      const user = userCredential.user;
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        loginError.textContent = "User profile not found. Please contact your school admin.";
+        await auth.signOut();
         return;
       }
-
-      // === Super Admin login ===
-      if (email === "levisbonventure@gmail.com" && password === "wamalwa1") {
-        window.location.href = "main_admin.html"; // redirect to Main Admin dashboard
-        return;
+      const role = userDoc.data().role || 'parent';
+      // Redirect based on role
+      if (user.email === mainAdminEmail) {
+        window.location.href = 'admin.html';
+      } else if (role === 'admin') {
+        window.location.href = 'admin_dashboard.html'; // School admin dashboard page
+      } else if (role === 'teacher') {
+        window.location.href = 'teacher_dashboard.html'; // Teacher dashboard page
+      } else {
+        // default to parent homepage/dashboard
+        window.location.href = 'index.html';
       }
-
-      // === Teacher login ===
-      try {
-        const q = query(collection(db, "teachers"), where("email", "==", email));
-        const snap = await getDocs(q);
-        if (snap.empty) {
-          errorMsg.textContent = "No teacher found with this email.";
-          return;
-        }
-
-        let loggedIn = false;
-        snap.forEach(docSnap => {
-          const data = docSnap.data();
-          if (data.password === password) {
-            loggedIn = true;
-            window.location.href = `teacher_dashboard.html?teacherId=${docSnap.id}`;
-          }
-        });
-
-        if (!loggedIn) {
-          errorMsg.textContent = "Incorrect password.";
-        }
-      } catch (err) {
-        console.error(err);
-        errorMsg.textContent = "Login failed. Try again.";
-      }
-    });
-
-    // 🌙 Dark Mode Toggle
-    const darkToggle = document.getElementById("darkModeToggle");
-    darkToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
-      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-    });
-
-    // Load saved dark mode
-    if (localStorage.getItem("darkMode") === "true") {
-      document.body.classList.add("dark");
-      darkToggle.textContent = "☀️";
+    } catch (err) {
+      loginError.textContent = err.message;
     }
-  </script>
+  });
+
+  registerForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    registerError.textContent = '';
+    registerSuccess.textContent = '';
+
+    if (regPassword.value !== regConfirmPassword.value) {
+      registerError.textContent = "Passwords do not match.";
+      return;
+    }
+    if (regPassword.value.length < 6) {
+      registerError.textContent = "Password should be at least 6 characters.";
+      return;
+    }
+
+    try {
+      const userCredential = await auth.createUserWithEmailAndPassword(regEmail.value.trim(), regPassword.value);
+      const user = userCredential.user;
+      // Save parent role in users collection
+      await db.collection('users').doc(user.uid).set({
+        email: regEmail.value.trim(),
+        role: 'parent',
+        children: [],
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      registerSuccess.textContent = "Registration successful! You can now log in.";
+      regEmail.value = '';
+      regPassword.value = '';
+      regConfirmPassword.value = '';
+      await auth.signOut();
+    } catch (err) {
+      registerError.textContent = err.message;
+    }
+  });
+</script>
+
 </body>
 </html>
