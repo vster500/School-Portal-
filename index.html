@@ -1,187 +1,693 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>School Portal</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f9f9f9;
-      color: #333;
-      transition: background 0.3s, color 0.3s;
-    }
-    header { background: #2c3e50; color: #fff; }
-    h2 { color: #2c3e50; }
-    body.dark { background: #1e1e1e; color: #eee; }
-    body.dark section { background: #2b2b2b; }
-    body.dark h2 { color: #f1c40f; }
-    body.dark header { background: #111; }
-    #darkModeToggle {
-      position: fixed;
-      bottom: 1.2rem;
-      right: 1.2rem;
-      background: #2c3e50;
-      color: #fff;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      transition: background 0.3s, transform 0.2s;
-    }
-    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
-    body.dark #darkModeToggle { background: #e67e22; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>School Portal - Home</title>
+<style>
+  :root {
+    --color-bg-light: #f9f9f9;
+    --color-bg-dark: #121212;
+    --color-text-light: #222;
+    --color-text-dark: #eee;
+    --color-accent: #4a90e2;
+    --color-card-bg-light: #ffffff;
+    --color-card-bg-dark: #1e1e1e;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+    --transition-duration: 0.3s;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 960px;
+    margin: auto;
+    padding: 1rem 1.25rem 2rem;
+    background-color: var(--color-bg-light);
+    color: var(--color-text-light);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+    min-height: 100vh;
+  }
+  
+  header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  header h1 {
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: 1.2px;
+    color: var(--color-accent);
+  }
+
+  nav {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  nav > div {
+    margin: 0.5rem 0;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.6rem 1rem;
+    font-size: 1.1rem;
+    border-radius: 25px;
+    border: 2px solid var(--color-accent);
+    outline-offset: 0;
+    transition: box-shadow var(--transition-duration);
+  }
+  input[type="text"]:focus {
+    box-shadow: 0 0 8px var(--color-accent);
+  }
+
+  button {
+    cursor: pointer;
+    padding: 0.5rem 1.25rem;
+    margin-left: 0.5rem;
+    border-radius: 25px;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    background-color: var(--color-accent);
+    color: white;
+    box-shadow: 0 3px 8px var(--color-accent);
+    transition: background-color 0.2s ease-in-out;
+  }
+  button:hover {
+    background-color: #3677d6;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  li {
+    padding: 0.75rem 1rem;
+    border-radius: 15px;
+    border: 1.5px solid var(--color-accent);
+    margin-bottom: 0.6rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    background-color: var(--color-card-bg-light);
+    box-shadow: 0 2px 5px var(--color-shadow);
+    transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
+  }
+  li:hover {
+    background-color: var(--color-accent);
+    color: white;
+    box-shadow: 0 6px 12px rgba(74,144,226,0.6);
+  }
+
+  section {
+    margin-bottom: 2.5rem;
+  }
+  h2 {
+    border-bottom: 3px solid var(--color-accent);
+    padding-bottom: 0.4rem;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: 0.7px;
+    color: var(--color-accent);
+  }
+
+  .notification {
+    background: #dbe9ff;
+    margin: 0.6rem 0;
+    padding: 0.6rem 1rem;
+    border-left: 6px solid var(--color-accent);
+    border-radius: 12px;
+    color: #034882;
+    font-weight: 600;
+    box-shadow: 0 1px 4px var(--color-shadow);
+  }
+
+  .quote {
+    font-style: italic;
+    margin: 1rem 0;
+    font-weight: 600;
+    color: #617d98;
+    font-size: 1.3rem;
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .featured-schools {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .school-card {
+    border: 1.8px solid var(--color-accent);
+    padding: 1rem 1.2rem;
+    border-radius: 15px;
+    flex: 1 1 250px;
+    max-width: 260px;
+    cursor: pointer;
+    background-color: var(--color-card-bg-light);
+    color: var(--color-accent);
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 10px var(--color-shadow);
+    transition: background-color var(--transition-duration), box-shadow var(--transition-duration), color var(--transition-duration);
+  }
+  .school-card:hover {
+    background-color: var(--color-accent);
+    color: white;
+    box-shadow: 0 10px 18px rgba(74, 144, 226, 0.7);
+  }
+
+  .carousel {
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+    border: 2px solid var(--color-accent);
+    padding: 1rem 1.2rem;
+    border-radius: 20px;
+    background-color: var(--color-card-bg-light);
+  }
+  
+  .carousel-inner {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+  .carousel-item {
+    min-width: 100%;
+    padding: 1rem;
+  }
+
+  .carousel-item h3 {
+    margin-bottom: 0.4rem;
+    color: var(--color-accent);
+  }
+  .carousel-item p {
+    font-weight: 600;
+    color: #4b4b4b;
+  }
+
+  .carousel-buttons {
+    text-align: center;
+    margin-top: 0.8rem;
+  }
+  .carousel-buttons button {
+    padding: 0.4rem 1.1rem;
+    margin: 0 0.3rem;
+    border-radius: 20px;
+    background: var(--color-accent);
+    border: none;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 3px 7px var(--color-accent);
+    transition: background-color 0.2s ease-in-out;
+  }
+  .carousel-buttons button:hover {
+    background-color: #3677d6;
+  }
+
+  .testimonial {
+    background: #c8e1ff;
+    padding: 1rem 1.2rem;
+    margin: 0.75rem 0;
+    border-radius: 20px;
+    box-shadow: 0 3px 7px var(--color-shadow);
+    font-weight: 600;
+    color: #034882;
+  }
+  .testimonial strong {
+    display: block;
+    font-weight: 900;
+    margin-bottom: 0.3rem;
+  }
+
+  .auth-section button {
+    background-color: var(--color-accent);
+    color: white;
+    font-weight: 700;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 18px;
+    box-shadow: 0 3px 8px var(--color-accent);
+    transition: background-color 0.3s ease;
+  }
+  .auth-section button:hover {
+    background-color: #3677d6;
+  }
+
+  #subscribeBtn {
+    display: block;
+    margin: 2rem auto 0 auto;
+    padding: 1rem 2rem;
+    font-size: 1.15rem;
+    max-width: 280px;
+  }
+  #subscribeStatus {
+    text-align: center;
+    margin-top: 0.6rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  /* Dark mode styles */
+  body.dark-mode {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-dark);
+  }
+  body.dark-mode input[type="text"] {
+    border-color: #3a82f7;
+    background-color: #222;
+    color: #eee;
+  }
+  body.dark-mode input[type="text"]:focus {
+    box-shadow: 0 0 10px #3a82f7;
+  }
+  body.dark-mode li, 
+  body.dark-mode .school-card, 
+  body.dark-mode .carousel,
+  body.dark-mode .notification,
+  body.dark-mode .testimonial {
+    background-color: var(--color-card-bg-dark);
+    color: var(--color-text-dark);
+    border-color: #3a82f7;
+    box-shadow: 0 4px 10px rgba(58, 130, 247, 0.3);
+  }
+  body.dark-mode li:hover,
+  body.dark-mode .school-card:hover {
+    background-color: #3a82f7;
+    color: #fff;
+    box-shadow: 0 10px 18px rgba(58, 130, 247, 0.7);
+  }
+  body.dark-mode header h1, 
+  body.dark-mode h2, 
+  body.dark-mode .quote {
+    color: #69a1ff;
+  }
+  body.dark-mode button {
+    background-color: #3a82f7;
+    box-shadow: 0 3px 7px rgba(58, 130, 247, 0.7);
+  }
+  body.dark-mode button:hover {
+    background-color: #2a61c7;
+  }
+  body.dark-mode #subscribeStatus {
+    color: #69a1ff;
+  }
+  /* Dark mode toggle button */
+  #darkModeToggle {
+    background: transparent;
+    border: 2px solid var(--color-accent);
+    color: var(--color-accent);
+    padding: 0.35rem 1rem;
+    border-radius: 40px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+  }
+  #darkModeToggle:hover {
+    background-color: var(--color-accent);
+    color: white;
+    box-shadow: 0 0 8px var(--color-accent);
+  }
+
+  /* Login Modal improvements */
+  #loginModal {
+    background: rgba(0, 0, 0, 0.85);
+  }
+  #loginModal input {
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--color-accent);
+    padding: 0.5rem;
+    outline-offset: 0;
+    margin-bottom: 0.8rem;
+    width: 100%;
+    color: var(--color-text-light);
+  }
+  #loginModal button {
+    margin-top: 0.6rem;
+    width: 100%;
+    background-color: var(--color-accent);
+    border-radius: 25px;
+    font-weight: 700;
+  }
+  body.dark-mode #loginModal input {
+    background: #333;
+    border-color: #69a1ff;
+    color: #ddd;
+  }
+</style>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+
 </head>
 <body>
+<header>
+  <h1>Welcome to the School Portal</h1>
+</header>
 
-  <!-- HEADER -->
-  <header class="p-4 text-center shadow">
-    <h1 class="text-2xl font-bold">📚 Welcome to School Portal</h1>
-  </header>
-
-  <!-- SEARCH BAR -->
-  <div class="max-w-4xl mx-auto mt-6">
-    <input type="text" id="searchBox" placeholder="Search school by name or student by admission..."
-      class="w-full p-3 border rounded-lg shadow focus:ring focus:ring-blue-300">
+<nav>
+  <div>
+    <input type="text" id="schoolSearch" placeholder="Search schools by name..." />
   </div>
+  <div class="auth-section" id="authSection">
+    <button id="loginBtn">Login</button>
+    <button id="logoutBtn" style="display:none;">Logout</button>
+    <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
+  </div>
+</nav>
 
-  <!-- NOTIFICATIONS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">📢 General Notifications</h2>
-    <div id="notifications" class="space-y-4">
-      <p class="text-gray-500">Loading notifications...</p>
+<section class="notifications">
+  <h2>General Notifications</h2>
+  <div id="globalNotifications">Loading notifications...</div>
+</section>
+
+<section>
+  <h2>Motivational Quote</h2>
+  <div id="dailyQuote" class="quote">Loading...</div>
+</section>
+
+<section>
+  <h2>Featured Schools</h2>
+  <div id="featuredSchools" class="featured-schools">Loading featured schools...</div>
+</section>
+
+<section>
+  <h2>Latest News & Events</h2>
+  <div class="carousel">
+    <div id="newsCarousel" class="carousel-inner"></div>
+    <div class="carousel-buttons">
+      <button id="prevNewsBtn" aria-label="Previous News">Prev</button>
+      <button id="nextNewsBtn" aria-label="Next News">Next</button>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- SCHOOLS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">🏫 Registered Schools</h2>
-    <div id="schoolList" class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-      <p class="text-gray-500">Loading schools...</p>
-    </div>
-  </section>
+<section>
+  <h2>Testimonials</h2>
+  <div id="testimonials">Loading testimonials...</div>
+</section>
 
-  <!-- SAVED STUDENTS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">⭐ Saved Students</h2>
-    <div id="savedStudents" class="space-y-3">
-      <p class="text-gray-500">No saved students yet.</p>
-    </div>
-  </section>
+<section>
+  <h2>Schools</h2>
+  <ul id="schoolList">Loading schools...</ul>
+</section>
 
-  <!-- 🌙 Dark Mode -->
-  <button id="darkModeToggle">🌙</button>
+<section>
+  <button id="subscribeBtn">Subscribe to Urgent Alerts</button>
+  <div id="subscribeStatus"></div>
+</section>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+<!-- Login Modal -->
+<div id="loginModal" style="display:none; position:fixed; top:0; left:0;width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:1.5rem 2rem; border-radius: 12px; max-width: 360px; width: 100%;">
+    <h3>Login</h3>
+    <input type="email" id="emailInput" placeholder="Email" />
+    <input type="password" id="passwordInput" placeholder="Password" />
+    <button id="loginSubmitBtn">Login</button>
+    <button id="closeLoginBtn" style="margin-top: 0.7rem; background:#ccc; color:#222;">Cancel</button>
+    <div id="loginError" style="color:red; margin-top:0.5rem;"></div>
+  </div>
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-      authDomain: "school-portal-233f5.firebaseapp.com",
-      projectId: "school-portal-233f5",
-      storageBucket: "school-portal-233f5.appspot.com",
-      messagingSenderId: "314984934331",
-      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-    };
+<script>
+  // Firebase config and init (same as before)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+  const messaging = firebase.messaging();
 
-    // 🔹 Load Notifications
-    async function loadNotifications() {
-      try {
-        const snap = await getDocs(collection(db, "notifications"));
-        const container = document.getElementById("notifications");
-        container.innerHTML = "";
-        if(snap.empty) {
-          container.innerHTML = "<p class='text-gray-500'>No notifications yet</p>";
+  // Element references
+  const schoolListElem = document.getElementById('schoolList');
+  const globalNotificationsElem = document.getElementById('globalNotifications');
+  const schoolSearchInput = document.getElementById('schoolSearch');
+  const featuredSchoolsElem = document.getElementById('featuredSchools');
+  const dailyQuoteElem = document.getElementById('dailyQuote');
+  const newsCarousel = document.getElementById('newsCarousel');
+  const testimonialsElem = document.getElementById('testimonials');
+  const subscribeBtn = document.getElementById('subscribeBtn');
+  const subscribeStatus = document.getElementById('subscribeStatus');
+  const authSection = document.getElementById('authSection');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const darkModeToggle = document.getElementById('darkModeToggle');
+
+  // Login modal references
+  const loginModal = document.getElementById('loginModal');
+  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+  const closeLoginBtn = document.getElementById('closeLoginBtn');
+  const emailInput = document.getElementById('emailInput');
+  const passwordInput = document.getElementById('passwordInput');
+  const loginError = document.getElementById('loginError');
+
+  // Login modal toggle
+  function showLogin(show) {
+    loginModal.style.display = show ? 'flex' : 'none';
+    loginError.textContent = '';
+  }
+  loginBtn.addEventListener('click', () => showLogin(true));
+  closeLoginBtn.addEventListener('click', () => showLogin(false));
+
+  logoutBtn.addEventListener('click', () => auth.signOut());
+
+  loginSubmitBtn.addEventListener('click', () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    loginError.textContent = '';
+    if (!email || !password) {
+      loginError.textContent = 'Please enter email and password.';
+      return;
+    }
+    auth.signInWithEmailAndPassword(email, password)
+      .then(() => showLogin(false))
+      .catch(err => loginError.textContent = err.message);
+  });
+
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-block';
+    } else {
+      loginBtn.style.display = 'inline-block';
+      logoutBtn.style.display = 'none';
+    }
+  });
+
+  // Global notifications
+  function fetchGlobalNotifications() {
+    db.collection('notifications').orderBy('timestamp', 'desc').limit(5).get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          globalNotificationsElem.innerHTML = '<p>No notifications at the moment.</p>';
           return;
         }
-        snap.forEach(docSnap => {
-          const n = docSnap.data();
-          const div = document.createElement("div");
-          div.className = "p-3 border rounded bg-gray-50";
-          let content = "";
-          if(n.image) content += `<img src="${n.image}" class="w-full rounded mb-2">`;
-          content += `<p>${n.message}</p>`;
-          if(n.fileUrl) content += `<a href="${n.fileUrl}" target="_blank" class="mt-2 inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Download PDF</a>`;
-          div.innerHTML = content;
-          container.appendChild(div);
+        globalNotificationsElem.innerHTML = '';
+        snapshot.forEach(doc => {
+          let data = doc.data();
+          let div = document.createElement('div');
+          div.classList.add('notification');
+          div.textContent = data.message || '';
+          globalNotificationsElem.appendChild(div);
         });
-      } catch(err) {
-        document.getElementById("notifications").innerHTML = `<p class="text-red-500">Failed to load notifications: ${err.message}</p>`;
-      }
+      })
+      .catch(e => {
+        globalNotificationsElem.innerHTML = '<p>Failed to load notifications.</p>';
+        console.error(e);
+      });
+  }
+
+  // Schools 
+  let allSchools = [];
+  function fetchSchools() {
+    db.collection('schools').get()
+      .then(snapshot => {
+        allSchools = [];
+        snapshot.forEach(doc => {
+          let data = doc.data();
+          allSchools.push({ id: doc.id, name: data.name || data.school_name || "Unnamed School" });
+        });
+        renderSchools(allSchools);
+      })
+      .catch(e => {
+        schoolListElem.innerHTML = '<li>Failed to load schools.</li>';
+        console.error(e);
+      });
+  }
+  function renderSchools(schools) {
+    schoolListElem.innerHTML = '';
+    if (schools.length === 0) {
+      schoolListElem.innerHTML = '<li>No schools found.</li>';
+      return;
     }
-
-    // 🔹 Load Schools in real-time
-    const schoolRef = collection(db, "schools");
-    onSnapshot(schoolRef, (snap) => {
-      const list = document.getElementById("schoolList");
-      list.innerHTML = "";
-      if(snap.empty){
-        list.innerHTML = "<p class='text-gray-500'>No schools registered yet</p>";
-        return;
-      }
-      snap.forEach(docSnap => {
-        const s = docSnap.data();
-        const card = document.createElement("a");
-        card.href = `school.html?id=${docSnap.id}`;
-        card.className = "p-4 bg-gray-50 border rounded-lg shadow hover:bg-gray-100 block";
-        card.innerHTML = `<h3 class="font-bold">${s.name}</h3><p class="text-sm text-gray-600">${s.location || ""}</p>`;
-        list.appendChild(card);
-      });
+    schools.forEach(school => {
+      const li = document.createElement('li');
+      li.textContent = school.name;
+      li.onclick = () => {
+        window.location.href = `school.html?schoolId=${school.id}`;
+      };
+      schoolListElem.appendChild(li);
     });
+  }
+  schoolSearchInput.addEventListener('input', () => {
+    const term = schoolSearchInput.value.toLowerCase();
+    const filtered = allSchools.filter(s => s.name.toLowerCase().includes(term));
+    renderSchools(filtered);
+  });
 
-    // 🔹 Load Saved Students
-    function loadSavedStudents() {
-      const saved = JSON.parse(localStorage.getItem("savedStudents")) || [];
-      const container = document.getElementById("savedStudents");
-      container.innerHTML = "";
-      if(saved.length === 0){
-        container.innerHTML = "<p class='text-gray-500'>No saved students yet.</p>";
-        return;
-      }
-      saved.forEach(stu => {
-        const div = document.createElement("div");
-        div.className = "p-3 border rounded bg-gray-50";
-        div.innerHTML = `<strong>${stu.name}</strong> - Admission: ${stu.admission} <br> School: ${stu.school}`;
-        container.appendChild(div);
+  // Daily quote
+  function fetchDailyQuote() {
+    const today = new Date();
+    const dayIndex = today.getDate() % 1000;
+    db.collection('quotes').get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          dailyQuoteElem.textContent = "Have a great day learning!";
+          return;
+        }
+        const quotes = snapshot.docs.map(doc => doc.data().text || "");
+        const selected = quotes[dayIndex % quotes.length];
+        dailyQuoteElem.textContent = selected;
+      })
+      .catch(e => {
+        dailyQuoteElem.textContent = "Keep pushing forward!";
+        console.error(e);
       });
+  }
+
+  // Featured schools
+  function fetchFeaturedSchools() {
+    db.collection('featuredSchools').get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          featuredSchoolsElem.textContent = "No featured schools at the moment.";
+          return;
+        }
+        featuredSchoolsElem.innerHTML = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const card = document.createElement('div');
+          card.className = 'school-card';
+          card.textContent = data.name || "Unnamed School";
+          card.onclick = () => window.location.href = `school.html?schoolId=${doc.id}`;
+          featuredSchoolsElem.appendChild(card);
+        });
+      })
+      .catch(e => {
+        featuredSchoolsElem.textContent = "Failed to load featured schools.";
+        console.error(e);
+      });
+  }
+
+  // News carousel
+  let carouselIndex = 0;
+  let newsItems = [];
+  function fetchNewsEvents() {
+    db.collection('newsEvents').orderBy('date', 'desc').limit(10).get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          newsCarousel.innerHTML = '<div class="carousel-item">No news available</div>';
+          return;
+        }
+        newsItems = [];
+        snapshot.forEach(doc => {
+          newsItems.push(doc.data());
+        });
+        renderCarousel();
+      })
+      .catch(e => {
+        newsCarousel.innerHTML = '<div class="carousel-item">Error loading news</div>';
+        console.error(e);
+      });
+  }
+  function renderCarousel() {
+    newsCarousel.style.transform = `translateX(-${carouselIndex * 100}%)`;
+    newsCarousel.innerHTML = '';
+    newsItems.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'carousel-item';
+      div.innerHTML = `<h3>${item.title || 'Untitled'}</h3><p>${item.description || ''}</p>`;
+      newsCarousel.appendChild(div);
+    });
+  }
+  document.getElementById('prevNewsBtn').onclick = () => {
+    carouselIndex = (carouselIndex - 1 + newsItems.length) % newsItems.length;
+    renderCarousel();
+  };
+  document.getElementById('nextNewsBtn').onclick = () => {
+    carouselIndex = (carouselIndex + 1) % newsItems.length;
+    renderCarousel();
+  };
+
+  // Testimonials
+  function fetchTestimonials() {
+    db.collection('testimonials').limit(5).get()
+      .then(snapshot => {
+        if (snapshot.empty) {
+          testimonialsElem.textContent = "No testimonials yet.";
+          return;
+        }
+        testimonialsElem.innerHTML = '';
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement('div');
+          div.className = 'testimonial';
+          div.innerHTML = `<strong>${data.name || 'Anonymous'}</strong><br>${data.message || ''}`;
+          testimonialsElem.appendChild(div);
+        });
+      })
+      .catch(e => {
+        testimonialsElem.textContent = "Failed to load testimonials.";
+        console.error(e);
+      });
+  }
+
+  // Firebase Cloud Messaging subscription
+  subscribeBtn.onclick = () => {
+    messaging.requestPermission()
+      .then(() => messaging.getToken())
+      .then(token => {
+        subscribeStatus.textContent = 'Subscribed to urgent alerts.';
+        console.log('FCM Token:', token);
+        // Save token to Firestore or server if needed
+      })
+      .catch(err => {
+        subscribeStatus.textContent = 'Subscription failed or denied.';
+        console.error(err);
+      });
+  };
+
+  // Dark mode toggle handling
+  const darkModeKey = 'schoolPortalDarkMode';
+  function applyDarkMode(enable) {
+    if (enable) {
+      document.body.classList.add('dark-mode');
+      darkModeToggle.textContent = '☀️ Light Mode';
+    } else {
+      document.body.classList.remove('dark-mode');
+      darkModeToggle.textContent = '🌙 Dark Mode';
     }
-
-    // 🔹 Search functionality
-    document.getElementById("searchBox").addEventListener("input", (e)=>{
-      const term = e.target.value.toLowerCase();
-      document.querySelectorAll("#schoolList a").forEach(el => {
-        el.style.display = el.innerText.toLowerCase().includes(term) ? "block" : "none";
-      });
-      document.querySelectorAll("#savedStudents div").forEach(el => {
-        el.style.display = el.innerText.toLowerCase().includes(term) ? "block" : "none";
-      });
-    });
-
-    // 🌙 Dark Mode
-    const darkToggle = document.getElementById("darkModeToggle");
-    darkToggle.addEventListener("click", ()=>{
-      document.body.classList.toggle("dark");
-      darkToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
-      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-    });
-    if(localStorage.getItem("darkMode") === "true"){
-      document.body.classList.add("dark");
-      darkToggle.textContent = "☀️";
-    }
-
-    // Run
-    loadNotifications();
-    loadSavedStudents();
-  </script>
-</body>
-</html>
+    localStorage.setItem(darkModeKey, enable ? 'true' : 'false');
+  }
+  darkModeToggle.onclick = () => {
+    const darkEnabled = document
