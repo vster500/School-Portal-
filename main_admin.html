@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>School Portal - Main Admin Panel</title>
 <style>
-  /* Basic resets and styling */
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
     max-width: 1000px;
     margin: auto;
     padding: 1.5rem 2rem;
@@ -159,137 +158,13 @@
   <button id="logoutBtn" style="display:none;">Logout</button>
 </div>
 
-<!-- Login Section -->
-<div id="loginSection" class="section">
-  <h2>Admin Login</h2>
-  <label for="email">Email</label>
-  <input type="email" id="email" placeholder="Admin Email" autocomplete="username" />
-  <label for="password">Password</label>
-  <input type="password" id="password" placeholder="Password" autocomplete="current-password" />
-  <button id="loginBtn">Login</button>
-  <p id="loginError" class="error-msg"></p>
-</div>
-
 <!-- Admin content sections -->
 <div id="adminContent" class="hidden">
-
-  <!-- Section: Add School and Register Admin -->
-  <div class="section">
-    <h2>Add School</h2>
-    <label for="schoolName">School Name</label>
-    <input type="text" id="schoolName" placeholder="School Name" />
-
-    <label for="schoolLogo">Logo Image Upload</label>
-    <input type="file" id="schoolLogo" accept="image/*" />
-    <p id="uploadLogoStatus"></p>
-
-    <label for="schoolContacts">Contacts (email, phone)</label>
-    <input type="text" id="schoolContacts" placeholder="Contacts" />
-    <button id="addSchoolBtn">Add School</button>
-    <p id="addSchoolStatus"></p>
-
-    <hr style="margin: 2rem 0;" />
-
-    <h3>Register School Admin</h3>
-    <label for="adminSchoolSelect">Select School</label>
-    <select id="adminSchoolSelect">
-      <option value="" disabled selected>Select a school</option>
-    </select>
-    <label for="adminEmailInput">Admin Email</label>
-    <input type="email" id="adminEmailInput" placeholder="Admin Email" />
-    <label for="adminPasswordInput">Password</label>
-    <input type="password" id="adminPasswordInput" placeholder="Password" />
-    <button id="registerAdminBtn">Register Admin</button>
-    <p id="registerAdminStatus"></p>
-  </div>
-
-  <!-- Section: Global Notifications Management -->
-  <div class="section">
-    <h2 class="collapsible">Manage Global Notifications &#x25BC;</h2>
-    <div id="globalNotificationsContent" class="content">
-      <label for="notifMessage">Notification Message</label>
-      <textarea id="notifMessage" class="textarea" placeholder="Enter notification message"></textarea>
-      <label for="notifPoster">Upload Poster Image</label>
-      <input type="file" id="notifPoster" accept="image/*" />
-      <button id="addNotificationBtn">Add Notification</button>
-      <p id="notifStatus"></p>
-
-      <h3>Existing Notifications</h3>
-      <div id="notifList"></div>
-    </div>
-  </div>
-
-  <!-- Section: Website Content Management (Quotes & Testimonials) -->
-  <div class="section">
-    <h2 class="collapsible">Manage Quotes & Testimonials &#x25BC;</h2>
-    <div id="contentManagement" class="content">
-      <h3>Daily Quotes</h3>
-      <label for="newQuoteText">New Quote Text</label>
-      <textarea id="newQuoteText" class="textarea" placeholder="Enter new quote"></textarea>
-      <button id="addQuoteBtn">Add Quote</button>
-      <p id="quoteStatus"></p>
-
-      <h3>Testimonials</h3>
-      <label for="testiName">Name</label>
-      <input type="text" id="testiName" placeholder="Name" />
-      <label for="testiMessage">Message</label>
-      <textarea id="testiMessage" class="textarea" placeholder="Enter testimonial message"></textarea>
-      <button id="addTestiBtn">Add Testimonial</button>
-      <p id="testiStatus"></p>
-
-      <h3>Existing Quotes & Testimonials</h3>
-      <div id="quotesList" style="margin-bottom: 1rem;"></div>
-      <div id="testiList"></div>
-    </div>
-  </div>
-
-  <!-- Section: Performance Analysis & Export -->
-  <div class="section">
-    <h2>School Performance Analysis</h2>
-    <button id="refreshPerformanceBtn">Refresh</button>
-    <button id="exportCSVBtn">Export CSV</button>
-    <button id="exportPDFBtn">Export PDF</button>
-    <div id="performanceOverview" style="margin-top: 1rem;"></div>
-  </div>
-
-  <!-- Section: Audit Logs -->
-  <div class="section">
-    <h2>Audit Logs (Last 20 Actions)</h2>
-    <table id="auditLogTable">
-      <thead>
-        <tr><th>Timestamp</th><th>Action</th><th>User</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Section: Access Controls & Roles -->
-  <div class="section">
-    <h2>Access Controls & Roles</h2>
-    <p>Brief overview of registered users & roles in the system.</p>
-    <table id="rolesTable">
-      <thead>
-        <tr><th>Email</th><th>Role</th><th>School</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Section: Real-time Analytics -->
-  <div class="section">
-    <h2>Real-time Site Usage & Stats</h2>
-    <ul>
-      <li><strong>Total Registered Users:</strong> <span id="totalUsers">N/A</span></li>
-      <li><strong>Total Schools:</strong> <span id="totalSchools">N/A</span></li>
-      <li><strong>Active School Admins:</strong> <span id="activeAdmins">N/A</span></li>
-      <li><strong>Global Notifications:</strong> <span id="totalNotifications">N/A</span></li>
-    </ul>
-  </div>
-
+  <!-- Content as before... -->
+  <!-- (Omitted here for brevity; keep all previous admin panel sections and JS handlers) -->
 </div>
 
 <script>
-  // Firebase config and init
   const firebaseConfig = {
     apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
     authDomain: "school-portal-233f5.firebaseapp.com",
@@ -298,12 +173,12 @@
     messagingSenderId: "314984934331",
     appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
   };
+
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
   const storage = firebase.storage();
 
-  // Elements references
   const loginSection = document.getElementById('loginSection');
   const adminContent = document.getElementById('adminContent');
   const loginBtn = document.getElementById('loginBtn');
@@ -313,102 +188,46 @@
   const logoutBtn = document.getElementById('logoutBtn');
   const adminEmailSpan = document.getElementById('adminEmail');
 
-  // Add school elements
-  const schoolNameInput = document.getElementById('schoolName');
-  const schoolLogoInput = document.getElementById('schoolLogo');
-  const schoolContactsInput = document.getElementById('schoolContacts');
-  const addSchoolBtn = document.getElementById('addSchoolBtn');
-  const uploadLogoStatus = document.getElementById('uploadLogoStatus');
-  const addSchoolStatus = document.getElementById('addSchoolStatus');
-
-  // Register admin elements
-  const adminSchoolSelect = document.getElementById('adminSchoolSelect');
-  const adminEmailInput = document.getElementById('adminEmailInput');
-  const adminPasswordInput = document.getElementById('adminPasswordInput');
-  const registerAdminBtn = document.getElementById('registerAdminBtn');
-  const registerAdminStatus = document.getElementById('registerAdminStatus');
-
-  // Global notifications
-  const notifMessage = document.getElementById('notifMessage');
-  const notifPoster = document.getElementById('notifPoster');
-  const addNotificationBtn = document.getElementById('addNotificationBtn');
-  const notifStatus = document.getElementById('notifStatus');
-  const notifList = document.getElementById('notifList');
-
-  // Quotes & testimonials
-  const newQuoteText = document.getElementById('newQuoteText');
-  const addQuoteBtn = document.getElementById('addQuoteBtn');
-  const quoteStatus = document.getElementById('quoteStatus');
-  const quotesList = document.getElementById('quotesList');
-
-  const testiName = document.getElementById('testiName');
-  const testiMessage = document.getElementById('testiMessage');
-  const addTestiBtn = document.getElementById('addTestiBtn');
-  const testiStatus = document.getElementById('testiStatus');
-  const testiList = document.getElementById('testiList');
-
-  // Performance analysis/export
-  const performanceOverview = document.getElementById('performanceOverview');
-  const refreshPerformanceBtn = document.getElementById('refreshPerformanceBtn');
-  const exportCSVBtn = document.getElementById('exportCSVBtn');
-  const exportPDFBtn = document.getElementById('exportPDFBtn');
-
-  // Audit Logs table body
-  const auditLogTableBody = document.querySelector('#auditLogTable tbody');
-
-  // Roles table body
-  const rolesTableBody = document.querySelector('#rolesTable tbody');
-
-  // Real-time stats elements
-  const totalUsersElem = document.getElementById('totalUsers');
-  const totalSchoolsElem = document.getElementById('totalSchools');
-  const activeAdminsElem = document.getElementById('activeAdmins');
-  const totalNotificationsElem = document.getElementById('totalNotifications');
-
-  // Hardcoded admin credentials
+  // Hardcoded admin email
   const mainAdminEmail = "levisbonventure@gmail.com";
-  const mainAdminPassword = "wamalwa1";
 
-  // Basic audit log helper function
-  async function logAction(action, userEmail) {
-    await db.collection('auditLogs').add({
-      action: action,
-      user: userEmail,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  }
-
-  // LOGIN
   loginBtn.addEventListener('click', async () => {
     loginError.textContent = '';
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
-    if (email !== mainAdminEmail || password !== mainAdminPassword) {
-      loginError.textContent = 'Invalid credentials!';
+    if (!email || !password) {
+      loginError.textContent = 'Enter email and password.';
       return;
     }
+
     try {
-      await auth.signInAnonymously();
+      // Use real email/password sign-in here
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      if (user.email !== mainAdminEmail) {
+        loginError.textContent = 'Access denied: Not main admin.';
+        await auth.signOut();
+        return;
+      }
+
+      // Show admin panel UI
       adminEmailSpan.textContent = email;
       loginSection.style.display = 'none';
       adminContent.style.display = 'block';
       logoutBtn.style.display = 'inline-block';
-      await loadSchoolsIntoSelect();
-      await refreshPerformance();
-      await loadNotifications();
-      await loadQuotes();
-      await loadTestimonials();
-      await loadAuditLogs();
-      await loadRoles();
-      await updateStats();
-      await logAction('Logged in', email);
+
+      // Load admin functions here, e.g.:
+      // await loadSchoolsIntoSelect();
+      // await refreshPerformance();
+      // ... (your other functions)
+
     } catch (e) {
-      loginError.textContent = 'Login error: ' + e.message;
+      loginError.textContent = 'Login failed: ' + e.message;
     }
   });
 
-  // LOGOUT
   logoutBtn.addEventListener('click', async () => {
     await auth.signOut();
     adminEmailSpan.textContent = 'Not logged in';
@@ -422,11 +241,18 @@
 
   auth.onAuthStateChanged(user => {
     if (user) {
-      // Already logged in anonymously
-      adminContent.style.display = 'block';
-      loginSection.style.display = 'none';
-      logoutBtn.style.display = 'inline-block';
-      adminEmailSpan.textContent = mainAdminEmail;
+      if (user.email === mainAdminEmail) {
+        loginSection.style.display = 'none';
+        adminContent.style.display = 'block';
+        adminEmailSpan.textContent = user.email;
+        logoutBtn.style.display = 'inline-block';
+      } else {
+        auth.signOut();
+        adminContent.style.display = 'none';
+        loginSection.style.display = 'block';
+        logoutBtn.style.display = 'none';
+        adminEmailSpan.textContent = 'Not logged in';
+      }
     } else {
       adminContent.style.display = 'none';
       loginSection.style.display = 'block';
@@ -435,349 +261,7 @@
     }
   });
 
-  // Upload logo to Storage
-  async function uploadFile(file, pathPrefix) {
-    if (!file) return null;
-    const fileRef = storage.ref().child(`${pathPrefix}/${Date.now()}_${file.name}`);
-    const snapshot = await fileRef.put(file);
-    return await snapshot.ref.getDownloadURL();
-  }
-
-  // Add school handler
-  addSchoolBtn.addEventListener('click', async () => {
-    addSchoolStatus.textContent = '';
-    uploadLogoStatus.textContent = 'Uploading logo...';
-
-    if (!schoolNameInput.value.trim()) {
-      addSchoolStatus.textContent = 'School name required.';
-      uploadLogoStatus.textContent = '';
-      return;
-    }
-    try {
-      const logoURL = schoolLogoInput.files.length ? await uploadFile(schoolLogoInput.files[0], 'school_logos') : null;
-      uploadLogoStatus.textContent = logoURL ? 'Logo uploaded successfully.' : 'No logo uploaded or skipped.';
-      const schoolDoc = await db.collection('schools').add({
-        name: schoolNameInput.value.trim(),
-        logoUrl: logoURL,
-        contacts: schoolContactsInput.value.trim(),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      addSchoolStatus.textContent = `School "${schoolNameInput.value.trim()}" added (ID: ${schoolDoc.id})`;
-      await logAction(`Added school ${schoolNameInput.value.trim()}`, mainAdminEmail);
-      schoolNameInput.value = '';
-      schoolContactsInput.value = '';
-      schoolLogoInput.value = '';
-      await loadSchoolsIntoSelect();
-      await updateStats();
-    } catch (e) {
-      addSchoolStatus.textContent = 'Error: ' + e.message;
-    }
-    uploadLogoStatus.textContent = '';
-  });
-
-  // Load schools dropdown for admin registration
-  async function loadSchoolsIntoSelect() {
-    adminSchoolSelect.innerHTML = '<option value="" disabled selected>Select a school</option>';
-    const snapshot = await db.collection('schools').get();
-    snapshot.forEach(doc => {
-      const option = document.createElement('option');
-      option.value = doc.id;
-      option.textContent = doc.data().name || 'Unnamed School';
-      adminSchoolSelect.appendChild(option);
-    });
-  }
-
-  // Register school admin (simulate with firestore record; real auth needs server or Firebase Admin SDK)
-  registerAdminBtn.addEventListener('click', async () => {
-    registerAdminStatus.textContent = '';
-    const email = adminEmailInput.value.trim();
-    const password = adminPasswordInput.value.trim();
-    const schoolId = adminSchoolSelect.value;
-    if (!email || !password || !schoolId) {
-      registerAdminStatus.textContent = 'All fields required.';
-      return;
-    }
-    try {
-      await db.collection('schoolAdmins').add({
-        email,
-        schoolId,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      registerAdminStatus.textContent = 'School admin registered (please create user elsewhere).';
-      await logAction(`Registered school admin ${email}`, mainAdminEmail);
-      adminEmailInput.value = '';
-      adminPasswordInput.value = '';
-      adminSchoolSelect.value = '';
-      await loadRoles();
-      await updateStats();
-    } catch (e) {
-      registerAdminStatus.textContent = 'Error: ' + e.message;
-    }
-  });
-
-  // Notifications management
-  addNotificationBtn.addEventListener('click', async () => {
-    notifStatus.textContent = '';
-    if (!notifMessage.value.trim()) {
-      notifStatus.textContent = 'Notification message required.';
-      notifStatus.className = 'error-msg';
-      return;
-    }
-    try {
-      const posterURL = notifPoster.files.length ? await uploadFile(notifPoster.files[0], 'notification_posters') : null;
-      await db.collection('notifications').add({
-        message: notifMessage.value.trim(),
-        posterUrl: posterURL,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      notifStatus.textContent = 'Notification added successfully.';
-      notifStatus.className = 'success-msg';
-      notifMessage.value = '';
-      notifPoster.value = '';
-      await loadNotifications();
-      await logAction('Added global notification', mainAdminEmail);
-      await updateStats();
-    } catch (e) {
-      notifStatus.textContent = 'Error: ' + e.message;
-      notifStatus.className = 'error-msg';
-    }
-  });
-
-  async function loadNotifications() {
-    notifList.innerHTML = '';
-    const snapshot = await db.collection('notifications').orderBy('timestamp', 'desc').limit(10).get();
-    if (snapshot.empty) {
-      notifList.textContent = 'No notifications found.';
-      return;
-    }
-    const ul = document.createElement('ul');
-    snapshot.forEach(doc => {
-      const n = doc.data();
-      const li = document.createElement('li');
-      li.style.marginBottom = '1rem';
-      li.innerHTML = `
-        <strong>${n.message}</strong>
-        ${n.posterUrl ? `<br><img src="${n.posterUrl}" alt="Poster" style="max-width:120px; margin-top:0.3rem;">` : ''}
-        <br><small>${n.timestamp?.toDate().toLocaleString() || ''}</small>`;
-      ul.appendChild(li);
-    });
-    notifList.innerHTML = '';
-    notifList.appendChild(ul);
-  }
-
-  // Quotes & Testimonials CRUD
-  addQuoteBtn.addEventListener('click', async () => {
-    quoteStatus.textContent = '';
-    if (!newQuoteText.value.trim()) {
-      quoteStatus.textContent = 'Quote text required.';
-      quoteStatus.className = 'error-msg';
-      return;
-    }
-    try {
-      await db.collection('quotes').add({ text: newQuoteText.value.trim() });
-      quoteStatus.textContent = 'Quote added.';
-      quoteStatus.className = 'success-msg';
-      newQuoteText.value = '';
-      await loadQuotes();
-      await logAction('Added quote', mainAdminEmail);
-    } catch (e) {
-      quoteStatus.textContent = 'Error: ' + e.message;
-      quoteStatus.className = 'error-msg';
-    }
-  });
-
-  async function loadQuotes() {
-    quotesList.innerHTML = '';
-    const snapshot = await db.collection('quotes').get();
-    if (snapshot.empty) {
-      quotesList.textContent = 'No quotes added.';
-      return;
-    }
-    const ul = document.createElement('ul');
-    snapshot.forEach(doc => {
-      const q = doc.data();
-      const li = document.createElement('li');
-      li.textContent = q.text;
-      ul.appendChild(li);
-    });
-    quotesList.appendChild(ul);
-  }
-
-  addTestiBtn.addEventListener('click', async () => {
-    testiStatus.textContent = '';
-    if (!testiName.value.trim() || !testiMessage.value.trim()) {
-      testiStatus.textContent = 'Name and Message are required.';
-      testiStatus.className = 'error-msg';
-      return;
-    }
-    try {
-      await db.collection('testimonials').add({
-        name: testiName.value.trim(),
-        message: testiMessage.value.trim()
-      });
-      testiStatus.textContent = 'Testimonial added.';
-      testiStatus.className = 'success-msg';
-      testiName.value = '';
-      testiMessage.value = '';
-      await loadTestimonials();
-      await logAction('Added testimonial', mainAdminEmail);
-    } catch (e) {
-      testiStatus.textContent = 'Error: ' + e.message;
-      testiStatus.className = 'error-msg';
-    }
-  });
-
-  async function loadTestimonials() {
-    testiList.innerHTML = '';
-    const snapshot = await db.collection('testimonials').get();
-    if (snapshot.empty) {
-      testiList.textContent = 'No testimonials yet.';
-      return;
-    }
-    const ul = document.createElement('ul');
-    snapshot.forEach(doc => {
-      const t = doc.data();
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>${t.name}:</strong> ${t.message}`;
-      ul.appendChild(li);
-    });
-    testiList.appendChild(ul);
-  }
-
-  // Performance Analysis & Export
-  refreshPerformanceBtn.addEventListener('click', refreshPerformance);
-
-  async function refreshPerformance() {
-    performanceOverview.textContent = 'Loading...';
-    try {
-      const schoolsSnap = await db.collection('schools').get();
-      let html = '<ul>';
-      for (const doc of schoolsSnap.docs) {
-        const schoolData = doc.data();
-        const studentsSnap = await db.collection('schools').doc(doc.id).collection('students').get();
-        html += `<li><strong>${schoolData.name}:</strong> ${studentsSnap.size} students enrolled</li>`;
-      }
-      html += '</ul>';
-      performanceOverview.innerHTML = html;
-    } catch (e) {
-      performanceOverview.textContent = 'Failed to load performance data.';
-    }
-  }
-
-  // Export as CSV
-  exportCSVBtn.addEventListener('click', async () => {
-    performanceOverview.textContent = 'Exporting CSV...';
-    try {
-      const schoolsSnap = await db.collection('schools').get();
-      const rows = [['School Name', 'Student Count']];
-      for (const doc of schoolsSnap.docs) {
-        const schoolData = doc.data();
-        const studentsSnap = await db.collection('schools').doc(doc.id).collection('students').get();
-        rows.push([schoolData.name, studentsSnap.size]);
-      }
-      const worksheet = XLSX.utils.aoa_to_sheet(rows);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Performance');
-      XLSX.writeFile(workbook, 'schools_performance.csv');
-      performanceOverview.textContent = 'CSV exported successfully.';
-    } catch (e) {
-      performanceOverview.textContent = 'Export CSV failed.';
-    }
-  });
-
-  // Export as PDF using jsPDF
-  exportPDFBtn.addEventListener('click', async () => {
-    performanceOverview.textContent = 'Exporting PDF...';
-    try {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const schoolsSnap = await db.collection('schools').get();
-      let y = 10;
-      doc.setFontSize(18);
-      doc.text('School Performance Report', 10, y);
-      y += 12;
-      doc.setFontSize(12);
-      for (const docSnap of schoolsSnap.docs) {
-        const schoolData = docSnap.data();
-        const studentsSnap = await db.collection('schools').doc(docSnap.id).collection('students').get();
-        doc.text(`${schoolData.name}: ${studentsSnap.size} students`, 10, y);
-        y += 8;
-        if (y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-      }
-      doc.save('performance_report.pdf');
-      performanceOverview.textContent = 'PDF exported successfully.';
-    } catch (e) {
-      performanceOverview.textContent = 'Export PDF failed.';
-    }
-  });
-
-  // Audit logs viewer
-  async function loadAuditLogs() {
-    auditLogTableBody.innerHTML = '';
-    const logsSnap = await db.collection('auditLogs')
-      .orderBy('timestamp', 'desc').limit(20).get();
-    for (const doc of logsSnap.docs) {
-      const log = doc.data();
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${log.timestamp?.toDate().toLocaleString() || ''}</td>
-        <td>${log.action}</td>
-        <td>${log.user}</td>
-      `;
-      auditLogTableBody.appendChild(tr);
-    }
-  }
-
-  // Load roles - simple overview (school admins + main admin)
-  async function loadRoles() {
-    rolesTableBody.innerHTML = '';
-    // Main admin
-    let trMain = document.createElement('tr');
-    trMain.innerHTML = `<td>${mainAdminEmail}</td><td>Main Admin</td><td>All Schools</td>`;
-    rolesTableBody.appendChild(trMain);
-
-    const adminsSnap = await db.collection('schoolAdmins').get();
-    for (const doc of adminsSnap.docs) {
-      const admin = doc.data();
-      const schoolDoc = await db.collection('schools').doc(admin.schoolId).get();
-      const schoolName = schoolDoc.exists ? schoolDoc.data().name : 'School';
-      let tr = document.createElement('tr');
-      tr.innerHTML = `<td>${admin.email}</td><td>School Admin</td><td>${schoolName}</td>`;
-      rolesTableBody.appendChild(tr);
-    }
-  }
-
-  // Update system stats
-  async function updateStats() {
-    const usersSnap = await db.collection('schoolAdmins').get();
-    totalUsersElem.textContent = usersSnap.size + 1; // +1 for main admin
-    const schoolsSnap = await db.collection('schools').get();
-    totalSchoolsElem.textContent = schoolsSnap.size;
-    activeAdminsElem.textContent = usersSnap.size;
-    const notificationsSnap = await db.collection('notifications').get();
-    totalNotificationsElem.textContent = notificationsSnap.size;
-  }
-
-  // Collapsible panels toggle
-  document.querySelectorAll('.collapsible').forEach(elem => {
-    elem.addEventListener('click', () => {
-      elem.classList.toggle('active');
-      const content = elem.nextElementSibling;
-      if (content.classList.contains('hide')) {
-        content.classList.remove('hide');
-        elem.innerHTML = elem.innerHTML.replace('▼', '▲');
-      } else {
-        content.classList.add('hide');
-        elem.innerHTML = elem.innerHTML.replace('▲', '▼');
-      }
-    });
-  });
-
-  // Initial setup - hide admin content until login
-  adminContent.style.display = 'none';
+  // Include your other admin functions here as before ...
 
 </script>
 
