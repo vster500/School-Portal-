@@ -1,311 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Kenya School Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <style>
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Montserrat', Arial, sans-serif;
-    background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%);
-    color: #233247;
-  }
-  header {
-    background-color: #000; /* Black background */
-    color: #fff;
-    padding: 2.5rem 0 3rem;
-    text-align: center;
-    border-bottom-left-radius: 40px;
-    border-bottom-right-radius: 40px;
-    position: relative;
-  }
-  header h1 {
-    font-size: 2.5rem;
-    letter-spacing: 0.04em;
-    margin: 0;
-    font-weight: 700;
-    text-shadow: none;
-  }
-  header p {
-    font-size: 1.25rem;
-    margin-top: 1rem;
-    margin-bottom: 2rem;
-    font-weight: 500;
-  }
-  .hero-search {
-    max-width: 680px;
-    margin: 0 auto;
-    display: flex;
-    gap: 1rem;
-  }
-  .hero-search input, .hero-search select {
-    font-size: 1.03rem;
-    padding: 0.8rem;
-    border-radius: 30px;
-    border: none;
-    outline: none;
-    margin: 0;
-    flex: 1 1 0;
-  }
-  .hero-search button {
-    background: #14a800;
-    color: #fff;
-    font-weight: 700;
-    padding: 0.8rem 1.8rem;
-    border-radius: 30px;
-    border: none;
-    cursor: pointer;
-    font-size: 1.07rem;
-    box-shadow: 0 2px 8px rgba(44,196,80,0.18);
-    transition: background 0.22s;
-  }
-  .hero-search button:hover {
-    background: #0e6f2b;
-  }
-  .nav-bar {
-    max-width: 1150px;
-    margin: -48px auto 0;
-    background: #fff;
-    padding: 0.7rem 2rem;
-    border-radius: 20px;
-    box-shadow: 0 3px 15px #bae8e8bb;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 1rem;
-    position: relative;
-    z-index: 100;
-  }
-  .nav-bar a {
-    color: #1d8fff;
-    font-weight: 700;
-    margin-left: 1rem;
-    text-decoration: none;
-    font-size: 1.07rem;
-    letter-spacing: 0.02em;
-    transition: color 0.22s;
-  }
-  .nav-bar a:hover {
-    color: #14a800;
-  }
-  .filters-wrap {
-    display: flex;
-    gap: 1.3rem;
-    margin: 2.2rem auto 2rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    max-width: 900px;
-  }
-  .filters-wrap select, .filters-wrap button {
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    border-radius: 25px;
-    border: 1.2px solid #1d8fff;
-    color: #233247;
-    background: #f7fafc;
-  }
-  .filters-wrap button {
-    background: #1d8fff;
-    color: #fff;
-    border: none;
-    font-weight: 700;
-    box-shadow: 0 2px 6px #8ed6f6aa;
-  }
-  .filters-wrap button.selected, .filters-wrap button:focus {
-    background: #38ef7d;
-    color: #023129;
-    border: 1.5px solid #1d8fff;
-  }
-  .top-schools-section {
-    max-width: 1200px;
-    margin: 2.5rem auto 1.8rem;
-  }
-  .top-schools-list {
-    display: flex;
-    gap: 1.8rem;
-    overflow-x: auto;
-    padding-bottom: 0.7rem;
-  }
-  .school-card {
-    flex: 1 1 210px;
-    min-width: 250px;
-    max-width: 300px;
-    background: #fff;
-    border-radius: 21px;
-    box-shadow: 0 3px 20px #bae8e8cc;
-    padding: 1.2rem 1rem 1.4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    transition: transform 0.12s, box-shadow 0.24s;
-    cursor: pointer;
-  }
-  .school-card:hover {
-    transform: translateY(-3px) scale(1.018);
-    box-shadow: 0 10px 30px #56be7faa;
-  }
-  .school-logo {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 0.7rem;
-    box-shadow: 0 2px 6px #eee;
-    border: 3px solid #e2f5fd;
-    background: #fafbff;
-  }
-  .top-badge {
-    background: linear-gradient(90deg, #38ef7d, #1d8fff);
-    color: #fff;
-    font-weight: 900;
-    border-radius: 8px 8px 8px 0;
-    font-size: 0.92rem;
-    position: absolute;
-    top: 0; right: 0;
-    padding: 0.32rem 1rem;
-    letter-spacing: 0.045em;
-  }
-  .school-card .levels, .school-card .type, .school-card .county {
-    font-size: 0.99rem;
-    margin-top: 0.24rem;
-    color: #188a62;
-    font-weight: 600;
-  }
-  .school-card .type {
-    color: #1d8fff;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-  }
-  .school-card .county {
-    color: #626e85;
-    font-size: 0.93rem;
-  }
-  .school-card .price {
-    margin: 0.4rem 0 0.18rem 0;
-    color: #147822;
-    font-weight: 700;
-  }
-  .school-card button {
-    margin-top: 0.7rem;
-    background: #38ef7d;
-    color: #025e2d;
-    font-size: 1rem;
-    font-weight: 700;
-    border: none;
-    border-radius: 24px;
-    padding: 0.48rem 1.35rem;
-    cursor: pointer;
-    box-shadow: 0 2px 8px #bafedeaa;
-    transition: background 0.18s;
-  }
-  .school-card button:hover {
-    background: #147822;
-    color: #fff;
-  }
-  main {
-    max-width: 1200px;
-    margin: 0 auto 2.2rem;
-    padding: 1.2rem 0;
-  }
-  .school-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.4rem;
-  }
-  .saved-children-bar {
-    background: linear-gradient(90deg, #39e4d8, #3edc81);
-    margin: 1.1rem auto 2rem;
-    padding: 1rem 1.3rem;
-    border-radius: 15px;
-    max-width: 900px;
-    color: #054f35;
-    box-shadow: 0 2px 6px #bafede88;
-    display: none;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-  }
-  .saved-child-chip {
-    background: #fff;
-    color: #22b573;
-    border-radius: 13px;
-    padding: 0.47rem 1.2rem;
-    margin: 0.2rem 0.53rem 0.2rem 0;
-    font-size: 1.03rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.14s;
-    display: inline-block;
-    border: 1.5px solid #33c9f7;
-    box-shadow: 0 1px 4px #53fbcd24;
-  }
-  .saved-child-chip:hover {
-    background: #38ef7d;
-    color: #014d2a;
-  }
-  .section-title {
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    font-weight: 900;
-    color: #16527a;
-    margin: 1.6rem 0 0.6rem 4px;
-    letter-spacing: 0.1em;
-    border-left: 4px solid #38ef7d;
-    padding-left: 0.5rem;
-  }
+  /* (your original styles unchanged) */
+  body { margin: 0; padding: 0; font-family: 'Montserrat', Arial, sans-serif; background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%); color: #233247; }
+  header { background-color: #000; color: #fff; padding: 2.5rem 0 3rem; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; position: relative; }
+  header h1 { font-size: 2.5rem; letter-spacing: 0.04em; margin: 0; font-weight: 700; text-shadow: none; }
+  header p { font-size: 1.25rem; margin-top: 1rem; margin-bottom: 2rem; font-weight: 500; }
+  .hero-search { max-width: 680px; margin: 0 auto; display: flex; gap: 1rem; }
+  .hero-search input, .hero-search select { font-size: 1.03rem; padding: 0.8rem; border-radius: 30px; border: none; outline: none; margin: 0; flex: 1 1 0; }
+  .hero-search button { background: #14a800; color: #fff; font-weight: 700; padding: 0.8rem 1.8rem; border-radius: 30px; border: none; cursor: pointer; font-size: 1.07rem; box-shadow: 0 2px 8px rgba(44,196,80,0.18); transition: background 0.22s; }
+  .hero-search button:hover { background: #0e6f2b; }
+  .nav-bar { max-width: 1150px; margin: -48px auto 0; background: #fff; padding: 0.7rem 2rem; border-radius: 20px; box-shadow: 0 3px 15px #bae8e8bb; display: flex; justify-content: flex-end; align-items: center; gap: 1rem; position: relative; z-index: 100; }
+  .nav-bar a { color: #1d8fff; font-weight: 700; margin-left: 1rem; text-decoration: none; font-size: 1.07rem; letter-spacing: 0.02em; transition: color 0.22s; }
+  .nav-bar a:hover { color: #14a800; }
+  .filters-wrap { display: flex; gap: 1.3rem; margin: 2.2rem auto 2rem; justify-content: center; flex-wrap: wrap; max-width: 900px; }
+  .filters-wrap select, .filters-wrap button { padding: 0.6rem 1.2rem; font-size: 1rem; border-radius: 25px; border: 1.2px solid #1d8fff; color: #233247; background: #f7fafc; }
+  .filters-wrap button { background: #1d8fff; color: #fff; border: none; font-weight: 700; box-shadow: 0 2px 6px #8ed6f6aa; }
+  .filters-wrap button.selected, .filters-wrap button:focus { background: #38ef7d; color: #023129; border: 1.5px solid #1d8fff; }
+  .top-schools-section { max-width: 1200px; margin: 2.5rem auto 1.8rem; }
+  .top-schools-list { display: flex; gap: 1.8rem; overflow-x: auto; padding-bottom: 0.7rem; }
+  .school-card { flex: 1 1 210px; min-width: 250px; max-width: 300px; background: #fff; border-radius: 21px; box-shadow: 0 3px 20px #bae8e8cc; padding: 1.2rem 1rem 1.4rem; display: flex; flex-direction: column; align-items: center; position: relative; transition: transform 0.12s, box-shadow 0.24s; cursor: pointer; }
+  .school-card:hover { transform: translateY(-3px) scale(1.018); box-shadow: 0 10px 30px #56be7faa; }
+  .school-logo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin-bottom: 0.7rem; box-shadow: 0 2px 6px #eee; border: 3px solid #e2f5fd; background: #fafbff; }
+  .top-badge { background: linear-gradient(90deg, #38ef7d, #1d8fff); color: #fff; font-weight: 900; border-radius: 8px 8px 8px 0; font-size: 0.92rem; position: absolute; top: 0; right: 0; padding: 0.32rem 1rem; letter-spacing: 0.045em; }
+  .school-card .levels, .school-card .type, .school-card .county { font-size: 0.99rem; margin-top: 0.24rem; color: #188a62; font-weight: 600; }
+  .school-card .type { color: #1d8fff; font-weight: 700; letter-spacing: 0.01em; }
+  .school-card .county { color: #626e85; font-size: 0.93rem; }
+  .school-card .price { margin: 0.4rem 0 0.18rem 0; color: #147822; font-weight: 700; }
+  .school-card button { margin-top: 0.7rem; background: #38ef7d; color: #025e2d; font-size: 1rem; font-weight: 700; border: none; border-radius: 24px; padding: 0.48rem 1.35rem; cursor: pointer; box-shadow: 0 2px 8px #bafedeaa; transition: background 0.18s; }
+  .school-card button:hover { background: #147822; color: #fff; }
+  main { max-width: 1200px; margin: 0 auto 2.2rem; padding: 1.2rem 0; }
+  .school-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4rem; }
+  .saved-children-bar { background: linear-gradient(90deg, #39e4d8, #3edc81); margin: 1.1rem auto 2rem; padding: 1rem 1.3rem; border-radius: 15px; max-width: 900px; color: #054f35; box-shadow: 0 2px 6px #bafede88; display: none; flex-wrap: wrap; align-items: center; gap: 1rem; }
+  .saved-child-chip { background: #fff; color: #22b573; border-radius: 13px; padding: 0.47rem 1.2rem; margin: 0.2rem 0.53rem 0.2rem 0; font-size: 1.03rem; font-weight: 700; cursor: pointer; transition: background 0.14s; display: inline-block; border: 1.5px solid #33c9f7; box-shadow: 0 1px 4px #53fbcd24; }
+  .saved-child-chip:hover { background: #38ef7d; color: #014d2a; }
+  .section-title { font-size: 1.2rem; text-transform: uppercase; font-weight: 900; color: #16527a; margin: 1.6rem 0 0.6rem 4px; letter-spacing: 0.1em; border-left: 4px solid #38ef7d; padding-left: 0.5rem; }
   @media (max-width: 700px) {
-    header {
-      padding: 1.2rem 0 2.2rem;
-    }
-    .hero-search {
-      flex-direction: column;
-      gap: 0.55rem;
-      width: 98%;
-    }
-    .top-schools-list {
-      gap: 0.6rem;
-    }
-    .school-card {
-      min-width: 85vw;
-    }
-    .nav-bar {
-      padding: 0.3rem 0.6rem;
-      border-radius: 12px;
-    }
-    .filters-wrap {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .school-grid {
-      grid-template-columns: 1fr;
-    }
+    header { padding: 1.2rem 0 2.2rem; }
+    .hero-search { flex-direction: column; gap: 0.55rem; width: 98%; }
+    .top-schools-list { gap: 0.6rem; }
+    .school-card { min-width: 85vw; }
+    .nav-bar { padding: 0.3rem 0.6rem; border-radius: 12px; }
+    .filters-wrap { flex-direction: column; gap: 0.5rem; }
+    .school-grid { grid-template-columns: 1fr; }
   }
-  /* Dark mode styles */
-  body.dark-mode {
-    background-color: #121212;
-    color: #ddd;
-  }
-  body.dark-mode header {
-    background-color: #111;
-    color: #eee;
-  }
-  body.dark-mode .nav-bar {
-    background-color: #222;
-    box-shadow: 0 3px 12px rgba(255 255 255 / 0.15);
-  }
-  body.dark-mode .school-card {
-    background-color: #222;
-    border-color: #555;
-    color: #ddd;
-    box-shadow: 0 4px 10px rgba(255 255 255 / 0.15);
-  }
-  body.dark-mode button {
-    background-color: #38ef7d;
-    color: #023129;
-  }
+  body.dark-mode { background-color: #121212; color: #ddd; }
+  body.dark-mode header { background-color: #111; color: #eee; }
+  body.dark-mode .nav-bar { background-color: #222; box-shadow: 0 3px 12px rgba(255 255 255 / 0.15); }
+  body.dark-mode .school-card { background-color: #222; border-color: #555; color: #ddd; box-shadow: 0 4px 10px rgba(255 255 255 / 0.15); }
+  body.dark-mode button { background-color: #38ef7d; color: #023129; }
+  /* small helper messages */
+  .muted { color: #6b7280; font-size: 0.95rem; }
+  .error { color: #b91c1c; }
 </style>
 </head>
 <body>
@@ -313,23 +65,12 @@
   <h1>Kenya School Portal</h1>
   <p>Find, compare, and connect with the best schools in every county — all from one place.</p>
   <button type="button" id="darkModeToggle" style="position: absolute; top:10px; right:20px; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; cursor:pointer;">🌙 Dark Mode</button>
+
   <form class="hero-search" id="mainSearchForm" onsubmit="return false;">
-    <input type="search" id="heroSearchInput" placeholder="Search schools by name, location..." />
-    <select id="levelFilter">
-      <option value="">All Levels</option>
-      <option value="Pre-primary">Pre-primary</option>
-      <option value="Primary">Primary</option>
-      <option value="Junior Secondary">Junior Secondary</option>
-    </select>
-    <select id="countyFilter">
-      <option value="">All Counties</option>
-    </select>
-    <select id="typeFilter">
-      <option value="">All</option>
-      <option value="Public">Public</option>
-      <option value="Private">Private</option>
-    </select>
-    <button id="mainSearchBtn">Search</button>
+    <input type="search" id="heroSearchInput" placeholder="Search schools by name, location or admission..." />
+    <select id="levelFilter"><option value="">All Levels</option><option value="Pre-primary">Pre-primary</option><option value="Primary">Primary</option><option value="Junior Secondary">Junior Secondary</option></select>
+    <select id="countyFilter"></select>
+    <button id="mainSearchBtn" type="button">Search</button>
   </form>
 </header>
 
@@ -341,18 +82,9 @@
 
 <div class="filters-wrap">
   <span style="font-weight:700;color:#1d8fff;">Browse by:</span>
-  <select id="filterLevelMini">
-    <option value="">All Levels</option>
-    <option value="Pre-primary">Pre-primary</option>
-    <option value="Primary">Primary</option>
-    <option value="Junior Secondary">Junior Secondary</option>
-  </select>
+  <select id="filterLevelMini"><option value="">All Levels</option><option value="Pre-primary">Pre-primary</option><option value="Primary">Primary</option><option value="Junior Secondary">Junior Secondary</option></select>
   <select id="filterCountyMini"></select>
-  <select id="filterTypeMini">
-    <option value="">All Types</option>
-    <option value="Public">Public</option>
-    <option value="Private">Private</option>
-  </select>
+  <select id="filterTypeMini"><option value="">All Types</option><option value="Public">Public</option><option value="Private">Private</option></select>
 </div>
 
 <div class="saved-children-bar" id="savedChildrenBar">
@@ -379,146 +111,281 @@
   </div>
 </section>
 
-<script>
-// County list
-const COUNTY_LIST = [
-  "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita Taveta","Tana River","Tharaka Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
-];
+<!-- small status area -->
+<div style="max-width:1200px;margin:1rem auto;padding:0 1rem;">
+  <div id="statusMessage" class="muted">Connecting to server...</div>
+</div>
 
-// Populate county select fields
-const countyFilter = document.getElementById('countyFilter');
-const filterCountyMini = document.getElementById('filterCountyMini');
-countyFilter.innerHTML = '<option value="">All Counties</option>' + COUNTY_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
-filterCountyMini.innerHTML = countyFilter.innerHTML;
+<!-- Firebase + app logic (module) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-// Dark mode toggle
-const darkModeToggle = document.getElementById('darkModeToggle');
-const savedChildrenBar = document.getElementById('savedChildrenBar');
-const savedChildrenChips = document.getElementById('savedChildrenChips');
+  // <-- your firebase config (as you provided) -->
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-  authDomain: "school-portal-233f5.firebaseapp.com",
-  projectId: "school-portal-233f5",
-  storageBucket: "school-portal-233f5.appspot.com",
-  messagingSenderId: "314984934331",
-  appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
 
-function toggleDarkMode(state) {
-  if(state) {
-    document.body.classList.add('dark-mode');
-    darkModeToggle.textContent = '☀️ Light Mode';
-    localStorage.setItem('darkMode', 'enabled');
-  } else {
-    document.body.classList.remove('dark-mode');
-    darkModeToggle.textContent = '🌙 Dark Mode';
-    localStorage.setItem('darkMode', 'disabled');
+  // Counties
+  const COUNTY_LIST = [
+    "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita Taveta","Tana River","Tharaka Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
+  ];
+
+  // DOM refs
+  const countyFilter = document.getElementById('countyFilter');
+  const filterCountyMini = document.getElementById('filterCountyMini');
+  const heroSearchInput = document.getElementById('heroSearchInput');
+  const mainSearchBtn = document.getElementById('mainSearchBtn');
+  const statusMessage = document.getElementById('statusMessage');
+
+  const schoolGrid = document.getElementById('schoolGrid');
+  const topSchoolsList = document.getElementById('topSchoolsList');
+  const savedChildrenBar = document.getElementById('savedChildrenBar');
+  const savedChildrenChips = document.getElementById('savedChildrenChips');
+
+  // populate county selects
+  countyFilter.innerHTML = '<option value="">All Counties</option>' + COUNTY_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
+  filterCountyMini.innerHTML = countyFilter.innerHTML;
+
+  // Dark mode
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  darkModeToggle.addEventListener('click', () => {
+    const on = document.body.classList.toggle('dark-mode');
+    darkModeToggle.textContent = on ? '☀️ Light Mode' : '🌙 Dark Mode';
+    localStorage.setItem('darkMode', on ? 'enabled' : 'disabled');
+  });
+  const savedDark = localStorage.getItem('darkMode');
+  if (savedDark === 'enabled') { document.body.classList.add('dark-mode'); darkModeToggle.textContent = '☀️ Light Mode'; }
+
+  // state
+  let schoolsLocal = []; // cached client-side copy for filtering
+
+  // --- utilities ---
+  function showStatus(msg, err=false) {
+    statusMessage.textContent = msg;
+    statusMessage.className = err ? 'error' : 'muted';
   }
-}
-darkModeToggle.onclick = () => {
-  toggleDarkMode(!document.body.classList.contains('dark-mode'));
-};
-const savedDarkMode = localStorage.getItem('darkMode');
-if(savedDarkMode === 'enabled' || (!savedDarkMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-  toggleDarkMode(true);
-}
 
-// Example schools data (replace with Firestore fetch)
-function sampleSchool(i) {
-  return {
-    id: 'school' + i,
-    name: `Sample School ${i}`,
-    logoUrl: '',
-    county: COUNTY_LIST[i % COUNTY_LIST.length],
-    levels: ['Primary', 'Junior Secondary'][i % 2],
-    type: ['Public', 'Private'][i % 2],
-    price: (i % 2 === 0) ? 'KES 15,000 / term' : '',
-    featured: i < 5,
-    rating: 4.5 - (i % 5) / 10,
-    contact: "0700xxxxxx",
-    address: 'Kimaeti, Bungoma',
-  }
-}
-
-function loadSchools() {
-  const schools = [];
-  for(let i = 1; i <= 16; i++) {
-    schools.push(sampleSchool(i));
-  }
-  showSchools(schools);
-  showTopSchools(schools.filter(s => s.featured));
-}
-
-function showSchools(schools) {
-  const grid = document.getElementById('schoolGrid');
-  grid.innerHTML = '';
-  schools.forEach(s => {
-    const div = document.createElement('div');
-    div.className = 'school-card';
-    div.innerHTML = `
-      ${s.logoUrl ? `<img src="${s.logoUrl}" class="school-logo" alt="logo">` : `<div class="school-logo" style="background:#ccc;"></div>`}
-      <div class="levels">${s.levels}</div>
-      <div style="font-size:1.13rem;font-weight:800;">${s.name}</div>
-      <div class="county">${s.county}</div>
-      <div class="type">${s.type}</div>
+  function createSchoolCard(docId, s) {
+    const container = document.createElement('div');
+    container.className = 'school-card';
+    const logoPart = s.logoUrl ? `<img src="${s.logoUrl}" class="school-logo" alt="logo">` : `<div class="school-logo" style="background:#ccc;"></div>`;
+    container.innerHTML = `
+      ${s.featured ? `<div class="top-badge">Featured</div>` : ''}
+      ${logoPart}
+      <div class="levels">${s.levels || ''}</div>
+      <div style="font-size:1.13rem;font-weight:800;">${s.name || 'Unnamed School'}</div>
+      <div class="county">${s.county || (s.location || '')}</div>
+      <div class="type">${s.type || ''}</div>
       <div class="price">${s.price ? s.price : ''}</div>
-      <button onclick="location.href='school.html?id=${s.id}'">Visit School</button>
+      <button type="button" data-id="${docId}">Visit School</button>
     `;
-    grid.appendChild(div);
-  });
-}
-
-function showTopSchools(schools) {
-  const container = document.getElementById('topSchoolsList');
-  container.innerHTML = '';
-  schools.forEach((s, idx) => {
-    const div = document.createElement('div');
-    div.className = 'school-card';
-    div.innerHTML = `
-      <div class="top-badge">Top ${idx + 1}</div>
-      ${s.logoUrl ? `<img src="${s.logoUrl}" class="school-logo" alt="logo">` : `<div class="school-logo" style="background:#ddd;"></div>`}
-      <div style="font-size:1.09rem;font-weight:700;">${s.name}</div>
-      <div class="levels">${s.levels}</div>
-      <div class="county">${s.county}</div>
-      <div class="type">${s.type}</div>
-      <div class="price">${s.price ? s.price : ''}</div>
-      <button onclick="location.href='school.html?id=${s.id}'">Visit</button>
-    `;
-    container.appendChild(div);
-  });
-}
-
-// Example saved children for logged-in parent (replace by auth+db)
-function renderSavedChildren(children) {
-  if(!children || !children.length) {
-    savedChildrenBar.style.display = 'none';
-    return;
+    // Visit click
+    const btn = container.querySelector('button');
+    btn.addEventListener('click', () => { window.location.href = `school.html?id=${docId}`; });
+    return container;
   }
-  savedChildrenChips.innerHTML = '';
-  children.forEach(child => {
-    const chip = document.createElement('span');
-    chip.className = 'saved-child-chip';
-    chip.textContent = `${child.name} (${child.admission})`;
-    chip.onclick = () => window.location.href = `student.html?admission=${child.admission}`;
-    savedChildrenChips.appendChild(chip);
-  });
-  savedChildrenBar.style.display = 'flex';
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadSchools();
-  // Dummy saved children - remove in real auth version
-  renderSavedChildren([
-    { name: 'Joyce Wanja', admission:'31231' },
-    { name: 'Brian Otieno', admission:'56632' }
-  ]);
-});
+  // --- real-time loaders ---
+  function loadSchoolsRealtime() {
+    showStatus('Loading schools...');
+    const col = collection(db, "schools");
+    // onSnapshot will call once immediately and then on every change
+    onSnapshot(col, (snap) => {
+      schoolsLocal = [];
+      schoolGrid.innerHTML = '';
+      topSchoolsList.innerHTML = '';
+      if (snap.empty) {
+        showStatus('No schools found', true);
+        schoolGrid.innerHTML = `<p class="muted">No schools registered</p>`;
+        return;
+      }
+
+      snap.forEach(d => {
+        const s = d.data();
+        s.__id = d.id;
+        schoolsLocal.push(s);
+      });
+
+      // show all
+      showSchools(schoolsLocal);
+      showTopSchools(schoolsLocal.filter(s => s.featured));
+      showStatus('Connected — live schools streaming');
+    }, (err) => {
+      console.error('schools onSnapshot error', err);
+      showStatus('Unable to stream schools: ' + err.message, true);
+    });
+  }
+
+  function loadNotificationsRealtime() {
+    showStatus('Loading notifications...');
+    const col = collection(db, "notifications");
+    onSnapshot(col, (snap) => {
+      const container = document.getElementById('news');
+      // We'll only update the "notifications" list area inside #news
+      const notifArea = document.getElementById('news').querySelector('div[style]');
+      if (!notifArea) return;
+      notifArea.innerHTML = '';
+      if (snap.empty) {
+        notifArea.innerHTML = '<p class="muted">No notifications</p>';
+        return;
+      }
+      snap.forEach(d => {
+        const n = d.data();
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${n.title || ''}</strong> ${n.message || ''} ${n.fileUrl ? ` <a href="${n.fileUrl}" target="_blank">Download</a>` : ''}`;
+        notifArea.appendChild(p);
+      });
+    }, (err) => {
+      console.error('notifications onSnapshot error', err);
+      showStatus('Unable to stream notifications: ' + err.message, true);
+    });
+  }
+
+  // show functions use cached array
+  function showSchools(list) {
+    schoolGrid.innerHTML = '';
+    if (!list.length) {
+      schoolGrid.innerHTML = '<p class="muted">No schools to show</p>';
+      return;
+    }
+    list.forEach(s => {
+      const id = s.__id || s.id || '';
+      const card = createSchoolCard(id, s);
+      schoolGrid.appendChild(card);
+    });
+  }
+
+  function showTopSchools(list) {
+    topSchoolsList.innerHTML = '';
+    if (!list.length) {
+      topSchoolsList.innerHTML = '<div class="muted">No featured schools</div>';
+      return;
+    }
+    list.slice(0,8).forEach((s, idx) => {
+      const card = createSchoolCard(s.__id || s.id, s);
+      // add badge
+      const badge = card.querySelector('.top-badge') || document.createElement('div');
+      badge.className = 'top-badge';
+      badge.textContent = `Top ${idx+1}`;
+      if (!card.querySelector('.top-badge')) card.prepend(badge);
+      topSchoolsList.appendChild(card);
+    });
+  }
+
+  // --- saved children rendering ---
+  function renderSavedChildren() {
+    const saved = JSON.parse(localStorage.getItem('savedChildren') || '[]');
+    if (!saved || !saved.length) {
+      savedChildrenBar.style.display = 'none';
+      return;
+    }
+    savedChildrenChips.innerHTML = '';
+    saved.forEach(child => {
+      const chip = document.createElement('span');
+      chip.className = 'saved-child-chip';
+      chip.textContent = `${child.name} (${child.admission})`;
+      chip.addEventListener('click', () => { window.location.href = `student_profile.html?schoolId=${child.schoolId || ''}&id=${child.id || ''}&admission=${child.admission}`; });
+      savedChildrenChips.appendChild(chip);
+    });
+    savedChildrenBar.style.display = 'flex';
+  }
+
+  function saveChildToLocal(child) {
+    const saved = JSON.parse(localStorage.getItem('savedChildren') || '[]');
+    // prevent duplicates by admission
+    if (saved.some(s => s.admission === child.admission)) {
+      alert('Child already saved');
+      return;
+    }
+    saved.push(child);
+    localStorage.setItem('savedChildren', JSON.stringify(saved));
+    renderSavedChildren();
+    alert('Child saved');
+  }
+
+  // --- search / quick student lookup ---
+  async function performSearch() {
+    const term = heroSearchInput.value.trim();
+    const lvl = document.getElementById('levelFilter').value;
+    const county = document.getElementById('countyFilter').value;
+    const type = document.getElementById('typeFilter')?.value || '';
+
+    // if looks like an admission number (digits or starts with ADM) do quick student lookup
+    const looksLikeAdmission = /^(\d+|ADM[\w-]+)$/i.test(term);
+    if (looksLikeAdmission && term.length > 0) {
+      // attempt to find student by admission field (simple query)
+      try {
+        const studentsCol = collection(db, 'students');
+        // getDocs and filter client-side because text-search is limited in Firestore (for demo)
+        const snap = await getDocs(studentsCol);
+        const found = [];
+        snap.forEach(d => {
+          const st = d.data();
+          if ((st.admission && st.admission.toString().toLowerCase() === term.toLowerCase()) ||
+              (st.name && st.name.toLowerCase().includes(term.toLowerCase()))) {
+            found.push({ id: d.id, ...st });
+          }
+        });
+        if (found.length) {
+          // show first match and give option to save
+          const st = found[0];
+          const ok = confirm(`Found student: ${st.name} — admission ${st.admission} — Save to your Saved Children?`);
+          if (ok) saveChildToLocal({ name: st.name, admission: st.admission, id: st.id, schoolId: st.schoolId || '' });
+          return;
+        } else {
+          alert('No student found with that admission number.');
+          return;
+        }
+      } catch (err) {
+        console.error('student lookup error', err);
+        alert('Student lookup failed: ' + err.message);
+        return;
+      }
+    }
+
+    // Otherwise filter schools client-side (we already have schoolsLocal)
+    let filtered = schoolsLocal.slice();
+    if (term) filtered = filtered.filter(s => ((s.name || '').toLowerCase().includes(term.toLowerCase()) || (s.location || '').toLowerCase().includes(term.toLowerCase())));
+    if (lvl) filtered = filtered.filter(s => (s.levels || '').toLowerCase().includes(lvl.toLowerCase()));
+    if (county) filtered = filtered.filter(s => (s.county || s.location || '').toLowerCase().includes(county.toLowerCase()));
+    if (type) filtered = filtered.filter(s => (s.type || '').toLowerCase() === type.toLowerCase());
+    showSchools(filtered);
+    window.scrollTo({ top: document.querySelector('main').offsetTop - 60, behavior: 'smooth' });
+  }
+
+  // --- initialization & online/offline handling ---
+  function startApp() {
+    if (!navigator.onLine) {
+      showStatus('You are offline — cannot stream live data', true);
+    }
+    loadSchoolsRealtime();
+    loadNotificationsRealtime();
+    renderSavedChildren();
+  }
+
+  // wire up search button
+  mainSearchBtn.addEventListener('click', performSearch);
+  heroSearchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+
+  // online/offline event listeners
+  window.addEventListener('online', () => { showStatus('Back online — reconnecting...'); startApp(); });
+  window.addEventListener('offline', () => { showStatus('You are offline — live data paused', true); });
+
+  // start
+  startApp();
 </script>
-
 </body>
-  </html>
-  
+</html>
