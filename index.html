@@ -3,805 +3,522 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>School Portal - Home</title>
+<title>Kenya School Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --color-bg-light: #f9f9f9;
-    --color-bg-dark: #121212;
-    --color-text-light: #222;
-    --color-text-dark: #eee;
-    --color-accent: #4a90e2;
-    --color-card-bg-light: #ffffff;
-    --color-card-bg-dark: #1e1e1e;
-    --color-shadow: rgba(0, 0, 0, 0.1);
-    --transition-duration: 0.3s;
-  }
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    max-width: 960px;
-    margin: auto;
-    padding: 1rem 1.25rem 2rem;
-    background-color: var(--color-bg-light);
-    color: var(--color-text-light);
-    transition: background-color var(--transition-duration), color var(--transition-duration);
-    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%);
+    color: #233247;
   }
   header {
+    background-color: #000; /* Black background */
+    color: #fff;
+    padding: 2.5rem 0 3rem;
     text-align: center;
-    margin-bottom: 1.5rem;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    position: relative;
   }
   header h1 {
+    font-size: 2.5rem;
+    letter-spacing: 0.04em;
+    margin: 0;
     font-weight: 700;
-    font-size: 2rem;
-    letter-spacing: 1.2px;
-    color: var(--color-accent);
+    text-shadow: none;
   }
-  nav {
+  header p {
+    font-size: 1.25rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    font-weight: 500;
+  }
+  .hero-search {
+    max-width: 680px;
+    margin: 0 auto;
     display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    align-items: center;
-    margin-bottom: 1.5rem;
+    gap: 1rem;
   }
-  nav > div {
-    margin: 0.5rem 0;
-  }
-  input[type="text"], input[type="search"] {
-    width: 100%;
-    max-width: 400px;
-    padding: 0.6rem 1rem;
-    font-size: 1.1rem;
-    border-radius: 25px;
-    border: 2px solid var(--color-accent);
-    outline-offset: 0;
-    transition: box-shadow var(--transition-duration);
-  }
-  input[type="text"]:focus, input[type="search"]:focus {
-    box-shadow: 0 0 8px var(--color-accent);
-  }
-  button {
-    cursor: pointer;
-    padding: 0.5rem 1.25rem;
-    margin-left: 0.5rem;
-    border-radius: 25px;
+  .hero-search input, .hero-search select {
+    font-size: 1.03rem;
+    padding: 0.8rem;
+    border-radius: 30px;
     border: none;
-    font-weight: 600;
-    font-size: 1rem;
-    background-color: var(--color-accent);
-    color: white;
-    box-shadow: 0 3px 8px var(--color-accent);
-    transition: background-color 0.2s ease-in-out;
+    outline: none;
+    margin: 0;
+    flex: 1 1 0;
   }
-  button:hover {
-    background-color: #3677d6;
-  }
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  li {
-    padding: 0.75rem 1rem;
-    border-radius: 15px;
-    border: 1.5px solid var(--color-accent);
-    margin-bottom: 0.6rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-accent);
-    background-color: var(--color-card-bg-light);
-    box-shadow: 0 2px 5px var(--color-shadow);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
-  }
-  li:hover {
-    background-color: var(--color-accent);
-    color: white;
-    box-shadow: 0 6px 12px rgba(74,144,226,0.6);
-  }
-  section {
-    margin-bottom: 2.5rem;
-  }
-  h2 {
-    border-bottom: 3px solid var(--color-accent);
-    padding-bottom: 0.4rem;
+  .hero-search button {
+    background: #14a800;
+    color: #fff;
     font-weight: 700;
-    font-size: 1.6rem;
-    letter-spacing: 0.7px;
-    color: var(--color-accent);
+    padding: 0.8rem 1.8rem;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-size: 1.07rem;
+    box-shadow: 0 2px 8px rgba(44,196,80,0.18);
+    transition: background 0.22s;
   }
-  .notification {
-    background: #dbe9ff;
-    margin: 0.6rem 0;
-    padding: 0.6rem 1rem;
-    border-left: 6px solid var(--color-accent);
-    border-radius: 12px;
-    color: #034882;
-    font-weight: 600;
-    box-shadow: 0 1px 4px var(--color-shadow);
+  .hero-search button:hover {
+    background: #0e6f2b;
   }
-  .quote {
-    font-style: italic;
-    margin: 1rem 0;
-    font-weight: 600;
-    color: #617d98;
-    font-size: 1.3rem;
-    text-align: center;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .featured-schools {
+  .nav-bar {
+    max-width: 1150px;
+    margin: -48px auto 0;
+    background: #fff;
+    padding: 0.7rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 3px 15px #bae8e8bb;
     display: flex;
-    gap: 1.2rem;
-    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 100;
+  }
+  .nav-bar a {
+    color: #1d8fff;
+    font-weight: 700;
+    margin-left: 1rem;
+    text-decoration: none;
+    font-size: 1.07rem;
+    letter-spacing: 0.02em;
+    transition: color 0.22s;
+  }
+  .nav-bar a:hover {
+    color: #14a800;
+  }
+  .filters-wrap {
+    display: flex;
+    gap: 1.3rem;
+    margin: 2.2rem auto 2rem;
     justify-content: center;
+    flex-wrap: wrap;
+    max-width: 900px;
+  }
+  .filters-wrap select, .filters-wrap button {
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 25px;
+    border: 1.2px solid #1d8fff;
+    color: #233247;
+    background: #f7fafc;
+  }
+  .filters-wrap button {
+    background: #1d8fff;
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    box-shadow: 0 2px 6px #8ed6f6aa;
+  }
+  .filters-wrap button.selected, .filters-wrap button:focus {
+    background: #38ef7d;
+    color: #023129;
+    border: 1.5px solid #1d8fff;
+  }
+  .top-schools-section {
+    max-width: 1200px;
+    margin: 2.5rem auto 1.8rem;
+  }
+  .top-schools-list {
+    display: flex;
+    gap: 1.8rem;
+    overflow-x: auto;
+    padding-bottom: 0.7rem;
   }
   .school-card {
-    border: 1.8px solid var(--color-accent);
-    padding: 1rem 1.2rem;
-    border-radius: 15px;
-    flex: 1 1 250px;
-    max-width: 260px;
-    cursor: pointer;
-    background-color: var(--color-card-bg-light);
-    color: var(--color-accent);
-    font-weight: 700;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 10px var(--color-shadow);
-    transition: background-color var(--transition-duration), box-shadow var(--transition-duration), color var(--transition-duration);
+    flex: 1 1 210px;
+    min-width: 250px;
+    max-width: 300px;
+    background: #fff;
+    border-radius: 21px;
+    box-shadow: 0 3px 20px #bae8e8cc;
+    padding: 1.2rem 1rem 1.4rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    position: relative;
+    transition: transform 0.12s, box-shadow 0.24s;
+    cursor: pointer;
   }
   .school-card:hover {
-    background-color: var(--color-accent);
-    color: white;
-    box-shadow: 0 10px 18px rgba(74, 144, 226, 0.7);
+    transform: translateY(-3px) scale(1.018);
+    box-shadow: 0 10px 30px #56be7faa;
   }
-  .carousel {
-    position: relative;
-    overflow: hidden;
-    max-width: 100%;
-    border: 2px solid var(--color-accent);
-    padding: 1rem 1.2rem;
-    border-radius: 20px;
-    background-color: var(--color-card-bg-light);
+  .school-logo {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.7rem;
+    box-shadow: 0 2px 6px #eee;
+    border: 3px solid #e2f5fd;
+    background: #fafbff;
   }
-  .carousel-inner {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-  }
-  .carousel-item {
-    min-width: 100%;
-    padding: 1rem;
-  }
-  .carousel-item h3 {
-    margin-bottom: 0.4rem;
-    color: var(--color-accent);
-  }
-  .carousel-item p {
-    font-weight: 600;
-    color: #4b4b4b;
-  }
-  .carousel-buttons {
-    text-align: center;
-    margin-top: 0.8rem;
-  }
-  .carousel-buttons button {
-    padding: 0.4rem 1.1rem;
-    margin: 0 0.3rem;
-    border-radius: 20px;
-    background: var(--color-accent);
-    border: none;
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 3px 7px var(--color-accent);
-    transition: background-color 0.2s ease-in-out;
-  }
-  .carousel-buttons button:hover {
-    background-color: #3677d6;
-  }
-  .testimonial {
-    background: #c8e1ff;
-    padding: 1rem 1.2rem;
-    margin: 0.75rem 0;
-    border-radius: 20px;
-    box-shadow: 0 3px 7px var(--color-shadow);
-    font-weight: 600;
-    color: #034882;
-  }
-  .testimonial strong {
-    display: block;
+  .top-badge {
+    background: linear-gradient(90deg, #38ef7d, #1d8fff);
+    color: #fff;
     font-weight: 900;
-    margin-bottom: 0.3rem;
+    border-radius: 8px 8px 8px 0;
+    font-size: 0.92rem;
+    position: absolute;
+    top: 0; right: 0;
+    padding: 0.32rem 1rem;
+    letter-spacing: 0.045em;
   }
-  .auth-section button {
-    background-color: var(--color-accent);
-    color: white;
+  .school-card .levels, .school-card .type, .school-card .county {
+    font-size: 0.99rem;
+    margin-top: 0.24rem;
+    color: #188a62;
+    font-weight: 600;
+  }
+  .school-card .type {
+    color: #1d8fff;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .school-card .county {
+    color: #626e85;
+    font-size: 0.93rem;
+  }
+  .school-card .price {
+    margin: 0.4rem 0 0.18rem 0;
+    color: #147822;
+    font-weight: 700;
+  }
+  .school-card button {
+    margin-top: 0.7rem;
+    background: #38ef7d;
+    color: #025e2d;
+    font-size: 1rem;
     font-weight: 700;
     border: none;
-    padding: 0.4rem 1rem;
-    border-radius: 18px;
-    box-shadow: 0 3px 8px var(--color-accent);
-    transition: background-color 0.3s ease;
+    border-radius: 24px;
+    padding: 0.48rem 1.35rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #bafedeaa;
+    transition: background 0.18s;
   }
-  .auth-section button:hover {
-    background-color: #3677d6;
+  .school-card button:hover {
+    background: #147822;
+    color: #fff;
   }
-  #subscribeBtn {
-    display: block;
-    margin: 2rem auto 0 auto;
-    padding: 1rem 2rem;
-    font-size: 1.15rem;
-    max-width: 280px;
+  main {
+    max-width: 1200px;
+    margin: 0 auto 2.2rem;
+    padding: 1.2rem 0;
   }
-  #subscribeStatus {
-    text-align: center;
-    margin-top: 0.6rem;
-    font-weight: 600;
-    color: var(--color-accent);
+  .school-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.4rem;
   }
-  #darkModeToggle {
-    background: transparent;
-    border: 2px solid var(--color-accent);
-    color: var(--color-accent);
-    padding: 0.35rem 1rem;
-    border-radius: 40px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-  }
-  #darkModeToggle:hover {
-    background-color: var(--color-accent);
-    color: white;
-    box-shadow: 0 0 8px var(--color-accent);
-  }
-  button.addChildBtn {
-    margin-left: auto;
-    background-color: #28a745;
-    font-weight: 600;
-    box-shadow: none;
-  }
-  button.addChildBtn:hover {
-    background-color: #218838;
-  }
-  .child-list {
-    margin-top: 1.5rem;
-    border-top: 3px solid var(--color-accent);
-    padding-top: 1rem;
-  }
-  .child-item {
-    background-color: #eff7ff;
-    padding: 0.7rem 1rem;
+  .saved-children-bar {
+    background: linear-gradient(90deg, #39e4d8, #3edc81);
+    margin: 1.1rem auto 2rem;
+    padding: 1rem 1.3rem;
     border-radius: 15px;
-    margin-bottom: 0.8rem;
-    box-shadow: 0 2px 6px var(--color-shadow);
-    font-weight: 600;
-    color: var(--color-accent);
-    display: flex;
-    justify-content: space-between;
+    max-width: 900px;
+    color: #054f35;
+    box-shadow: 0 2px 6px #bafede88;
+    display: none;
+    flex-wrap: wrap;
     align-items: center;
+    gap: 1rem;
   }
-  .child-item:hover {
-    background-color: var(--color-accent);
-    color: white;
+  .saved-child-chip {
+    background: #fff;
+    color: #22b573;
+    border-radius: 13px;
+    padding: 0.47rem 1.2rem;
+    margin: 0.2rem 0.53rem 0.2rem 0;
+    font-size: 1.03rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.14s;
+    display: inline-block;
+    border: 1.5px solid #33c9f7;
+    box-shadow: 0 1px 4px #53fbcd24;
+  }
+  .saved-child-chip:hover {
+    background: #38ef7d;
+    color: #014d2a;
+  }
+  .section-title {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    font-weight: 900;
+    color: #16527a;
+    margin: 1.6rem 0 0.6rem 4px;
+    letter-spacing: 0.1em;
+    border-left: 4px solid #38ef7d;
+    padding-left: 0.5rem;
+  }
+  @media (max-width: 700px) {
+    header {
+      padding: 1.2rem 0 2.2rem;
+    }
+    .hero-search {
+      flex-direction: column;
+      gap: 0.55rem;
+      width: 98%;
+    }
+    .top-schools-list {
+      gap: 0.6rem;
+    }
+    .school-card {
+      min-width: 85vw;
+    }
+    .nav-bar {
+      padding: 0.3rem 0.6rem;
+      border-radius: 12px;
+    }
+    .filters-wrap {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .school-grid {
+      grid-template-columns: 1fr;
+    }
   }
   /* Dark mode styles */
   body.dark-mode {
-    background-color: var(--color-bg-dark);
-    color: var(--color-text-dark);
+    background-color: #121212;
+    color: #ddd;
   }
-  body.dark-mode input[type="text"], body.dark-mode button, body.dark-mode .child-item {
-    border-color: #3a82f7;
-    background-color: #222;
+  body.dark-mode header {
+    background-color: #111;
     color: #eee;
   }
-  body.dark-mode input[type="text"]:focus {
-    box-shadow: 0 0 10px #3a82f7;
+  body.dark-mode .nav-bar {
+    background-color: #222;
+    box-shadow: 0 3px 12px rgba(255 255 255 / 0.15);
   }
-  body.dark-mode li, 
-  body.dark-mode .school-card, 
-  body.dark-mode .carousel,
-  body.dark-mode .notification,
-  body.dark-mode .testimonial, 
-  body.dark-mode .child-item {
-    background-color: var(--color-card-bg-dark);
-    color: var(--color-text-dark);
-    border-color: #3a82f7;
-    box-shadow: 0 4px 10px rgba(58, 130, 247, 0.3);
-  }
-  body.dark-mode li:hover,
-  body.dark-mode .school-card:hover,
-  body.dark-mode .child-item:hover {
-    background-color: #3a82f7;
-    color: #fff;
-    box-shadow: 0 10px 18px rgba(58, 130, 247, 0.7);
-  }
-  body.dark-mode header h1, 
-  body.dark-mode h2, 
-  body.dark-mode .quote {
-    color: #69a1ff;
+  body.dark-mode .school-card {
+    background-color: #222;
+    border-color: #555;
+    color: #ddd;
+    box-shadow: 0 4px 10px rgba(255 255 255 / 0.15);
   }
   body.dark-mode button {
-    background-color: #3a82f7;
-    box-shadow: 0 3px 7px rgba(58, 130, 247, 0.7);
-  }
-  body.dark-mode button:hover {
-    background-color: #2a61c7;
-  }
-  body.dark-mode #subscribeStatus {
-    color: #69a1ff;
+    background-color: #38ef7d;
+    color: #023129;
   }
 </style>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 </head>
 <body>
 <header>
-  <h1>Welcome to the School Portal</h1>
+  <h1>Kenya School Portal</h1>
+  <p>Find, compare, and connect with the best schools in every county — all from one place.</p>
+  <button type="button" id="darkModeToggle" style="position: absolute; top:10px; right:20px; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; cursor:pointer;">🌙 Dark Mode</button>
+  <form class="hero-search" id="mainSearchForm" onsubmit="return false;">
+    <input type="search" id="heroSearchInput" placeholder="Search schools by name, location..." />
+    <select id="levelFilter">
+      <option value="">All Levels</option>
+      <option value="Pre-primary">Pre-primary</option>
+      <option value="Primary">Primary</option>
+      <option value="Junior Secondary">Junior Secondary</option>
+    </select>
+    <select id="countyFilter">
+      <option value="">All Counties</option>
+    </select>
+    <select id="typeFilter">
+      <option value="">All</option>
+      <option value="Public">Public</option>
+      <option value="Private">Private</option>
+    </select>
+    <button id="mainSearchBtn">Search</button>
+  </form>
 </header>
 
-<nav>
-  <div>
-    <input type="text" id="schoolSearch" placeholder="Search schools by name..." />
-  </div>
-  <div class="auth-section" id="authSection">
-<a href="login.html" style="color: var(--color-accent); font-weight: bold; text-decoration: none; cursor: pointer;">Login</a>
-    <button id="logoutBtn" style="display:none;">Logout</button>
-    <button id="darkModeToggle" aria-label="Toggle Dark Mode">🌙 Dark Mode</button>
-  </div>
-</nav>
-
-<section class="notifications">
-  <h2>General Notifications</h2>
-  <div id="globalNotifications">Loading notifications...</div>
-</section>
-
-<section>
-  <h2>Search Child by Admission Number</h2>
-  <div style="display:flex; gap:0.5rem; max-width:440px; margin-bottom:1rem;">
-    <input type="search" id="childSearchInput" placeholder="Enter child's admission number" />
-    <button id="childSearchBtn">Search</button>
-  </div>
-  <ul id="childSearchResults"></ul>
-</section>
-
-<section class="child-list" id="linkedChildrenSection" style="display:none;">
-  <h2>Your Linked Children</h2>
-  <div id="linkedChildrenList">Loading linked children...</div>
-</section>
-
-<section>
-  <h2>Latest News & Events</h2>
-  <div class="carousel">
-    <div id="newsCarousel" class="carousel-inner"></div>
-    <div class="carousel-buttons">
-      <button id="prevNewsBtn" aria-label="Previous News">Prev</button>
-      <button id="nextNewsBtn" aria-label="Next News">Next</button>
-    </div>
-  </div>
-</section>
-
-<section>
-  <h2>Schools</h2>
-  <ul id="schoolList">Loading schools...</ul>
-</section>
-
-<section>
-  <h2>Featured Schools</h2>
-  <div id="featuredSchools" class="featured-schools">Loading featured schools...</div>
-</section>
-
-<section>
-  <h2>Motivational Quote</h2>
-  <div id="dailyQuote" class="quote">Loading...</div>
-</section>
-
-<section>
-  <h2>Testimonials</h2>
-  <div id="testimonials">Loading testimonials...</div>
-</section>
-
-<section>
-  <button id="subscribeBtn">Subscribe to Urgent Alerts</button>
-  <div id="subscribeStatus"></div>
-</section>
-
-<!-- Login Modal -->
-<div id="loginModal" style="display:none; position:fixed; top:0; left:0;width:100%; height:100%; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;">
-  <div style="background:#fff; padding:1.5rem 2rem; border-radius: 12px; max-width: 360px; width: 100%;">
-    <h3>Login</h3>
-    <input type="email" id="emailInput" placeholder="Email" />
-    <input type="password" id="passwordInput" placeholder="Password" />
-    <button id="loginSubmitBtn">Login</button>
-    <button id="closeLoginBtn" style="margin-top: 0.7rem; background:#ccc; color:#222;">Cancel</button>
-    <div id="loginError" style="color:red; margin-top:0.5rem;"></div>
-  </div>
+<div class="nav-bar">
+  <a href="login.html">Login / Register</a>
+  <a href="#">Add Your School</a>
+  <a href="#news">News & Free Resources</a>
 </div>
 
+<div class="filters-wrap">
+  <span style="font-weight:700;color:#1d8fff;">Browse by:</span>
+  <select id="filterLevelMini">
+    <option value="">All Levels</option>
+    <option value="Pre-primary">Pre-primary</option>
+    <option value="Primary">Primary</option>
+    <option value="Junior Secondary">Junior Secondary</option>
+  </select>
+  <select id="filterCountyMini"></select>
+  <select id="filterTypeMini">
+    <option value="">All Types</option>
+    <option value="Public">Public</option>
+    <option value="Private">Private</option>
+  </select>
+</div>
+
+<div class="saved-children-bar" id="savedChildrenBar">
+  <b>Your Saved Children:</b>
+  <div id="savedChildrenChips" style="display:inline;"></div>
+</div>
+
+<section class="top-schools-section">
+  <div class="section-title">Top Rated Schools</div>
+  <div class="top-schools-list" id="topSchoolsList"></div>
+</section>
+
+<main>
+  <div class="section-title">All Schools</div>
+  <div class="school-grid" id="schoolGrid"></div>
+</main>
+
+<section id="news">
+  <div class="section-title">Latest News & Free Educational Resources</div>
+  <div style="background:#f9fbfc;padding:1.1rem 1rem;border-radius:1em;">
+    <p><b>MOE:</b> Gov. releases new CBC notes and schemes of work for JSS. &mdash; <a href="#">Download</a></p>
+    <p>Guide: <a href="#">How to choose the best school for your child</a></p>
+    <p>See <a href="#">more resources</a> &mdash; or <a href="#">Contact admin</a>.</p>
+  </div>
+</section>
+
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-    authDomain: "school-portal-233f5.firebaseapp.com",
-    projectId: "school-portal-233f5",
-    storageBucket: "school-portal-233f5.appspot.com",
-    messagingSenderId: "314984934331",
-    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-  };
+// County list
+const COUNTY_LIST = [
+  "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita Taveta","Tana River","Tharaka Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
+];
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
-  const messaging = firebase.messaging();
+// Populate county select fields
+const countyFilter = document.getElementById('countyFilter');
+const filterCountyMini = document.getElementById('filterCountyMini');
+countyFilter.innerHTML = '<option value="">All Counties</option>' + COUNTY_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
+filterCountyMini.innerHTML = countyFilter.innerHTML;
 
-  const schoolListElem = document.getElementById('schoolList');
-  const globalNotificationsElem = document.getElementById('globalNotifications');
-  const schoolSearchInput = document.getElementById('schoolSearch');
-  const featuredSchoolsElem = document.getElementById('featuredSchools');
-  const dailyQuoteElem = document.getElementById('dailyQuote');
-  const newsCarousel = document.getElementById('newsCarousel');
-  const testimonialsElem = document.getElementById('testimonials');
-  const subscribeBtn = document.getElementById('subscribeBtn');
-  const subscribeStatus = document.getElementById('subscribeStatus');
-  const authSection = document.getElementById('authSection');
-  const loginBtn = document.getElementById('loginBtn');
-  const logoutBtn = document.getElementById('logoutBtn');
-  const darkModeToggle = document.getElementById('darkModeToggle');
+// Dark mode toggle
+const darkModeToggle = document.getElementById('darkModeToggle');
+const savedChildrenBar = document.getElementById('savedChildrenBar');
+const savedChildrenChips = document.getElementById('savedChildrenChips');
 
-  const loginModal = document.getElementById('loginModal');
-  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
-  const closeLoginBtn = document.getElementById('closeLoginBtn');
-  const emailInput = document.getElementById('emailInput');
-  const passwordInput = document.getElementById('passwordInput');
-  const loginError = document.getElementById('loginError');
+const firebaseConfig = {
+  apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+  authDomain: "school-portal-233f5.firebaseapp.com",
+  projectId: "school-portal-233f5",
+  storageBucket: "school-portal-233f5.appspot.com",
+  messagingSenderId: "314984934331",
+  appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
 
-  const childSearchInput = document.getElementById('childSearchInput');
-  const childSearchBtn = document.getElementById('childSearchBtn');
-  const childSearchResults = document.getElementById('childSearchResults');
-  const linkedChildrenSection = document.getElementById('linkedChildrenSection');
-  const linkedChildrenList = document.getElementById('linkedChildrenList');
-
-  let currentUser = null;
-  let userData = null;
-
-  // Show/hide login modal
-  function showLogin(show) {
-    loginModal.style.display = show ? 'flex' : 'none';
-    loginError.textContent = '';
+function toggleDarkMode(state) {
+  if(state) {
+    document.body.classList.add('dark-mode');
+    darkModeToggle.textContent = '☀️ Light Mode';
+    localStorage.setItem('darkMode', 'enabled');
+  } else {
+    document.body.classList.remove('dark-mode');
+    darkModeToggle.textContent = '🌙 Dark Mode';
+    localStorage.setItem('darkMode', 'disabled');
   }
-  loginBtn.addEventListener('click', () => showLogin(true));
-  closeLoginBtn.addEventListener('click', () => showLogin(false));
+}
+darkModeToggle.onclick = () => {
+  toggleDarkMode(!document.body.classList.contains('dark-mode'));
+};
+const savedDarkMode = localStorage.getItem('darkMode');
+if(savedDarkMode === 'enabled' || (!savedDarkMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  toggleDarkMode(true);
+}
 
-  logoutBtn.addEventListener('click', () => auth.signOut());
+// Example schools data (replace with Firestore fetch)
+function sampleSchool(i) {
+  return {
+    id: 'school' + i,
+    name: `Sample School ${i}`,
+    logoUrl: '',
+    county: COUNTY_LIST[i % COUNTY_LIST.length],
+    levels: ['Primary', 'Junior Secondary'][i % 2],
+    type: ['Public', 'Private'][i % 2],
+    price: (i % 2 === 0) ? 'KES 15,000 / term' : '',
+    featured: i < 5,
+    rating: 4.5 - (i % 5) / 10,
+    contact: "0700xxxxxx",
+    address: 'Kimaeti, Bungoma',
+  }
+}
 
-  loginSubmitBtn.addEventListener('click', async () => {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-    loginError.textContent = '';
-    if (!email || !password) {
-      loginError.textContent = 'Please enter email and password.';
-      return;
-    }
-    try {
-      const cred = await auth.signInWithEmailAndPassword(email, password);
-      currentUser = cred.user;
-      await loadUserData();
-      showLogin(false);
-      updateUIOnLogin();
-    } catch (err) {
-      loginError.textContent = err.message;
-    }
+function loadSchools() {
+  const schools = [];
+  for(let i = 1; i <= 16; i++) {
+    schools.push(sampleSchool(i));
+  }
+  showSchools(schools);
+  showTopSchools(schools.filter(s => s.featured));
+}
+
+function showSchools(schools) {
+  const grid = document.getElementById('schoolGrid');
+  grid.innerHTML = '';
+  schools.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'school-card';
+    div.innerHTML = `
+      ${s.logoUrl ? `<img src="${s.logoUrl}" class="school-logo" alt="logo">` : `<div class="school-logo" style="background:#ccc;"></div>`}
+      <div class="levels">${s.levels}</div>
+      <div style="font-size:1.13rem;font-weight:800;">${s.name}</div>
+      <div class="county">${s.county}</div>
+      <div class="type">${s.type}</div>
+      <div class="price">${s.price ? s.price : ''}</div>
+      <button onclick="location.href='school.html?id=${s.id}'">Visit School</button>
+    `;
+    grid.appendChild(div);
   });
+}
 
-  // Load logged in user data from Firestore
-  async function loadUserData() {
-    if (!auth.currentUser) return;
-    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
-    userData = userDoc.exists ? userDoc.data() : null;
-  }
-
-  // Update UI for login/logout and linked children
-  async function updateUIOnLogin() {
-    if (auth.currentUser && userData) {
-      loginBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-block';
-
-      // Show linked children if parent
-      if (userData.role === 'parent') {
-        linkedChildrenSection.style.display = 'block';
-        await loadLinkedChildren();
-      } else {
-        linkedChildrenSection.style.display = 'none';
-      }
-    } else {
-      loginBtn.style.display = 'inline-block';
-      logoutBtn.style.display = 'none';
-      linkedChildrenSection.style.display = 'none';
-    }
-  }
-
-  // Load linked children for logged-in parent
-  async function loadLinkedChildren() {
-    linkedChildrenList.innerHTML = 'Loading linked children...';
-    if (!userData || !userData.children || userData.children.length === 0) {
-      linkedChildrenList.innerHTML = '<p>No children linked yet. Search and add below.</p>';
-      return;
-    }
-    linkedChildrenList.innerHTML = '';
-    for (const childId of userData.children) {
-      const studentDoc = await db.collectionGroup('students').where('admission', '==', childId).get();
-      if (!studentDoc.empty) {
-        const studentData = studentDoc.docs[0].data();
-        const schoolId = studentDoc.docs[0].ref.parent.parent.id;
-        const div = document.createElement('div');
-        div.className = 'child-item';
-        div.textContent = `${studentData.name || 'Student'} (${studentData.admission})`;
-        div.onclick = () => window.location.href = `student.html?schoolId=${schoolId}&admission=${studentData.admission}`;
-        linkedChildrenList.appendChild(div);
-      }
-    }
-  }
-
-  // Search child by admission and show add button if parent logged in
-  childSearchBtn.addEventListener('click', async () => {
-    childSearchResults.innerHTML = 'Searching...';
-    const admissionNum = childSearchInput.value.trim();
-    if (!admissionNum) {
-      childSearchResults.innerHTML = '<li>Please enter an admission number.</li>';
-      return;
-    }
-    // Search students collection group by admission number
-    try {
-      const snapshot = await db.collectionGroup('students').where('admission', '==', admissionNum).get();
-      childSearchResults.innerHTML = '';
-      if (snapshot.empty) {
-        childSearchResults.innerHTML = `<li>No student found for admission number "${admissionNum}".</li>`;
-        return;
-      }
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const schoolId = doc.ref.parent.parent.id;
-        const li = document.createElement('li');
-        li.style.justifyContent = 'space-between';
-        li.textContent = `${data.name || 'Student'} (${data.admission}) - School: ${schoolId}`;
-        if (currentUser && userData && userData.role === 'parent') {
-          const addBtn = document.createElement('button');
-          addBtn.textContent = '+ Add';
-          addBtn.className = 'addChildBtn';
-          addBtn.onclick = async (e) => {
-            e.stopPropagation();
-            await addChildToParent(data.admission);
-          };
-          li.appendChild(addBtn);
-        }
-        childSearchResults.appendChild(li);
-      });
-    } catch (e) {
-      childSearchResults.innerHTML = '<li>Error searching children.</li>';
-      console.error(e);
-    }
+function showTopSchools(schools) {
+  const container = document.getElementById('topSchoolsList');
+  container.innerHTML = '';
+  schools.forEach((s, idx) => {
+    const div = document.createElement('div');
+    div.className = 'school-card';
+    div.innerHTML = `
+      <div class="top-badge">Top ${idx + 1}</div>
+      ${s.logoUrl ? `<img src="${s.logoUrl}" class="school-logo" alt="logo">` : `<div class="school-logo" style="background:#ddd;"></div>`}
+      <div style="font-size:1.09rem;font-weight:700;">${s.name}</div>
+      <div class="levels">${s.levels}</div>
+      <div class="county">${s.county}</div>
+      <div class="type">${s.type}</div>
+      <div class="price">${s.price ? s.price : ''}</div>
+      <button onclick="location.href='school.html?id=${s.id}'">Visit</button>
+    `;
+    container.appendChild(div);
   });
+}
 
-  // Add child admission number to parent's profile
-  async function addChildToParent(admissionNumber) {
-    if (!auth.currentUser) {
-      alert('Please log in to add children.');
-      return;
-    }
-    if (!userData.children) userData.children = [];
-    if (userData.children.includes(admissionNumber)) {
-      alert('Child already linked.');
-      return;
-    }
-    userData.children.push(admissionNumber);
-    await db.collection('users').doc(auth.currentUser.uid).update({ children: userData.children });
-    alert('Child added successfully.');
-    await loadLinkedChildren();
+// Example saved children for logged-in parent (replace by auth+db)
+function renderSavedChildren(children) {
+  if(!children || !children.length) {
+    savedChildrenBar.style.display = 'none';
+    return;
   }
-
-  // Fetch other data (schools, notifications, quotes, news, testimonials) - from prior code snippets
-  async function fetchGlobalNotifications() {
-    try {
-      const snapshot = await db.collection('notifications').orderBy('timestamp', 'desc').limit(5).get();
-      if (snapshot.empty) {
-        globalNotificationsElem.innerHTML = '<p>No notifications at the moment.</p>';
-        return;
-      }
-      globalNotificationsElem.innerHTML = '';
-      snapshot.forEach(doc => {
-        let data = doc.data();
-        let div = document.createElement('div');
-        div.classList.add('notification');
-        div.textContent = data.message || '';
-        globalNotificationsElem.appendChild(div);
-      });
-    } catch {
-      globalNotificationsElem.innerHTML = '<p>Failed to load notifications.</p>';
-    }
-  }
-  async function fetchSchools() {
-    try {
-      const snapshot = await db.collection('schools').get();
-      allSchools = [];
-      snapshot.forEach(doc => {
-        let data = doc.data();
-        allSchools.push({ id: doc.id, name: data.name || "Unnamed School" });
-      });
-      renderSchools(allSchools);
-    } catch {
-      schoolListElem.innerHTML = '<li>Failed to load schools.</li>';
-    }
-  }
-  function renderSchools(schools) {
-    schoolListElem.innerHTML = '';
-    if (schools.length === 0) {
-      schoolListElem.innerHTML = '<li>No schools found.</li>';
-      return;
-    }
-    schools.forEach(school => {
-      const li = document.createElement('li');
-      li.textContent = school.name;
-      li.onclick = () => window.location.href = `school.html?schoolId=${school.id}`;
-      schoolListElem.appendChild(li);
-    });
-  }
-  schoolSearchInput.addEventListener('input', () => {
-    const term = schoolSearchInput.value.toLowerCase();
-    const filtered = allSchools.filter(s => s.name.toLowerCase().includes(term));
-    renderSchools(filtered);
+  savedChildrenChips.innerHTML = '';
+  children.forEach(child => {
+    const chip = document.createElement('span');
+    chip.className = 'saved-child-chip';
+    chip.textContent = `${child.name} (${child.admission})`;
+    chip.onclick = () => window.location.href = `student.html?admission=${child.admission}`;
+    savedChildrenChips.appendChild(chip);
   });
+  savedChildrenBar.style.display = 'flex';
+}
 
-  async function fetchDailyQuote() {
-    try {
-      const today = new Date();
-      const dayIndex = today.getDate() % 1000;
-      let snapshot = await db.collection('quotes').get();
-      if (snapshot.empty) {
-        dailyQuoteElem.textContent = "Have a great day learning!";
-        return;
-      }
-      const quotes = snapshot.docs.map(doc => doc.data().text || "");
-      dailyQuoteElem.textContent = quotes[dayIndex % quotes.length];
-    } catch {
-      dailyQuoteElem.textContent = "Keep pushing forward!";
-    }
-  }
-
-  async function fetchFeaturedSchools() {
-    try {
-      let snapshot = await db.collection('featuredSchools').get();
-      if (snapshot.empty) {
-        featuredSchoolsElem.textContent = "No featured schools at the moment.";
-        return;
-      }
-      featuredSchoolsElem.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const card = document.createElement('div');
-        card.className = 'school-card';
-        card.textContent = data.name || "Unnamed School";
-        card.onclick = () => window.location.href = `school.html?schoolId=${doc.id}`;
-        featuredSchoolsElem.appendChild(card);
-      });
-    } catch {
-      featuredSchoolsElem.textContent = "Failed to load featured schools.";
-    }
-  }
-
-  async function fetchNewsEvents() {
-    try {
-      let snapshot = await db.collection('newsEvents').orderBy('date', 'desc').limit(10).get();
-      if (snapshot.empty) {
-        newsCarousel.innerHTML = '<div class="carousel-item">No news available</div>';
-        return;
-      }
-      newsItems = [];
-      snapshot.forEach(doc => newsItems.push(doc.data()));
-      renderCarousel();
-    } catch {
-      newsCarousel.innerHTML = '<div class="carousel-item">Error loading news</div>';
-    }
-  }
-  function renderCarousel() {
-    newsCarousel.style.transform = `translateX(-${carouselIndex * 100}%)`;
-    newsCarousel.innerHTML = '';
-    newsItems.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'carousel-item';
-      div.innerHTML = `<h3>${item.title || 'Untitled'}</h3><p>${item.description || ''}</p>`;
-      newsCarousel.appendChild(div);
-    });
-  }
-  document.getElementById('prevNewsBtn').onclick = () => {
-    carouselIndex = (carouselIndex - 1 + newsItems.length) % newsItems.length;
-    renderCarousel();
-  };
-  document.getElementById('nextNewsBtn').onclick = () => {
-    carouselIndex = (carouselIndex + 1) % newsItems.length;
-    renderCarousel();
-  };
-
-  async function fetchTestimonials() {
-    try {
-      let snapshot = await db.collection('testimonials').limit(5).get();
-      if (snapshot.empty) {
-        testimonialsElem.textContent = "No testimonials yet.";
-        return;
-      }
-      testimonialsElem.innerHTML = '';
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement('div');
-        div.className = 'testimonial';
-        div.innerHTML = `<strong>${data.name || 'Anonymous'}</strong><br>${data.message || ''}`;
-        testimonialsElem.appendChild(div);
-      });
-    } catch {
-      testimonialsElem.textContent = "Failed to load testimonials.";
-    }
-  }
-
-  subscribeBtn.onclick = () => {
-    messaging.requestPermission()
-      .then(() => messaging.getToken())
-      .then(token => {
-        subscribeStatus.textContent = 'Subscribed to urgent alerts.';
-        console.log('FCM Token:', token);
-      })
-      .catch(err => {
-        subscribeStatus.textContent = 'Subscription failed or denied.';
-      });
-  };
-
-  // Dark mode toggle handling
-  const darkModeKey = 'schoolPortalDarkMode';
-  function applyDarkMode(enable) {
-    if (enable) {
-      document.body.classList.add('dark-mode');
-      darkModeToggle.textContent = '☀️ Light Mode';
-    } else {
-      document.body.classList.remove('dark-mode');
-      darkModeToggle.textContent = '🌙 Dark Mode';
-    }
-    localStorage.setItem(darkModeKey, enable ? 'true' : 'false');
-  }
-  darkModeToggle.onclick = () => {
-    const darkEnabled = document.body.classList.contains('dark-mode');
-    applyDarkMode(!darkEnabled);
-  };
-  // Initialize dark mode based on saved preference or system
-  const savedDarkMode = localStorage.getItem(darkModeKey);
-  if (savedDarkMode === 'true') applyDarkMode(true);
-  else if (!savedDarkMode && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) applyDarkMode(true);
-
-  // Auth state changes
-  auth.onAuthStateChanged(async user => {
-    if (user) {
-      currentUser = user;
-      const userDoc = await db.collection('users').doc(user.uid).get();
-      userData = userDoc.exists ? userDoc.data() : null;
-      updateUIOnLogin();
-    } else {
-      currentUser = null;
-      userData = null;
-      updateUIOnLogin();
-    }
-  });
-
-  // Initialize page loads
-  let allSchools = [];
-  let newsItems = [];
-  let carouselIndex = 0;
-  fetchGlobalNotifications();
-  fetchSchools();
-  fetchDailyQuote();
-  fetchFeaturedSchools();
-  fetchNewsEvents();
-  fetchTestimonials();
-
+document.addEventListener('DOMContentLoaded', () => {
+  loadSchools();
+  // Dummy saved children - remove in real auth version
+  renderSavedChildren([
+    { name: 'Joyce Wanja', admission:'31231' },
+    { name: 'Brian Otieno', admission:'56632' }
+  ]);
+});
 </script>
+
 </body>
-</html>
+  </html>
+  
