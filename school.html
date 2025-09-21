@@ -1,156 +1,370 @@
-<!-- Save as school.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>School Portal</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"/>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f9f9f9;
-      color: #333;
-      transition: background 0.3s, color 0.3s;
-    }
-    header {
-      background: #2c3e50;
-      color: #fff;
-    }
-    .btn-primary {
-      background: #2c3e50;
-      color: #fff;
-    }
-    .btn-primary:hover { background: #34495e; }
-    .btn-accent {
-      background: #3498db;
-      color: #fff;
-    }
-    .btn-accent:hover { background: #2980b9; }
-    h2 { color: #2c3e50; }
-
-    /* Dark Mode */
-    body.dark { background: #1e1e1e; color: #eee; }
-    body.dark section { background: #2b2b2b; }
-    body.dark h2 { color: #f1c40f; }
-    body.dark header { background: #111; }
-
-    /* Floating Dark Toggle */
-    #darkModeToggle {
-      position: fixed;
-      bottom: 1.2rem;
-      right: 1.2rem;
-      background: #2c3e50;
-      color: #fff;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      transition: background 0.3s, transform 0.2s;
-    }
-    #darkModeToggle:hover { background: #34495e; transform: scale(1.1); }
-    body.dark #darkModeToggle { background: #e67e22; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>School Portal - School Details</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+<style>
+  body {
+    margin: 0;
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%);
+    color: #233247;
+  }
+  header {
+    background-color: #000;
+    color: #fff;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+  }
+  header h1 {
+    font-size: 2.4rem;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+    margin: 0;
+  }
+  .container {
+    max-width: 900px;
+    margin: 2rem auto 4rem;
+    background: white;
+    border-radius: 15px;
+    padding: 2rem 3rem;
+    box-shadow: 0 10px 30px rgb(56 239 125 / 0.35);
+  }
+  .photo-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+  }
+  .photo-gallery img {
+    width: 150px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #bafedeaa;
+    transition: transform 0.25s ease;
+  }
+  .photo-gallery img:hover {
+    transform: scale(1.05);
+  }
+  .contact-section, .info-section {
+    margin-bottom: 1.3rem;
+  }
+  .social-links a {
+    margin-right: 1rem;
+    font-size: 1.7rem;
+    color: #1d8fff;
+    transition: color 0.22s;
+  }
+  .social-links a:hover {
+    color: #38ef7d;
+  }
+  .btn {
+    background-color: #38ef7d;
+    color: #025e2d;
+    font-weight: 700;
+    padding: 0.6rem 1.2rem;
+    border-radius: 24px;
+    margin-right: 1rem;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(56,239,125,0.5);
+    border: none;
+    transition: background-color 0.24s;
+  }
+  .btn:hover {
+    background-color: #147822;
+    color: white;
+  }
+  h2 {
+    font-weight: 700;
+    margin-bottom: 0.7rem;
+    font-size: 1.3rem;
+  }
+  .search-child-box {
+    margin-top: 2rem;
+    padding: 1.3rem;
+    background: #f0f7f4;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #bafedeaa;
+  }
+  .search-child-box input {
+    padding: 0.6rem 0.9rem;
+    border-radius: 20px;
+    border: 2px solid #1d8fff;
+    width: 70%;
+    font-size: 1.1rem;
+    outline-offset: 0;
+    transition: border-color 0.25s;
+  }
+  .search-child-box input:focus {
+    border-color: #38ef7d;
+    outline: none;
+  }
+  .search-child-box button {
+    padding: 0.62rem 1.3rem;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .notification-section {
+    background: #f9fef9;
+    border-radius: 12px;
+    padding: 1rem 1.4rem;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+  .notification-section p {
+    margin-bottom: 0.4rem;
+  }
+  .notice {
+    background: #fff3cd;
+    border-left: 6px solid #ffecb5;
+    padding: 0.9rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+  }
+  footer {
+    max-width: 900px;
+    margin: 4rem auto 2rem;
+    text-align: center;
+    font-size: 0.94rem;
+    color: #617d98;
+  }
+</style>
 </head>
-<body class="text-gray-800">
+<body>
 
-  <!-- HEADER -->
-  <header class="p-4 flex justify-between items-center shadow">
-    <div id="schoolHeader" class="text-2xl font-bold">Loading School...</div>
-    <button id="loginBtn" class="btn-accent px-4 py-2 rounded-lg shadow">
-      Teacher Login
-    </button>
-  </header>
+<header>
+  <h1 id="schoolNameHeader">Loading School Info...</h1>
+</header>
 
-  <!-- SEARCH BAR -->
-  <div class="max-w-4xl mx-auto mt-6">
-    <input type="text" id="searchBox" placeholder="Search notifications or student admission/name..."
-      class="w-full p-3 border rounded-lg shadow focus:ring focus:ring-blue-300">
-  </div>
-
-  <!-- NOTIFICATIONS -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">📢 Announcements</h2>
-    <div id="notifications" class="space-y-4">
-      <p class="text-gray-500">Loading announcements...</p>
-    </div>
+<div class="container">
+  <section class="info-section">
+    <h2>About the School</h2>
+    <p><strong>Motto:</strong> <span id="schoolMotto"></span></p>
+    <p><strong>Vision:</strong> <span id="schoolVision"></span></p>
+    <p id="schoolDescription"></p>
+    <div class="photo-gallery" id="photoGallery"></div>
   </section>
 
-  <!-- STUDENT LOOKUP -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">🎓 Student Lookup</h2>
-    <input type="text" id="admissionInput" placeholder="Enter admission number..."
-      class="w-full p-2 border rounded mb-3">
-    <button id="lookupBtn" class="btn-primary px-4 py-2 rounded-lg">
-      Search
-    </button>
-    <div id="studentResult" class="mt-4 text-gray-700"></div>
+  <section class="contact-section">
+    <h2>Contact Information</h2>
+    <p><strong>Phone/Email:</strong> <span id="schoolContact"></span></p>
+    <p><strong>Principal:</strong> <span id="schoolPrincipal"></span></p>
+    <p><strong>Principal Contact:</strong> <span id="schoolPrincipalContact"></span></p>
+    <p><strong>Location:</strong> <span id="schoolLocation"></span></p>
+    <p><strong>Levels Offered:</strong> <span id="schoolLevels"></span></p>
+    <p><strong>Type:</strong> <span id="schoolType"></span></p>
+    <p><strong>Facilities:</strong> <span id="schoolFacilities"></span></p>
+    <p><strong>Languages of Instruction:</strong> <span id="schoolLanguages"></span></p>
+    <p><strong>Website:</strong> <a href="#" id="schoolWebsiteLink" target="_blank" rel="noopener noreferrer"></a></p>
+    <div class="social-links" id="socialLinks"></div>
   </section>
 
-  <!-- SCHOOL INFO -->
-  <section class="max-w-4xl mx-auto mt-6 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-3">🏫 School Information</h2>
-    <div id="schoolInfo" class="space-y-2">
-      <p><strong>Motto:</strong> Loading...</p>
-      <p><strong>Location:</strong> Loading...</p>
-      <p><strong>Contact:</strong> Loading...</p>
-    </div>
-    <div id="map" class="mt-4 w-full h-60 bg-gray-200 flex items-center justify-center rounded-lg">
-      Google Map Placeholder
-    </div>
+  <section class="notification-section">
+    <h2>School Notifications</h2>
+    <div id="notificationsList">Loading notifications...</div>
   </section>
 
-  <!-- 🌙 Floating Dark Toggle -->
-  <button id="darkModeToggle">🌙</button>
+  <section>
+    <button class="btn" id="adminLoginBtn">School Admin Login</button>
+</section>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  </section>
+    <a href="https://wa.me/254769883456" target="_blank" class="btn">Contact Portal Admin on WhatsApp</a>
+    <p>Our services are free for schools! Contact us to register your school admin and start using our management systems.</p>
+  </section>
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-      authDomain: "school-portal-233f5.firebaseapp.com",
-      projectId: "school-portal-233f5",
-      storageBucket: "school-portal-233f5.firebasestorage.app",
-      messagingSenderId: "314984934331",
-      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-    };
+  <section class="search-child-box">
+    <h2>Find Your Child’s Records</h2>
+    <p>Enter child's admission number to search results and fee balances.</p>
+    <input type="text" id="studentAdmissionInput" placeholder="Admission Number" autocomplete="off" />
+    <button id="searchChildBtn" class="btn">Search</button>
+    <div id="searchChildStatus"></div>
+  </section>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  <section>
+    <p><strong>Note to Parents:</strong> You can create free accounts on our portal to save your children from any school for quick access and monitoring.</p>
+    <p><a href="login.html">Parent Login / Register</a></p>
+  </section>
+</div>
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const schoolId = urlParams.get("id") || "school1";
+<footer>
+  Kenya School Portal &copy; 2025
+</footer>
 
-    // Load school info
-    async function loadSchool() { /* your existing code */ }
-    // Load announcements
-    async function loadNotifications() { /* your existing code */ }
-    // Lookup student and search
-    /* your existing code */
-    // Dark mode toggle
-    /* your existing code */
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // Init
-    loadSchool();
-    loadNotifications();
-  </script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
 
-  <script>
-    // Teacher Login button
-    document.getElementById("loginBtn").addEventListener("click", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const schoolId = urlParams.get("id") || "school1";
-      window.location.href = `login.html?schoolId=${schoolId}`;
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Extract school id from URL
+  const params = new URLSearchParams(window.location.search);
+  const schoolId = params.get('id');
+
+  // Cache references
+  const header = document.getElementById('schoolNameHeader');
+  const mottoEl = document.getElementById('schoolMotto');
+  const visionEl = document.getElementById('schoolVision');
+  const descriptionEl = document.getElementById('schoolDescription');
+  const galleryEl = document.getElementById('photoGallery');
+  const contactEl = document.getElementById('schoolContact');
+  const principalEl = document.getElementById('schoolPrincipal');
+  const principalContactEl = document.getElementById('schoolPrincipalContact');
+  const locationEl = document.getElementById('schoolLocation');
+  const levelsEl = document.getElementById('schoolLevels');
+  const typeEl = document.getElementById('schoolType');
+  const facilitiesEl = document.getElementById('schoolFacilities');
+  const languagesEl = document.getElementById('schoolLanguages');
+  const websiteLink = document.getElementById('schoolWebsiteLink');
+  const socialLinksEl = document.getElementById('socialLinks');
+  const notificationsList = document.getElementById('notificationsList');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const searchChildBtn = document.getElementById('searchChildBtn');
+  const studentAdmissionInput = document.getElementById('studentAdmissionInput');
+  const searchChildStatus = document.getElementById('searchChildStatus');
+
+  // Load school data
+  async function loadSchool() {
+    if (!schoolId) {
+      header.textContent = 'School ID missing';
+      return;
+    }
+    const docRef = doc(db, 'schools', schoolId);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      header.textContent = 'School not found';
+      return;
+    }
+    const data = docSnap.data();
+    
+    header.textContent = data.name || 'Unnamed School';
+    mottoEl.textContent = data.motto || 'Not provided';
+    visionEl.textContent = data.vision || 'Not provided';
+    descriptionEl.textContent = data.description || 'No description available.';
+    contactEl.textContent = data.contact || 'N/A';
+    principalEl.textContent = data.principal || 'N/A';
+    principalContactEl.textContent = data.principalContact || 'N/A';
+    locationEl.textContent = `${data.county || ''}${data.location ? ', ' + data.location : ''}`;
+    levelsEl.textContent = (data.levels || []).join(', ');
+    typeEl.textContent = data.type || 'N/A';
+    facilitiesEl.textContent = data.facilities || 'N/A';
+    languagesEl.textContent = data.languages || 'N/A';
+    if(data.website){
+      websiteLink.textContent = data.website;
+      websiteLink.href = data.website;
+    } else {
+      websiteLink.style.display = 'none';
+    }
+
+    // Photos gallery
+    galleryEl.innerHTML = '';
+    (data.photos || []).forEach(url => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = data.name + ' photo';
+      img.onclick = () => window.open(url, '_blank');
+      galleryEl.appendChild(img);
     });
-  </script>
+
+    // Social media links
+    socialLinksEl.innerHTML = '';
+    if(data.socialLinks) {
+      const soc = data.socialLinks;
+      if(soc.facebook) socialLinksEl.appendChild(createSocialIconLink('facebook', soc.facebook));
+      if(soc.twitter) socialLinksEl.appendChild(createSocialIconLink('twitter', soc.twitter));
+      if(soc.instagram) socialLinksEl.appendChild(createSocialIconLink('instagram', soc.instagram));
+    }
+  }
+
+  // Social media icons (fontawesome SVG inline)
+  function createSocialIconLink(type, url) {
+    let svg = '';
+    switch(type) {
+      case 'facebook': svg = `<svg ...Facebook SVG Icon...></svg>`; break;
+      case 'twitter': svg = `<svg ...Twitter SVG Icon...></svg>`; break;
+      case 'instagram': svg = `<svg ...Instagram SVG Icon...></svg>`; break;
+    }
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.title = type[0].toUpperCase() + type.slice(1);
+    a.innerHTML = svg;
+    return a;
+  }
+
+  // Load notifications realtime
+  function loadNotifications() {
+    const q = query(collection(db, 'notifications'), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'));
+    onSnapshot(q, (snapshot) => {
+      notificationsList.innerHTML = '';
+      if (snapshot.empty) {
+        notificationsList.innerHTML = '<p>No notifications</p>';
+        return;
+      }
+      snapshot.forEach(doc => {
+        const n = doc.data();
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${n.title || 'Notification'}:</strong> ${n.message || ''}`;
+        notificationsList.appendChild(p);
+      });
+    });
+  }
+
+  // Admin Login button click
+  adminLoginBtn.onclick = () => {
+    window.location.href = 'login.html'; // or admin dashboard login if separate
+  }
+
+  // Child admission search (for parents)
+  searchChildBtn.onclick = async () => {
+    searchChildStatus.textContent = '';
+    const admission = studentAdmissionInput.value.trim();
+    if (!admission) {
+      searchChildStatus.textContent = 'Enter admission number';
+      return;
+    }
+    try {
+      // Query students collection by admission
+      const studentsCol = collection(db, 'students');
+      const q = query(studentsCol, where('admission', '==', admission), where('schoolId', '==', schoolId));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        searchChildStatus.textContent = 'No records found for that admission number.';
+        return;
+      }
+      snapshot.forEach(doc => {
+        const st = doc.data();
+        window.location.href = `student.html?id=${doc.id}&schoolId=${schoolId}&admission=${admission}`;
+      });
+    } catch(err) {
+      searchChildStatus.textContent = 'Error fetching student info: ' + err.message;
+    }
+  }
+
+  loadSchool();
+  loadNotifications();
+
+</script>
+
 </body>
-</html>
+      </html>
+  
