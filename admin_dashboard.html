@@ -1,159 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>School Admin Dashboard</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #444;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-    }
-    .totals {
-      display: flex;
-      justify-content: space-around;
-      padding: 15px;
-      background: #fff;
-      margin: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .totals div {
-      font-size: 16px;
-      font-weight: bold;
-    }
-    #chart-container {
-      width: 90%;
-      margin: 20px auto;
-      background: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .grid-buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 15px;
-      padding: 20px;
-    }
-    .grid-buttons button {
-      padding: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #fff;
-      transition: transform 0.2s ease-in-out;
-    }
-    .grid-buttons button:hover {
-      transform: scale(1.05);
-    }
-    footer {
-      text-align: center;
-      padding: 15px;
-      margin-top: 20px;
-      color: #666;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Dashboard - Kenya School Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+<style>
+  body {
+    font-family: 'Montserrat', Arial, sans-serif;
+    margin: 0;
+    background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%);
+    color: #233247;
+  }
+  header {
+    background-color: #000;
+    color: white;
+    padding: 2rem 2rem 3rem;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    text-align: center;
+  }
+  header h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    letter-spacing: 0.04em;
+  }
+  header p {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-top: 0.4rem;
+  }
+  .stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 1.3rem;
+  }
+  .stat {
+    background-color: white;
+    border-radius: 20px;
+    padding: 1.2rem 2.5rem;
+    box-shadow: 0 8px 30px 0 rgb(56 239 125 / 0.35);
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-align: center;
+    width: 170px;
+    color: #147822;
+  }
+  .feature-grid {
+    margin: 3rem auto 1rem;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+    gap: 1.8rem;
+  }
+  .feature-btn {
+    background-color: #38ef7d;
+    color: #025e2d;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 3.3rem 0;
+    border-radius: 28px;
+    box-shadow: 0 3px 14px rgb(56 239 125 / 0.7);
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+  }
+  .feature-btn:hover {
+    background-color: #147822;
+    color: white;
+  }
+  .small-actions {
+    margin: 2rem auto;
+    max-width: 900px;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .small-btn {
+    background-color: #1d8fff;
+    color: white;
+    font-weight: 700;
+    padding: 0.9rem 1.8rem;
+    border-radius: 34px;
+    box-shadow: 0 2px 8px rgb(29 143 255 / 0.75);
+    cursor: pointer;
+    transition: background-color 0.22s ease;
+  }
+  .small-btn:hover {
+    background-color: #1053b0;
+  }
+  .search-bar {
+    margin: 2.4rem auto 0;
+    max-width: 600px;
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+  }
+  .search-bar input {
+    flex-grow: 1;
+    padding: 0.6rem 1.1rem;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    border: 2px solid #1d8fff;
+    outline-offset: 0;
+    transition: border-color 0.3s ease;
+  }
+  .search-bar input:focus {
+    border-color: #38ef7d;
+    outline: none;
+  }
+  .search-bar button {
+    background-color: #147822;
+    padding: 0.62rem 1.6rem;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 7px #38ef7dcc;
+    transition: background-color 0.2s ease;
+  }
+  .search-bar button:hover {
+    background-color: #0c4511;
+  }
+  .activity-feed {
+    margin: 3rem auto 3rem;
+    max-width: 900px;
+    padding: 1rem 1.3rem;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgb(56 239 125 / 0.1);
+    font-size: 1rem;
+    color: #233247;
+    min-height: 120px;
+  }
+  .footer-bar {
+    text-align: center;
+    color: #617d98;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h2 id="schoolName">Loading School...</h2>
-  </header>
 
-  <div class="totals">
-    <div>Students: <span id="totalStudents">0</span></div>
-    <div>Teachers: <span id="totalTeachers">0</span></div>
-    <div>Classes: <span id="totalClasses">0</span></div>
+<header>
+  <h1 id="schoolNameTitle">Loading School Name...</h1>
+  <p id="adminNameDesc">Registered Admin</p>
+  <div class="stats-container">
+    <div class="stat" id="totalTeachersCnt">Teachers: --</div>
+    <div class="stat" id="totalPupilsCnt">Pupils: --</div>
   </div>
+</header>
 
-  <div id="chart-container">
-    <canvas id="performanceChart"></canvas>
-  </div>
+<div class="small-actions">
+  <button class="small-btn" id="btnAddStudent">Add Student</button>
+  <button class="small-btn" id="btnAddTeacher">Add Teacher</button>
+  <button class="small-btn" id="btnPostAnnouncement">Post Announcement</button>
+</div>
 
-  <div class="grid-buttons" id="featureButtons">
-    <!-- Buttons will be dynamically loaded from Firestore -->
-  </div>
+<div class="search-bar">
+  <input type="text" id="quickSearchInput" placeholder="Search students or teachers..." />
+  <button id="btnQuickSearch">Search</button>
+</div>
 
-  <footer>
-    ⓒ Powered by Vster
-  </footer>
+<div class="feature-grid">
+  <button class="feature-btn" id="manageStudentsBtn">Manage Students</button>
+  <button class="feature-btn" id="manageTeachersBtn">Manage Teachers</button>
+  <button class="feature-btn" id="postResultsBtn">Post Results</button>
+  <button class="feature-btn" id="feeBalancesBtn">Fee Balances</button>
+  <button class="feature-btn" id="analysisBtn">Analysis</button>
+  <button class="feature-btn" id="accountManagementBtn">Account Management</button>
+</div>
 
-  <script type="module">
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-      authDomain: "school-portal-233f5.firebaseapp.com",
-      projectId: "school-portal-233f5",
-      storageBucket: "school-portal-233f5.firebasestorage.app",
-      messagingSenderId: "314984934331",
-      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-    };
+<div class="activity-feed" id="activityFeed">
+  Recent activity feed will appear here...
+</div>
 
-    // Init Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<div class="footer-bar">
+  Kenya School Portal © 2025
+</div>
 
-    // Load school info
-    async function loadSchoolInfo() {
-      const schoolRef = await db.collection("schoolInfo").doc("main").get();
-      if (schoolRef.exists) {
-        const data = schoolRef.data();
-        document.getElementById("schoolName").innerText = data.name || "My School";
-        document.getElementById("totalStudents").innerText = data.students || 0;
-        document.getElementById("totalTeachers").innerText = data.teachers || 0;
-        document.getElementById("totalClasses").innerText = data.classes || 0;
-        renderChart(data.performance || {});
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Parameters needed, such as school id and admin user id passed from login or elsewhere
+  const schoolId = 'school123'; // Replace with dynamic value
+  const adminUserId = 'admin123'; // Replace with dynamic value
+
+  // DOM refs
+  const schoolNameTitle = document.getElementById('schoolNameTitle');
+  const adminNameDesc = document.getElementById('adminNameDesc');
+  const totalTeachersCnt = document.getElementById('totalTeachersCnt');
+  const totalPupilsCnt = document.getElementById('totalPupilsCnt');
+  const activityFeed = document.getElementById('activityFeed');
+
+  // Feature buttons refs
+  document.getElementById('btnAddStudent').addEventListener('click', () => {
+    window.location.href = 'add_student.html';
+  });
+  document.getElementById('btnAddTeacher').addEventListener('click', () => {
+    window.location.href = 'add_teacher.html';
+  });
+  document.getElementById('btnPostAnnouncement').addEventListener('click', () => {
+    window.location.href = 'post_announcement.html';
+  });
+  document.getElementById('manageStudentsBtn').addEventListener('click', () => {
+    window.location.href = 'manageStudents.html';
+  });
+  document.getElementById('manageTeachersBtn').addEventListener('click', () => {
+    window.location.href = 'manageTeachers.html';
+  });
+  document.getElementById('postResultsBtn').addEventListener('click', () => {
+    window.location.href = 'postResults.html';
+  });
+  document.getElementById('feeBalancesBtn').addEventListener('click', () => {
+    window.location.href = 'feeBalances.html';
+  });
+  document.getElementById('analysisBtn').addEventListener('click', () => {
+    window.location.href = 'analysis.html';
+  });
+  document.getElementById('accountManagementBtn').addEventListener('click', () => {
+    window.location.href = 'accountManagement.html';
+  });
+
+  // Load school name & admin name from Firestore
+  async function loadSchoolAndAdminInfo() {
+    try {
+      const schoolDoc = await db.collection('schools').doc(schoolId).get();
+      if (schoolDoc.exists) {
+        schoolNameTitle.textContent = schoolDoc.data().name || 'Unnamed School';
+      } else {
+        schoolNameTitle.textContent = 'School Not Found';
       }
+      const adminDoc = await db.collection('admins').doc(adminUserId).get();
+      if (adminDoc.exists) {
+        adminNameDesc.textContent = `Admin: ${adminDoc.data().name} (Registered)`;
+      } else {
+        adminNameDesc.textContent = 'Admin Info Unavailable';
+      }
+    } catch (error) {
+      console.error("Failed to load school/admin info:", error);
+      schoolNameTitle.textContent = 'Loading error';
+      adminNameDesc.textContent = '';
     }
+  }
 
-    // Render performance chart
-    function renderChart(performance) {
-      const ctx = document.getElementById("performanceChart").getContext("2d");
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(performance),
-          datasets: [{
-            label: 'Average Scores',
-            data: Object.values(performance),
-            backgroundColor: 'rgba(75, 192, 192, 0.6)'
-          }]
-        },
-        options: { responsive: true }
-      });
+  // Load counts of teachers and pupils for this school
+  async function loadCounts() {
+    try {
+      const teachersQ = query(collection(db, 'teachers'), where('schoolId', '==', schoolId));
+      const teachersSnap = await getDocs(teachersQ);
+      totalTeachersCnt.textContent = `Teachers: ${teachersSnap.size}`;
+
+      const pupilsQ = query(collection(db, 'students'), where('schoolId', '==', schoolId));
+      const pupilsSnap = await getDocs(pupilsQ);
+      totalPupilsCnt.textContent = `Pupils: ${pupilsSnap.size}`;
+    } catch (error) {
+      console.error("Error loading counts:", error);
+      totalTeachersCnt.textContent = 'Teachers: --';
+      totalPupilsCnt.textContent = 'Pupils: --';
     }
+  }
 
-    // Load feature buttons
-    async function loadFeatures() {
-      const featureGrid = document.getElementById("featureButtons");
-      const snapshot = await db.collection("features").get();
-      snapshot.forEach(doc => {
-        const feature = doc.data();
-        const btn = document.createElement("button");
-        btn.style.background = feature.color || "#555";
-        btn.innerText = feature.name;
-        btn.onclick = () => window.location.href = feature.link;
-        featureGrid.appendChild(btn);
-      });
-    }
+  // Placeholder for recent activity feed data loading, can extend later
+  async function loadRecentActivity() {
+    activityFeed.textContent = 'No recent activity data available.';
+  }
 
-    loadSchoolInfo();
-    loadFeatures();
-  </script>
+  loadSchoolAndAdminInfo();
+  loadCounts();
+  loadRecentActivity();
+
+  // Quick search button logic for admin dashboard
+  const quickSearchInput = document.getElementById('quickSearchInput');
+  const btnQuickSearch = document.getElementById('btnQuickSearch');
+  btnQuickSearch.addEventListener('click', async () => {
+    const searchTerm = quickSearchInput.value.trim();
+    if (!searchTerm) return alert('Please enter a term to search');
+    // You can expand the search to students and teachers based on name or admission
+    window.location.href = `search.html?query=${encodeURIComponent(searchTerm)}`;
+  });
+
+</script>
+
 </body>
-</html>
+  </html>
