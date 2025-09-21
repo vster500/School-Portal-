@@ -20,18 +20,12 @@
     text-align: center;
     border-bottom-left-radius: 40px;
     border-bottom-right-radius: 40px;
-    position: relative;
   }
   header h1 {
     font-size: 2.5rem;
     letter-spacing: 0.04em;
     margin: 0;
     font-weight: 700;
-    text-shadow: none;
-  }
-  .dark-mode {
-    background-color: #121212;
-    color: #ddd;
   }
   .container {
     max-width: 720px;
@@ -45,34 +39,23 @@
     font-weight: 700;
     margin-bottom: 0.35rem;
   }
-  input[type="text"],
-  input[type="email"],
-  select,
-  textarea {
+  input[type="text"], input[type="email"], select, textarea {
     width: 100%;
     padding: 0.55rem 1rem;
     font-size: 1.05rem;
     border-radius: 20px;
     border: 2px solid #1d8fff;
-    outline-offset: 0;
     margin-bottom: 1.3rem;
+    outline-offset: 0;
     transition: border-color 0.25s ease;
   }
-  input[type="file"] {
-    margin-bottom: 1.3rem;
-  }
-  input:focus,
-  select:focus,
-  textarea:focus {
+  input:focus, select:focus, textarea:focus {
     border-color: #38ef7d;
     outline: none;
   }
   textarea {
     min-height: 100px;
     resize: vertical;
-  }
-  .multiselect-container {
-    margin-bottom: 1.3rem;
   }
   button[type="submit"] {
     background-color: #38ef7d;
@@ -145,11 +128,41 @@
     <label class="form-label" for="schoolDescription">Brief Description</label>
     <textarea id="schoolDescription" name="schoolDescription"></textarea>
 
+    <label class="form-label" for="motto">School Motto</label>
+    <input type="text" id="motto" name="motto" />
+
+    <label class="form-label" for="vision">Vision Statement</label>
+    <textarea id="vision" name="vision"></textarea>
+
+    <label class="form-label" for="principal">Principal / Director Name</label>
+    <input type="text" id="principal" name="principal" />
+
+    <label class="form-label" for="principalContact">Principal Contact (email or phone)</label>
+    <input type="text" id="principalContact" name="principalContact" />
+
+    <label class="form-label" for="languages">Languages of Instruction (comma separated)</label>
+    <input type="text" id="languages" name="languages" />
+
+    <label class="form-label" for="facilities">Facilities (comma separated, e.g. Library, Labs, Sports)</label>
+    <input type="text" id="facilities" name="facilities" />
+
+    <label class="form-label" for="socialFacebook">Facebook URL</label>
+    <input type="url" id="socialFacebook" name="socialFacebook" placeholder="https://facebook.com/yourPage" />
+
+    <label class="form-label" for="socialTwitter">Twitter URL</label>
+    <input type="url" id="socialTwitter" name="socialTwitter" placeholder="https://twitter.com/yourPage" />
+
+    <label class="form-label" for="socialInstagram">Instagram URL</label>
+    <input type="url" id="socialInstagram" name="socialInstagram" placeholder="https://instagram.com/yourPage" />
+
+    <label class="form-label" for="schoolWebsite">School Website URL</label>
+    <input type="url" id="schoolWebsite" name="schoolWebsite" placeholder="https://yourSchoolWebsite.com" />
+
     <label class="form-label" for="contact">Contact Details (email or phone) *</label>
     <input type="text" id="contact" name="contact" required />
 
-    <label class="form-label" for="photos">School Photos (Multiple Allowed)</label>
-    <input type="file" id="photos" name="photos" accept="image/*" multiple />
+    <label class="form-label" for="photos">School Photos (At least one photo required)</label>
+    <input type="file" id="photos" name="photos" accept="image/*" multiple required />
 
     <button type="submit">Add School</button>
     <div id="statusMessage" class="status-message"></div>
@@ -189,7 +202,6 @@
   const schoolCodeContainer = document.getElementById('schoolCodeContainer');
   const schoolCodeInput = document.getElementById('schoolCode');
 
-  // Show/hide school code input if Public selected because it's required for public schools
   schoolTypeSelect.addEventListener('change', () => {
     if (schoolTypeSelect.value === 'Public') {
       schoolCodeContainer.style.display = 'block';
@@ -208,7 +220,10 @@
     statusMessage.textContent = '';
     statusMessage.className = 'status-message';
 
-    // Validate required fields are not empty
+    if(addSchoolForm.photos.files.length === 0) {
+      showError("Please upload at least one school photo.");
+      return;
+    }
     if (!addSchoolForm.schoolName.value.trim()) return showError("School Name is required.");
     if (!addSchoolForm.county.value) return showError("Please select the county.");
     if (!addSchoolForm.location.value.trim()) return showError("Please enter the location.");
@@ -218,19 +233,19 @@
     if (!addSchoolForm.contact.value.trim()) return showError("Please enter contact info.");
 
     try {
-      // Upload photos to storage (if any)
+      // Upload photos
       let photoUrls = [];
       if(addSchoolForm.photos.files.length > 0) {
         const promises = [];
         for(let file of addSchoolForm.photos.files) {
-          const storageRef = storage.ref().child(`school_photos/${Date.now()}_${file.name}`);
-          promises.push(storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()));
+          const fileRef = storage.ref().child(`school_photos/${Date.now()}_${file.name}`);
+          promises.push(fileRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()));
         }
         photoUrls = await Promise.all(promises);
       }
 
-      // Save school document
-      const docRef = await db.collection('schools').add({
+      // Prepare school data
+      const docData = {
         name: addSchoolForm.schoolName.value.trim(),
         county: addSchoolForm.county.value,
         location: addSchoolForm.location.value.trim(),
@@ -239,15 +254,33 @@
         levels: Array.from(addSchoolForm.levels.selectedOptions).map(o => o.value),
         price: addSchoolForm.feeStructure.value.trim() || null,
         description: addSchoolForm.schoolDescription.value.trim() || null,
+        motto: addSchoolForm.motto.value.trim() || null,
+        vision: addSchoolForm.vision.value.trim() || null,
+        principal: addSchoolForm.principal.value.trim() || null,
+        principalContact: addSchoolForm.principalContact.value.trim() || null,
+        languages: addSchoolForm.languages.value.trim() || null,
+        facilities: addSchoolForm.facilities.value.trim() || null,
+        socialLinks: {
+          facebook: addSchoolForm.socialFacebook.value.trim() || null,
+          twitter: addSchoolForm.socialTwitter.value.trim() || null,
+          instagram: addSchoolForm.socialInstagram.value.trim() || null
+        },
+        website: addSchoolForm.schoolWebsite.value.trim() || null,
         contact: addSchoolForm.contact.value.trim(),
         photos: photoUrls,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        featured: false // default, can be set true by admin later
-      });
+        featured: false
+      };
 
-      showSuccess("School added successfully! Thank you.");
+      await db.collection('schools').add(docData);
+
+      showSuccess("School added successfully! Redirecting to homepage...");
       addSchoolForm.reset();
       schoolCodeContainer.style.display = "none";
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 2300);
 
     } catch(error) {
       showError("Error adding school: " + error.message);
@@ -264,5 +297,4 @@
   }
 </script>
 </body>
-  </html>
-  
+</html>
