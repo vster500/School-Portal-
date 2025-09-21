@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Kenya School Portal - Add School</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<style>
+  body {
+    margin: 0;
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%);
+    color: #233247;
+  }
+  header {
+    background-color: #000;
+    color: #fff;
+    padding: 2.5rem 0 3rem;
+    text-align: center;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    position: relative;
+  }
+  header h1 {
+    font-size: 2.5rem;
+    letter-spacing: 0.04em;
+    margin: 0;
+    font-weight: 700;
+    text-shadow: none;
+  }
+  .dark-mode {
+    background-color: #121212;
+    color: #ddd;
+  }
+  .container {
+    max-width: 720px;
+    margin: 2rem auto 3rem;
+    background: white;
+    border-radius: 15px;
+    padding: 2rem 3rem;
+    box-shadow: 0 8px 30px rgb(56 239 125 / 0.35);
+  }
+  .form-label {
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+  }
+  input[type="text"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.55rem 1rem;
+    font-size: 1.05rem;
+    border-radius: 20px;
+    border: 2px solid #1d8fff;
+    outline-offset: 0;
+    margin-bottom: 1.3rem;
+    transition: border-color 0.25s ease;
+  }
+  input[type="file"] {
+    margin-bottom: 1.3rem;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #38ef7d;
+    outline: none;
+  }
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .multiselect-container {
+    margin-bottom: 1.3rem;
+  }
+  button[type="submit"] {
+    background-color: #38ef7d;
+    color: #025e2d;
+    padding: 0.9rem 1.6rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(56,239,125,0.6);
+    transition: background-color 0.3s ease;
+  }
+  button[type="submit"]:hover {
+    background-color: #147822;
+    color: white;
+  }
+  .status-message {
+    font-weight: 700;
+    margin-top: 0.4rem;
+  }
+  .status-success {
+    color: #147822;
+  }
+  .status-error {
+    color: #b91c1c;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Kenya School Portal</h1>
+  <p>Add a New School to the Portal</p>
+</header>
+
+<div class="container">
+  <form id="addSchoolForm">
+
+    <label class="form-label" for="schoolName">School Name *</label>
+    <input type="text" id="schoolName" name="schoolName" required />
+
+    <label class="form-label" for="county">County *</label>
+    <select id="county" name="county" required></select>
+
+    <label class="form-label" for="location">Location (Town) *</label>
+    <input type="text" id="location" name="location" required />
+
+    <label class="form-label" for="schoolType">School Type *</label>
+    <select id="schoolType" name="schoolType" required>
+      <option value="">Select type</option>
+      <option value="Public">Public</option>
+      <option value="Private">Private</option>
+    </select>
+
+    <div id="schoolCodeContainer" style="display:none;">
+      <label class="form-label" for="schoolCode">School Code *</label>
+      <input type="text" id="schoolCode" name="schoolCode" />
+    </div>
+
+    <label class="form-label" for="levels">School Levels *</label>
+    <select id="levels" name="levels" multiple size="3" required>
+      <option value="Pre-primary">Pre-primary</option>
+      <option value="Primary">Primary</option>
+      <option value="Junior Secondary">Junior Secondary</option>
+    </select>
+
+    <label class="form-label" for="feeStructure">Fee Structure (e.g. KES 15,000 / term)</label>
+    <input type="text" id="feeStructure" name="feeStructure" />
+
+    <label class="form-label" for="schoolDescription">Brief Description</label>
+    <textarea id="schoolDescription" name="schoolDescription"></textarea>
+
+    <label class="form-label" for="contact">Contact Details (email or phone) *</label>
+    <input type="text" id="contact" name="contact" required />
+
+    <label class="form-label" for="photos">School Photos (Multiple Allowed)</label>
+    <input type="file" id="photos" name="photos" accept="image/*" multiple />
+
+    <button type="submit">Add School</button>
+    <div id="statusMessage" class="status-message"></div>
+  </form>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  const COUNTY_LIST = [
+    "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita Taveta","Tana River","Tharaka Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
+  ];
+
+  const countySelect = document.getElementById('county');
+  COUNTY_LIST.forEach(county => {
+    const option = document.createElement('option');
+    option.value = county;
+    option.textContent = county;
+    countySelect.appendChild(option);
+  });
+
+  const schoolTypeSelect = document.getElementById('schoolType');
+  const schoolCodeContainer = document.getElementById('schoolCodeContainer');
+  const schoolCodeInput = document.getElementById('schoolCode');
+
+  // Show/hide school code input if Public selected because it's required for public schools
+  schoolTypeSelect.addEventListener('change', () => {
+    if (schoolTypeSelect.value === 'Public') {
+      schoolCodeContainer.style.display = 'block';
+      schoolCodeInput.setAttribute('required', 'required');
+    } else {
+      schoolCodeContainer.style.display = 'none';
+      schoolCodeInput.removeAttribute('required');
+    }
+  });
+
+  const addSchoolForm = document.getElementById('addSchoolForm');
+  const statusMessage = document.getElementById('statusMessage');
+
+  addSchoolForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    statusMessage.textContent = '';
+    statusMessage.className = 'status-message';
+
+    // Validate required fields are not empty
+    if (!addSchoolForm.schoolName.value.trim()) return showError("School Name is required.");
+    if (!addSchoolForm.county.value) return showError("Please select the county.");
+    if (!addSchoolForm.location.value.trim()) return showError("Please enter the location.");
+    if (!addSchoolForm.schoolType.value) return showError("Please select school type.");
+    if (schoolTypeSelect.value === 'Public' && !addSchoolForm.schoolCode.value.trim()) return showError("School code is required for public schools.");
+    if (!addSchoolForm.levels.selectedOptions.length) return showError("Please select at least one level.");
+    if (!addSchoolForm.contact.value.trim()) return showError("Please enter contact info.");
+
+    try {
+      // Upload photos to storage (if any)
+      let photoUrls = [];
+      if(addSchoolForm.photos.files.length > 0) {
+        const promises = [];
+        for(let file of addSchoolForm.photos.files) {
+          const storageRef = storage.ref().child(`school_photos/${Date.now()}_${file.name}`);
+          promises.push(storageRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()));
+        }
+        photoUrls = await Promise.all(promises);
+      }
+
+      // Save school document
+      const docRef = await db.collection('schools').add({
+        name: addSchoolForm.schoolName.value.trim(),
+        county: addSchoolForm.county.value,
+        location: addSchoolForm.location.value.trim(),
+        type: addSchoolForm.schoolType.value,
+        schoolCode: addSchoolForm.schoolType.value === 'Public' ? addSchoolForm.schoolCode.value.trim() : null,
+        levels: Array.from(addSchoolForm.levels.selectedOptions).map(o => o.value),
+        price: addSchoolForm.feeStructure.value.trim() || null,
+        description: addSchoolForm.schoolDescription.value.trim() || null,
+        contact: addSchoolForm.contact.value.trim(),
+        photos: photoUrls,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        featured: false // default, can be set true by admin later
+      });
+
+      showSuccess("School added successfully! Thank you.");
+      addSchoolForm.reset();
+      schoolCodeContainer.style.display = "none";
+
+    } catch(error) {
+      showError("Error adding school: " + error.message);
+    }
+  });
+
+  function showError(msg) {
+    statusMessage.textContent = msg;
+    statusMessage.className = 'status-message status-error';
+  }
+  function showSuccess(msg) {
+    statusMessage.textContent = msg;
+    statusMessage.className = 'status-message status-success';
+  }
+</script>
+</body>
+  </html>
+  
