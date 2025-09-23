@@ -1,224 +1,407 @@
-<!-- Save as manage_students.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Students</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    body { background: #f4f6f9; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
-    header { background: #2c3e50; color: white; padding: 15px; text-align: center; font-size: 22px; font-weight: bold; }
-    .card { background: white; padding: 15px; border-radius: 10px; margin: 20px auto; max-width: 1000px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .btn { background: #007bff; color: white; padding: 6px 10px; border-radius: 6px; font-size: 14px; cursor: pointer; }
-    .btn:hover { background: #0056b3; }
-    .danger { background: #dc3545; }
-    .danger:hover { background: #a71d2a; }
-    .green { background: #28a745; }
-    .green:hover { background: #1e7e34; }
-    .yellow { background: #ffc107; color: #333; }
-    .yellow:hover { background: #e0a800; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manage Students - Kenya School Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Montserrat', Arial, sans-serif;
+    background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%);
+    margin: 0;
+    color: #233247;
+  }
+  header {
+    background-color: #000;
+    color: #fff;
+    padding: 3rem 1.4rem 3rem 1.4rem;
+    text-align: center;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    font-weight: 700;
+    font-size: 2.2rem;
+    letter-spacing: 0.02em;
+  }
+  main {
+    max-width: 1020px;
+    margin: 2.6rem auto 3rem;
+    background: white;
+    border-radius: 28px;
+    padding: 2.7rem 3rem 3rem 3rem;
+    box-shadow: 0 11px 30px 0 rgb(56 239 125 / 0.38);
+  }
+  @media (max-width: 650px) {
+    main {padding: 1.5rem; margin: 1.6rem 0 2rem;}
+    header {font-size: 1.5rem; padding: 1.3rem 1rem 1.3rem 1rem;}
+    select, input[type=text] { width: 100% !important;}
+  }
+  .btn-primary {
+    background: #14a800;
+    color: #fff;
+    font-weight: 700;
+    padding: 0.7rem 1.8rem;
+    border-radius: 30px;
+    box-shadow: 0 4px 11px #58e034aa;
+    cursor: pointer;
+    border: none;
+    font-size: 1.03rem;
+    letter-spacing: 0.02em;
+    transition: background 0.35s ease;
+  }
+  .btn-primary:hover {
+    background: #0e6f2b;
+    color: #def9de;
+  }
+  .btn-danger {
+    background-color: #dc2626;
+    color: #fff;
+    padding: 0.55rem 1.3rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-danger:hover {background-color: #991b1b;}
+  .filters-wrap {margin-bottom: 1.9rem;}
+  label {font-weight: 700; font-size: 1rem; margin-bottom: 0.35rem; color: #04382b;}
+  select, input[type=text], input[type=file] {
+    padding: 0.55rem 1rem;
+    border-radius: 22px;
+    border: 2px solid #1d8fff;
+    width: 195px;
+    font-size: 1.02rem;
+    outline-offset: 0;
+    transition: border-color 0.35s;
+    color: #233247;
+  }
+  th, td {padding: 11px 12px; text-align: left;}
+  th {background: #38ef7d; color: #023129; font-weight: 700;}
+  tbody tr:nth-child(odd) {background: #f3f9f6;}
+  tbody tr:hover {background: #befec8aa;}
+  .modal-bg {
+    display: none;
+    position: fixed; inset:0;
+    background: rgba(0,0,0,0.25);
+    justify-content: center; align-items: center; z-index: 500;
+  }
+  .modal-bg.active {display: flex;}
+  .modal {background: white; border-radius: 20px; box-shadow: 0 6px 15px rgba(0,0,0,0.15); padding: 30px 35px; max-width: 480px; width: 100%;}
+  .modal h3 {font-weight: 700; font-size: 1.2rem; margin-bottom: 1.2rem; color: #13412e;}
+  .modal-footer {display: flex; justify-content: flex-end; gap: 1rem; margin-top: 18px;}
+  .modal-footer button {padding: 0.55rem 1.5rem; border-radius: 30px; font-weight: 700; font-size: 1rem; cursor: pointer;}
+  .inline-btn {padding: 0.3rem 0.7rem; border-radius: 14px; font-size: 0.98rem; font-weight: 600;}
+</style>
 </head>
 <body>
+<header>Manage Students</header>
+<main>
 
-  <!-- Header -->
-  <header>👨‍🎓 Manage Students</header>
-
-  <!-- Add Student Button -->
-  <div class="card text-center">
-    <a href="add_student.html" class="btn green">➕ Add Student</a>
-  </div>
-
-  <!-- Search & Filter -->
-  <div class="card">
-    <h2 class="text-lg font-bold mb-3">🔍 Search & Filter</h2>
-    <div class="flex gap-2">
-      <input type="text" id="search" placeholder="Search by name or admission no" class="flex-1 p-2 border rounded">
-      <select id="filterClass" class="p-2 border rounded">
-        <option value="">All Classes</option>
-        <option>Pre-Primary</option>
-        <option>Primary</option>
-        <option>Junior Secondary</option>
-        <option>Form One</option>
+<!-- Filters row -->
+  <div class="filters-wrap flex-row">
+    <div>
+      <label for="searchText">Search Students</label><br/>
+      <input id="searchText" type="text" placeholder="Name or Assessment No." />
+    </div>
+    <div>
+      <label for="filterLevel">Level</label><br/>
+      <select id="filterLevel">
+        <option value="">All Levels</option>
+        <option value="Pre-primary">Pre-primary</option>
+        <option value="Primary">Primary</option>
+        <option value="JSS">Junior Secondary</option>
       </select>
     </div>
-  </div>
-
-  <!-- Student List -->
-  <div class="card">
-    <h2 class="text-lg font-bold mb-3">📋 Student List</h2>
-    <div id="studentsList" class="space-y-2"></div>
-  </div>
-
-  <!-- Edit Modal -->
-  <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg w-full max-w-md">
-      <h2 class="text-xl font-bold mb-4">✏️ Edit Student</h2>
-      <form id="editForm" class="space-y-3">
-        <input type="hidden" id="editId">
-        <input type="text" id="editName" placeholder="Full Name" class="w-full p-2 border rounded" required>
-        <input type="text" id="editAdmission" placeholder="Admission No" class="w-full p-2 border rounded" required>
-        <select id="editClass" class="w-full p-2 border rounded">
-          <option>Pre-Primary</option>
-          <option>Primary</option>
-          <option>Junior Secondary</option>
-          <option>Form One</option>
-        </select>
-        <input type="file" id="editPhoto" class="w-full">
-        <div class="flex justify-end gap-2">
-          <button type="button" id="closeModal" class="btn danger">Cancel</button>
-          <button type="submit" class="btn green">Save</button>
-        </div>
-      </form>
+    <div>
+      <label for="filterClass">Class</label><br/>
+      <select id="filterClass" disabled>
+        <option value="">Select level first</option>
+      </select>
     </div>
+    <button class="btn-primary" id="openAddModalBtn">Add Student</button>
   </div>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, doc, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Assessment No.</th>
+        <th>Level</th>
+        <th>Class</th>
+        <th>Status</th>
+        <th>Parent Contact</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="studentsTableBody">
+      <tr><td colspan="7" style="text-align:center; padding: 1.6rem;">Loading students...</td></tr>
+    </tbody>
+  </table>
 
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-      authDomain: "school-portal-233f5.firebaseapp.com",
-      projectId: "school-portal-233f5",
-      storageBucket: "school-portal-233f5.appspot.com",
-      messagingSenderId: "314984934331",
-      appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-    };
+</main>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    const schoolId = localStorage.getItem("schoolId");
-
-    const studentsList = document.getElementById("studentsList");
-    const searchInput = document.getElementById("search");
-    const filterClass = document.getElementById("filterClass");
-
-    const editModal = document.getElementById("editModal");
-    const editForm = document.getElementById("editForm");
-    const closeModal = document.getElementById("closeModal");
-
-    // All classes in order for promotion
-    const classOrder = ["Pre-Primary", "Primary", "Junior Secondary", "Form One"];
-
-    function getNextClass(current) {
-      const idx = classOrder.indexOf(current);
-      return idx >= 0 && idx < classOrder.length - 1 ? classOrder[idx + 1] : current;
-    }
-
-    function renderStudents(students) {
-  studentsList.innerHTML = "";
-  students.forEach(docSnap => {
-    const s = docSnap.data();
-    const div = document.createElement("div");
-    div.className = "p-3 border rounded flex justify-between items-center";
-    div.innerHTML = `
-      <span>
-        <a href="student_profile.html?schoolId=${schoolId}&id=${docSnap.id}" class="text-blue-600 hover:underline font-medium">
-  ${s.name} (${s.admission})
-</a> - ${s.classLevel}
-      </span>
-      <div class="flex gap-2">
-        <button class="btn yellow" data-action="edit" data-id="${docSnap.id}">Edit</button>
-        <button class="btn green" data-action="promote" data-id="${docSnap.id}" data-class="${s.classLevel}">Promote</button>
-        <button class="btn" data-action="repeat" data-id="${docSnap.id}">Repeat</button>
-        <button class="btn danger" data-action="delete" data-id="${docSnap.id}">Delete</button>
+<!-- Modal for add/edit -->
+<div class="modal-bg" id="studentModalBg">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle">Add New Student</h3>
+    <form id="studentForm" autocomplete="off">
+      <label for="studentName">Name</label>
+      <input id="studentName" name="studentName" type="text" placeholder="Student full name" required />
+      <label for="assessmentNumber">Assessment Number</label>
+      <div style="display:flex; gap:0.6rem;">
+        <input id="assessmentNumber" name="assessmentNumber" type="text" placeholder="Assessment number" required style="flex:1;" />
+        <button type="button" class="inline-btn btn-primary" id="autoAssessmentBtn">Auto</button>
       </div>
-    `;
-    studentsList.appendChild(div);
+      <label for="studentLevel">Level</label>
+      <select id="studentLevel" name="studentLevel" required>
+        <option value="">Select Level</option>
+        <option value="Pre-primary">Pre-primary</option>
+        <option value="Primary">Primary</option>
+        <option value="JSS">Junior Secondary</option>
+      </select>
+      <label for="studentClass">Class</label>
+      <select id="studentClass" name="studentClass" required disabled>
+        <option value="">Select level first</option>
+      </select>
+      <label for="studentStatus">Status</label>
+      <select id="studentStatus" name="studentStatus" required>
+        <option value="active">Active</option>
+        <option value="repeat">Repeat</option>
+        <option value="promoted">Promoted</option>
+      </select>
+      <label for="parentContact">Parent Contact</label>
+      <input id="parentContact" name="parentContact" type="text" placeholder="Parent mobile / email" />
+      <label for="studentPhoto">Student Photo</label>
+      <input id="studentPhoto" name="studentPhoto" type="file" accept="image/*" capture="environment" />
+      <div class="modal-footer">
+        <button type="submit" class="btn-primary">Save</button>
+        <button type="button" class="btn-danger" id="cancelStudentBtn">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-    // Action buttons
-    div.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.id;
-        const action = btn.dataset.action;
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-        if (action === "delete") {
-          await deleteDoc(doc(db, "schools", schoolId, "students", id));
-          alert("❌ Student deleted");
-        } else if (action === "repeat") {
-          await updateDoc(doc(db, "schools", schoolId, "students", id), { repeated: true });
-          alert("🔄 Student marked to repeat");
-        } else if (action === "promote") {
-          const nextClass = getNextClass(btn.dataset.class);
-          await updateDoc(doc(db, "schools", schoolId, "students", id), { classLevel: nextClass });
-          alert(`⬆️ Promoted to ${nextClass}`);
-        } else if (action === "edit") {
-          const snap = await getDoc(doc(db, "schools", schoolId, "students", id));
-          if (snap.exists()) {
-            const data = snap.data();
-            document.getElementById("editId").value = id;
-            document.getElementById("editName").value = data.name;
-            document.getElementById("editAdmission").value = data.admission;
-            document.getElementById("editClass").value = data.classLevel;
-            editModal.classList.remove("hidden");
-          }
-        }
-      });
-    });
-  });
-}
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
 
-    // Live updates
-    function fetchStudents() {
-      onSnapshot(collection(db, "schools", schoolId, "students"), (snap) => {
-        let results = [];
-        snap.forEach(docSnap => {
-          const s = docSnap.data();
-          const searchText = searchInput.value.toLowerCase();
-          const classFilter = filterClass.value;
-          if (
-            (s.name.toLowerCase().includes(searchText) || s.admission.toLowerCase().includes(searchText)) &&
-            (classFilter === "" || s.classLevel === classFilter)
-          ) {
-            results.push(docSnap);
-          }
-        });
-        renderStudents(results);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const schoolId = localStorage.getItem('schoolId') || 'school1';
+
+  // LEVEL CLASSES DEFINITIONS
+  const LEVEL_CLASSES = {
+    'Pre-primary': ['pp1', 'pp2'],
+    'Primary': ['Grade 1','Grade 2','Grade 3','Grade 4','Grade 5','Grade 6'],
+    'JSS': ['Grade 7','Grade 8','Grade 9']
+  };
+
+  // --- DOM hooks ---
+  const studentModalBg = document.getElementById('studentModalBg');
+  const openAddModalBtn = document.getElementById('openAddModalBtn');
+  const cancelStudentBtn = document.getElementById('cancelStudentBtn');
+  const studentForm = document.getElementById('studentForm');
+  const studentsTableBody = document.getElementById('studentsTableBody');
+  const filterLevel = document.getElementById('filterLevel');
+  const filterClass = document.getElementById('filterClass');
+  const searchText = document.getElementById('searchText');
+  const studentLevel = document.getElementById('studentLevel');
+  const studentClass = document.getElementById('studentClass');
+  const assessmentNumber = document.getElementById('assessmentNumber');
+  const autoAssessmentBtn = document.getElementById('autoAssessmentBtn');
+
+  // --- Populate class select based on level ---
+  function populateClassDropdown(level, selectElement){
+    selectElement.innerHTML = '';
+    if(level && LEVEL_CLASSES[level]){
+      selectElement.disabled = false;
+      selectElement.innerHTML = '<option value="">Select Class</option>';
+      LEVEL_CLASSES[level].forEach(cl => {
+        const option = document.createElement('option');
+        option.value = cl;
+        option.text = cl;
+        selectElement.appendChild(option);
       });
     }
-    fetchStudents();
+    else {
+      selectElement.disabled = true;
+      selectElement.innerHTML = '<option value="">Select level first</option>';
+    }
+  }
+  filterLevel.addEventListener('change', () => { populateClassDropdown(filterLevel.value, filterClass); applyFilters(); });
+  studentLevel.addEventListener('change', () => populateClassDropdown(studentLevel.value, studentClass));
 
-    // Trigger search/filter refresh
-    searchInput.addEventListener("input", fetchStudents);
-    filterClass.addEventListener("change", fetchStudents);
+  // --- Auto-generate assessment number ---
+  autoAssessmentBtn.addEventListener('click', () => {
+    // Unique, readable, short pattern e.g. "ASM-YYMMDD-HHMM-XXX"
+    const now = new Date();
+    const rand = Math.floor(Math.random()*900 + 100);
+    const str = `ASM-${now.getFullYear().toString().slice(-2)}${String(now.getMonth()+1).padStart(2,"0")}${String(now.getDate()).padStart(2,"0")}-${String(now.getHours()).padStart(2,"0")}${String(now.getMinutes()).padStart(2,"0")}-${rand}`;
+    assessmentNumber.value = str;
+  });
 
-    // Close modal
-    closeModal.addEventListener("click", () => editModal.classList.add("hidden"));
-
-    // Save edits
-    editForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const id = document.getElementById("editId").value;
-      const name = document.getElementById("editName").value;
-      const admission = document.getElementById("editAdmission").value;
-      const classLevel = document.getElementById("editClass").value;
-      const photoFile = document.getElementById("editPhoto").files[0];
-
-      let photoUrl;
-      if (photoFile) {
-        const photoRef = ref(storage, `students/${schoolId}/${id}/${photoFile.name}`);
-        await uploadBytes(photoRef, photoFile);
-        photoUrl = await getDownloadURL(photoRef);
-      }
-
-      const updateData = { name, admission, classLevel };
-      if (photoUrl) updateData.photoUrl = photoUrl;
-
-      await updateDoc(doc(db, "schools", schoolId, "students", id), updateData);
-
-      alert("✅ Student updated");
-      editModal.classList.add("hidden");
+  // --- Student list real-time ---
+  let studentsLocal = [];
+  let editStudentId = null;
+  function loadStudents(){
+    const studentsCol = collection(db, 'schools', schoolId, 'students');
+    onSnapshot(studentsCol, snapshot => {
+      studentsLocal = [];
+      snapshot.forEach(doc => { studentsLocal.push({ id: doc.id, ...doc.data() }); });
+      applyFilters();
+    }, error => {
+      studentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center p-4">Failed to load students.</td></tr>';
     });
-  </script>
+  }
+
+  function renderStudentsTable(students){
+    if(!students.length){
+      studentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center p-4">No students found.</td></tr>';
+      return;
+    }
+    studentsTableBody.innerHTML = '';
+    students.forEach(stud => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${stud.name}</td>
+        <td>${stud.assessmentNumber}</td>
+        <td>${stud.level || '-'}</td>
+        <td>${stud.class || '-'}</td>
+        <td>${stud.status || '-'}</td>
+        <td>${stud.parentContact || '-'}</td>
+        <td>
+          <button class="inline-btn btn-primary mr-1" onclick="editStudent('${stud.id}')">Edit</button>
+          <button class="inline-btn btn-primary mr-1" onclick="promoteStudent('${stud.id}')">Promote</button>
+          <button class="inline-btn btn-primary mr-1" onclick="repeatStudent('${stud.id}')">Repeat</button>
+          <button class="inline-btn btn-danger" onclick="deleteStudent('${stud.id}')">Delete</button>
+        </td>
+      `;
+      studentsTableBody.appendChild(tr);
+    });
+  }
+
+  function applyFilters(){
+    let filtered = [...studentsLocal];
+    const stxt = searchText.value.toLowerCase();
+    const lvl = filterLevel.value;
+    const cl = filterClass.value;
+
+    if(stxt){ filtered = filtered.filter(s => s.name.toLowerCase().includes(stxt) || (s.assessmentNumber && s.assessmentNumber.toLowerCase().includes(stxt))); }
+    if(lvl){ filtered = filtered.filter(s => s.level === lvl); }
+    if(cl){ filtered = filtered.filter(s => s.class === cl); }
+    renderStudentsTable(filtered);
+  }
+
+  window.editStudent = (id) => {
+    const stud = studentsLocal.find(s => s.id === id);
+    if(!stud) return alert("Student not found");
+    editStudentId = id;
+    document.getElementById('modalTitle').textContent = 'Edit Student';
+    studentForm.studentName.value = stud.name || "";
+    assessmentNumber.value = stud.assessmentNumber || "";
+    studentLevel.value = stud.level || "";
+    populateClassDropdown(stud.level, studentClass);
+    studentClass.value = stud.class || "";
+    studentForm.studentStatus.value = stud.status || "active";
+    studentForm.parentContact.value = stud.parentContact || "";
+    studentModalBg.classList.add('active');
+  };
+
+  window.promoteStudent = async (id) => {
+    const stud = studentsLocal.find(s => s.id === id);
+    if(!stud) return alert("Student not found");
+    const classes = LEVEL_CLASSES[stud.level] || [];
+    const currIndex = classes.indexOf(stud.class);
+    if(currIndex === -1) return alert("Invalid class for student");
+    if(currIndex === classes.length -1){
+      await updateDoc(doc(db, 'schools', schoolId, 'students', id), { status: 'promoted' });
+      alert(`${stud.name} completed the highest class for ${stud.level}`);
+    } else {
+      await updateDoc(doc(db, 'schools', schoolId, 'students', id), { class: classes[currIndex + 1], status: 'active' });
+      alert(`${stud.name} promoted to ${classes[currIndex + 1]}`);
+    }
+  };
+
+  window.repeatStudent = async (id) => {
+    if(!confirm('Mark this student to repeat the current class?')) return;
+    await updateDoc(doc(db, 'schools', schoolId, 'students', id), { status: 'repeat' });
+    alert('Student marked to repeat');
+  };
+
+  window.deleteStudent = async (id) => {
+    if(!confirm('Confirm deleting student, this is irreversible!')) return;
+    try{
+      await deleteDoc(doc(db, 'schools', schoolId, 'students', id));
+      alert('Student deleted');
+    } catch(err) {
+      alert('Delete failed: ' + err.message);
+    }
+  };
+
+  openAddModalBtn.addEventListener('click', () => {
+    editStudentId = null;
+    document.getElementById('modalTitle').textContent = 'Add New Student';
+    studentForm.reset();
+    studentClass.disabled = true;
+    studentModalBg.classList.add('active');
+  });
+
+  cancelStudentBtn.addEventListener('click', () => studentModalBg.classList.remove('active'));
+
+  studentForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = studentForm.studentName.value.trim();
+    const assessmentNo = assessmentNumber.value.trim();
+    const level = studentLevel.value;
+    const cls = studentClass.value;
+    const status = studentForm.studentStatus.value;
+    const parentContact = studentForm.parentContact.value.trim();
+    const photoFile = studentForm.studentPhoto.files[0];
+
+    if(!name || !assessmentNo || !level || !cls || !status){
+      return alert('Please fill in all required fields');
+    }
+    let photoUrl = null;
+    if(photoFile){
+      const storageRef = ref(storage, `schools/${schoolId}/students_photos/${Date.now()}_${photoFile.name}`);
+      await uploadBytes(storageRef, photoFile);
+      photoUrl = await getDownloadURL(storageRef);
+    }
+    try {
+      if(editStudentId){
+        const docRef = doc(db, 'schools', schoolId, 'students', editStudentId);
+        await updateDoc(docRef, { name, assessmentNumber: assessmentNo, level, class: cls, status, parentContact, ...(photoUrl ? {photoUrl} : {}) });
+        alert('Student updated');
+      } else {
+        await addDoc(collection(db, 'schools', schoolId, 'students'), { name, assessmentNumber: assessmentNo, level, class: cls, status, parentContact, ...(photoUrl ? {photoUrl} : {}) });
+        alert('Student added');
+      }
+      studentModalBg.classList.remove('active');
+    } catch(error) {
+      alert('Saving failed: ' + error.message);
+    }
+  });
+
+
+  filterClass.addEventListener('change', applyFilters);
+  filterLevel.addEventListener('change', () => populateClassDropdown(filterLevel.value, filterClass));
+  filterLevel.addEventListener('change', applyFilters);
+  searchText.addEventListener('input', applyFilters);
+
+  loadStudents();
+</script>
 </body>
 </html>
