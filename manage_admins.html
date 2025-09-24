@@ -2,54 +2,108 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manage Admins - Kenya School Portal</title>
   <style>
-    body { font-family: sans-serif; background:#f5f9f6; padding:1rem; max-width:900px; margin:auto; }
-    header { background:#006644; color:white; padding:1.5rem; border-radius:8px; text-align:center; margin-bottom:1.5rem; }
-    form, .admin-list { background:white; padding:1.5rem; border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,0.1); margin-bottom:1.5rem; }
-    label { display:block; margin-top:1rem; font-weight:600; }
-    input, select { width:100%; padding:0.6rem; margin-top:0.3rem; border:1px solid #ccc; border-radius:6px; }
-    button { margin-top:1rem; padding:0.7rem 1.5rem; background:#006644; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:600; }
-    button:hover { background:#004d33; }
-    table { width:100%; border-collapse:collapse; margin-top:1rem; }
-    th,td { border:1px solid #ddd; padding:0.7rem; text-align:left; }
-    th { background:#006644; color:white; }
-    .btn-delete { background:#c62828; color:white; padding:0.3rem 0.7rem; border:none; border-radius:5px; cursor:pointer; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      padding: 2rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #006400;
+    }
+    label {
+      display: block;
+      margin: 0.8rem 0 0.3rem;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.6rem 1rem;
+      background: #006400;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #008000; }
+    .delete-btn {
+      background: #c0392b;
+    }
+    .delete-btn:hover {
+      background: #e74c3c;
+    }
+    .msg {
+      margin-top: 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    .error { color: red; }
+    .success { color: green; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      padding: 0.8rem;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background: #eaf5ea;
+    }
   </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <header>Manage Admins</header>
+  <h1>Manage Admins</h1>
 
   <form id="adminForm">
     <label for="schoolSelect">Select School</label>
     <select id="schoolSelect" required>
-      <option value="">Loading schools...</option>
+      <option value="">-- Select School --</option>
     </select>
 
-    <label for="emailInput">Email Address</label>
-    <input type="email" id="emailInput" required placeholder="Enter admin email" />
+    <label for="email">Admin Email</label>
+    <input type="email" id="email" required />
+
+    <label for="password">Temporary Password</label>
+    <input type="password" id="password" required minlength="6" />
 
     <button type="submit">Add Admin</button>
-    <p id="msg"></p>
+    <div id="msg" class="msg"></div>
   </form>
 
-  <div class="admin-list">
-    <h3>Current Admins</h3>
-    <table>
-      <thead>
-        <tr><th>Email</th><th>School</th><th>Action</th></tr>
-      </thead>
-      <tbody id="adminsTableBody">
-        <tr><td colspan="3">Loading admins...</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <h2>Existing Admins</h2>
+  <table id="adminsTable">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>School</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, setDoc, doc, onSnapshot, deleteDoc, query, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
+  <script>
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
       authDomain: "school-portal-233f5.firebaseapp.com",
@@ -58,81 +112,102 @@
       messagingSenderId: "314984934331",
       appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
     };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const schoolSelect = document.getElementById('schoolSelect');
+    const adminForm = document.getElementById('adminForm');
+    const msg = document.getElementById('msg');
+    const adminsTable = document.querySelector("#adminsTable tbody");
 
-    const schoolSelect = document.getElementById("schoolSelect");
-    const emailInput = document.getElementById("emailInput");
-    const adminForm = document.getElementById("adminForm");
-    const msg = document.getElementById("msg");
-    const adminsTableBody = document.getElementById("adminsTableBody");
+    let schoolsMap = {}; // store schoolId -> name
 
-    // Load schools
+    // Load schools into dropdown
     async function loadSchools() {
-      const snapshot = await getDocs(collection(db, "schools"));
-      schoolSelect.innerHTML = "<option value=''>Select School</option>";
-      snapshot.forEach(docSnap => {
-        const school = docSnap.data();
-        const opt = document.createElement("option");
-        opt.value = docSnap.id;
-        opt.textContent = school.name;
-        schoolSelect.appendChild(opt);
+      const snapshot = await db.collection('schools').get();
+      snapshot.forEach(doc => {
+        schoolsMap[doc.id] = doc.data().name;
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = doc.data().name;
+        schoolSelect.appendChild(option);
       });
     }
-    loadSchools();
 
-    // Add admin (Firestore only)
-    adminForm.addEventListener("submit", async e => {
+    // Load admins list
+    async function loadAdmins() {
+      adminsTable.innerHTML = "";
+      const snapshot = await db.collection('users').where("role", "==", "admin").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const tr = document.createElement("tr");
+
+        const tdEmail = document.createElement("td");
+        tdEmail.textContent = data.email;
+
+        const tdSchool = document.createElement("td");
+        tdSchool.textContent = schoolsMap[data.schoolId] || "Unknown";
+
+        const tdAction = document.createElement("td");
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.classList.add("delete-btn");
+        delBtn.onclick = async () => {
+          if (confirm("Delete this admin?")) {
+            await db.collection("users").doc(doc.id).delete();
+            loadAdmins();
+          }
+        };
+        tdAction.appendChild(delBtn);
+
+        tr.appendChild(tdEmail);
+        tr.appendChild(tdSchool);
+        tr.appendChild(tdAction);
+
+        adminsTable.appendChild(tr);
+      });
+    }
+
+    // Add admin
+    adminForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       msg.textContent = "";
-      const email = emailInput.value.trim();
-      const schoolID = schoolSelect.value;
-      if (!email || !schoolID) {
-        msg.textContent = "Please fill all fields.";
+      msg.className = "msg";
+
+      const schoolId = schoolSelect.value;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!schoolId) {
+        msg.textContent = "Please select a school.";
+        msg.classList.add("error");
         return;
       }
+
       try {
-        const schoolDoc = (await getDocs(collection(db, "schools"))).docs.find(d=>d.id===schoolID);
-        const schoolName = schoolDoc ? schoolDoc.data().name : "";
-        const newDoc = doc(collection(db, "users"));
-        await setDoc(newDoc, {
-          email,
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const newUser = userCredential.user;
+
+        await db.collection('users').doc(newUser.uid).set({
+          email: email,
           role: "admin",
-          schoolID,
-          schoolName,
-          createdAt: new Date()
+          schoolId: schoolId,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+
         msg.textContent = "Admin added successfully!";
+        msg.classList.add("success");
         adminForm.reset();
-      } catch(err) {
-        msg.textContent = "Error: " + err.message;
+        loadAdmins();
+      } catch (err) {
+        msg.textContent = err.message;
+        msg.classList.add("error");
       }
     });
 
-    // Load admins list
-    function loadAdmins() {
-      const q = query(collection(db, "users"), where("role","==","admin"));
-      onSnapshot(q, snapshot => {
-        adminsTableBody.innerHTML = "";
-        snapshot.forEach(docSnap => {
-          const a = docSnap.data();
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${a.email}</td>
-            <td>${a.schoolName||"-"}</td>
-            <td><button class="btn-delete" onclick="deleteAdmin('${docSnap.id}')">Delete</button></td>
-          `;
-          adminsTableBody.appendChild(tr);
-        });
-      });
-    }
-    loadAdmins();
-
-    // Delete admin
-    window.deleteAdmin = async (id) => {
-      if(confirm("Delete this admin?")) await deleteDoc(doc(db,"users",id));
-    };
+    // Initialize
+    loadSchools().then(loadAdmins);
   </script>
 </body>
-</html>
+    </html>
