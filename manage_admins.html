@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Manage Admins - Kenya School Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet"/>
   <style>
     body {
       font-family: "Montserrat", sans-serif;
@@ -42,7 +42,6 @@
       font-size: 1.05rem;
     }
     select,
-    input[type="text"],
     input[type="email"],
     input[type="password"] {
       width: 100%;
@@ -52,13 +51,7 @@
       border: 2px solid #38ef7d;
       font-size: 1rem;
       margin-bottom: 1.25rem;
-      outline-offset: 0;
-      transition: border-color 0.3s ease;
       color: #115124;
-    }
-    select:focus,
-    input:focus {
-      border-color: #064e10;
     }
     button {
       background: linear-gradient(45deg, #38ef7d, #11998e);
@@ -70,54 +63,33 @@
       color: white;
       cursor: pointer;
       box-shadow: 0 6px 16px rgb(56 239 125 / 0.8);
-      transition: background 0.3s ease;
     }
     button:hover {
       background: linear-gradient(150deg, #11998e, #38ef7d);
     }
-    .error-msg {
-      color: #aa2a2a;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-    .success-msg {
-      color: #19671d;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
+    .error-msg { color: #aa2a2a; font-weight: 700; margin-bottom: 0.75rem; }
+    .success-msg { color: #19671d; font-weight: 700; margin-bottom: 1rem; }
     .admin-list {
       background: white;
       border-radius: 18px;
-      padding: 1rem 1rem;
+      padding: 1rem;
       box-shadow: 0 6px 12px rgb(56 239 125 /0.22);
     }
-    .search-bar {
-      margin-bottom: 1rem;
-      max-width: 420px;
-    }
+    .search-bar { margin-bottom: 1rem; max-width: 420px; }
     table {
       border-collapse: collapse;
       width: 100%;
       font-size: 1rem;
       color: #115124;
     }
-    th,
-    td {
+    th, td {
       border: 1px solid #8ce19b96;
       padding: 0.8rem 1rem;
       text-align: left;
     }
-    th {
-      background-color: #38ef7d;
-      color: #064e10;
-      font-weight: 700;
-    }
-    tr:nth-child(odd) {
-      background-color: #e5ffcf;
-    }
-    tr:hover {
-      background-color: #b4ef94;
-    }
+    th { background-color: #38ef7d; color: #064e10; font-weight: 700; }
+    tr:nth-child(odd) { background-color: #e5ffcf; }
+    tr:hover { background-color: #b4ef94; }
     .btn-delete {
       background: #dc2626;
       border: none;
@@ -127,36 +99,6 @@
       cursor: pointer;
       font-weight: 600;
     }
-    .btn-delete:hover {
-      background: #991b1b;
-    }
-    @media (max-width: 520px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      tr {
-        margin-bottom: 1rem;
-      }
-      th {
-        position: absolute; 
-        left: -9999px;
-        top: -9999px;
-      }
-      td {
-        padding-left: 50%;
-        text-align: right;
-        position: relative;
-      }
-      td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 1rem;
-        width: 45%;
-        font-weight: 700;
-        text-align: left;
-        color: #2c5236;
-      }
-    }
   </style>
 </head>
 <body>
@@ -164,15 +106,12 @@
 <header>Manage Admins</header>
 
 <section>
-  <h2>Add New Admin</h2>
-  <form id="adminForm">
+  <h2 style="font-weight:700; margin-bottom:1.2rem; color:#2b6e2b;">Add New Admin</h2>
+  <form id="adminForm" novalidate>
     <label for="schoolSelect">Select School</label>
     <select id="schoolSelect" required>
       <option value="">Loading schools...</option>
     </select>
-
-    <label for="fullNameInput">Full Name</label>
-    <input type="text" id="fullNameInput" placeholder="Enter full name" required />
 
     <label for="emailInput">Email Address</label>
     <input type="email" id="emailInput" placeholder="Enter email" required />
@@ -191,12 +130,11 @@
 </section>
 
 <section class="admin-list">
-  <h2>Current Admins</h2>
-  <input type="text" id="searchInput" placeholder="Search admins by name or email" class="search-bar" />
+  <h2 style="font-weight:700; margin-bottom: 1rem; color:#2b6e2b;">Current Admins</h2>
+  <input type="text" id="searchInput" placeholder="Search admins by email" class="search-bar" />
   <table>
     <thead>
       <tr>
-        <th>Full Name</th>
         <th>Email</th>
         <th>School</th>
         <th>Actions</th>
@@ -204,7 +142,7 @@
     </thead>
     <tbody id="adminsTableBody">
       <tr>
-        <td colspan="4" style="text-align:center; padding: 2rem 0; color: #8bbf87;">Loading admins...</td>
+        <td colspan="3" style="text-align:center; padding: 2rem 0; color: #8bbf87;">Loading admins...</td>
       </tr>
     </tbody>
   </table>
@@ -213,11 +151,8 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-  import { 
-    getFirestore, collection, getDocs, setDoc, doc, query, where, onSnapshot, deleteDoc, orderBy, getDoc 
-  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  import { getFirestore, collection, getDocs, setDoc, doc, query, where, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-  // 🔹 Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
     authDomain: "school-portal-233f5.firebaseapp.com",
@@ -233,7 +168,6 @@
 
   const adminForm = document.getElementById("adminForm");
   const schoolSelect = document.getElementById("schoolSelect");
-  const fullNameInput = document.getElementById("fullNameInput");
   const emailInput = document.getElementById("emailInput");
   const passwordInput = document.getElementById("passwordInput");
   const confirmPasswordInput = document.getElementById("confirmPasswordInput");
@@ -242,7 +176,7 @@
   const adminsTableBody = document.getElementById("adminsTableBody");
   const searchInput = document.getElementById("searchInput");
 
-  // Load schools into dropdown
+  // Load schools
   async function loadSchools() {
     const schoolsCol = collection(db, "schools");
     const schoolSnapshots = await getDocs(schoolsCol);
@@ -260,7 +194,7 @@
   // Load admins list
   function loadAdmins() {
     const adminsCol = collection(db, "users");
-    const q = query(adminsCol, where("role", "==", "admin"), orderBy("fullName"));
+    const q = query(adminsCol, where("role", "==", "admin"));
     onSnapshot(q, snapshot => {
       const admins = [];
       snapshot.forEach(docSnap => admins.push({ id: docSnap.id, ...docSnap.data() }));
@@ -268,34 +202,29 @@
     });
   }
 
-  // Render admin list
   function renderAdmins(admins) {
     const filter = searchInput.value.trim().toLowerCase();
     adminsTableBody.innerHTML = "";
     const filtered = admins.filter(admin =>
-      admin.fullName?.toLowerCase().includes(filter) || admin.email?.toLowerCase().includes(filter)
+      admin.email.toLowerCase().includes(filter)
     );
     if (filtered.length === 0) {
-      adminsTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#679360; padding:1.8rem;">No matching admins</td></tr>`;
+      adminsTableBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:1.8rem;">No admins found</td></tr>`;
       return;
     }
     filtered.forEach(admin => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td data-label="Full Name">${admin.fullName || "-"}</td>
         <td data-label="Email">${admin.email || "-"}</td>
         <td data-label="School">${admin.schoolName || "-"}</td>
-        <td data-label="Actions">
-          <button class="btn-delete" onclick="deleteAdmin('${admin.id}')">Delete</button>
-        </td>
+        <td><button class="btn-delete" onclick="deleteAdmin('${admin.id}')">Delete</button></td>
       `;
       adminsTableBody.appendChild(tr);
     });
   }
 
-  // Delete admin
   window.deleteAdmin = async (docID) => {
-    if (!confirm("Are you sure you want to delete this admin?")) return;
+    if (!confirm("Delete this admin?")) return;
     try {
       await deleteDoc(doc(db, "users", docID));
       alert("Admin deleted");
@@ -304,13 +233,11 @@
     }
   };
 
-  // Add admin
   adminForm.addEventListener("submit", async e => {
     e.preventDefault();
     formError.textContent = "";
     formSuccess.textContent = "";
 
-    const fullName = fullNameInput.value.trim();
     const email = emailInput.value.trim();
     const password = passwordInput.value;
     const confirmPassword = confirmPasswordInput.value;
@@ -320,12 +247,16 @@
       formError.textContent = "Please select a school.";
       return;
     }
+    if (!email || !password || !confirmPassword) {
+      formError.textContent = "Please fill all required fields.";
+      return;
+    }
     if (password !== confirmPassword) {
       formError.textContent = "Passwords do not match.";
       return;
     }
     if (password.length < 6) {
-      formError.textContent = "Password must be at least 6 characters.";
+      formError.textContent = "Passwords must be at least 6 characters.";
       return;
     }
 
@@ -333,12 +264,14 @@
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      const schoolRef = doc(db, "schools", schoolID);
-      const schoolSnap = await getDoc(schoolRef);
-      const schoolName = schoolSnap.exists() ? schoolSnap.data().name : "";
+      // Get school name
+      const schoolDoc = await getDocs(collection(db, "schools"));
+      let schoolName = "";
+      schoolDoc.forEach(docSnap => {
+        if (docSnap.id === schoolID) schoolName = docSnap.data().name;
+      });
 
       await setDoc(doc(db, "users", user.uid), {
-        fullName,
         email,
         schoolID,
         schoolName,
@@ -348,14 +281,13 @@
 
       formSuccess.textContent = "Admin registered successfully!";
       adminForm.reset();
+      loadAdmins();
     } catch (err) {
       formError.textContent = err.message;
     }
   });
 
-  searchInput.addEventListener("input", () => loadAdmins());
-
-  // Start
+  searchInput.addEventListener("input", () => {});
   loadAdmins();
 </script>
 
