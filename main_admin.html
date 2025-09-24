@@ -3,266 +3,144 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>School Portal - Main Admin Panel</title>
+<title>Kenya School Portal - Main Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
 <style>
   body {
-    font-family: Arial, sans-serif;
-    max-width: 1000px;
-    margin: auto;
-    padding: 1.5rem 2rem;
-    background: linear-gradient(135deg, #f0f8ff, #e6f3ff);
-    color: #333;
+    margin: 0; font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #e8f0fe, #98e6cf);
+    color: #1a2930;
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
   }
-  h1, h2 {
-    color: #005fab;
-    font-weight: 900;
+  header {
+    background-color: #123e2d;
+    color: #d3ffe2;
+    padding: 2rem;
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 2.6rem;
+    box-shadow: 0 5px 14px rgba(20, 168, 0, 0.62);
   }
-  h2 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    border-bottom: 3px solid #007acc;
-    padding-bottom: 0.3rem;
+  main {
+    flex-grow: 1;
+    width: 100%;
+    max-width: 900px;
+    padding: 2rem 1rem 3rem 1rem;
   }
-  button {
-    background: #007acc;
-    color: #fff;
-    border: none;
-    padding: 0.55rem 1.3rem;
-    border-radius: 30px;
+  .admin-info {
+    color: #105725;
+    font-size: 1.1rem;
+    margin-bottom: 1.8rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    box-shadow: 0 4px 10px rgba(0, 122, 204, 0.5);
+    text-align: center;
   }
-  button:hover {
-    background: #005f99;
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 1.8rem;
   }
-  input, select, textarea {
-    padding: 0.5rem 0.8rem;
-    font-size: 1rem;
-    border-radius: 25px;
-    border: 1.8px solid #007acc;
-    width: 100%;
-    max-width: 420px;
-    margin-bottom: 0.8rem;
-    transition: box-shadow 0.2s;
-  }
-  input:focus, select:focus, textarea:focus {
-    box-shadow: 0 0 8px #0099ff;
-    outline: none;
-  }
-  label {
-    font-weight: 700;
-    display: block;
-    margin-bottom: 0.3rem;
-    color: #004f80;
-  }
-  .section {
-    background: #cce6ff;
-    border-radius: 20px;
-    padding: 1.5rem 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 6px 18px rgba(0, 123, 204, 0.3);
-  }
-  #logoutBtn {
-    background-color: #cc3300 !important;
-    margin-left: 1rem;
-    box-shadow: none;
-  }
-  #logoutBtn:hover {
-    background-color: #992600 !important;
-  }
-  .flex-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .small-btn {
-    padding: 0.4rem 0.9rem;
-    font-size: 0.9rem;
-  }
-  .textarea {
-    min-height: 80px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 3px 12px rgb(0 123 204 / 0.3);
-  }
-  table th, table td {
-    padding: 0.8rem 1.2rem;
-    border-bottom: 1px solid #d9e7ff;
-    text-align: left;
-    color: #004f80;
-  }
-  table th {
-    background-color: #007acc;
-    color: #fff;
-    font-weight: 700;
-  }
-  .table-header {
-    margin-top: 1rem;
-    font-size: 1.2rem;
+  .dashboard-btn {
+    background: linear-gradient(45deg, #38ef7d, #11998e);
+    border-radius: 32px;
+    padding: 2.3rem 0;
+    color: white;
     font-weight: 800;
-    color: #004466;
-  }
-  .collapsible {
+    font-size: 1.2rem;
     cursor: pointer;
+    text-align: center;
+    box-shadow: 0px 10px 20px rgb(56 239 125 / 0.8);
     user-select: none;
-    padding: 0.2rem 0;
-    color: #003366;
-    font-weight: 900;
-    margin-top: 0.8rem;
-    margin-bottom: 0.4rem;
+    transition: all 0.3s ease;
+    border: none;
+    letter-spacing: 0.03em;
   }
-  .content {
-    max-height: 1000px;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
+  .dashboard-btn:hover {
+    background: linear-gradient(145deg, #11998e, #38ef7d);
+    box-shadow: 0 13px 25px 0 rgb(44 171 53 / 0.95);
   }
-  .content.hide {
-    max-height: 0;
-    padding: 0;
-    margin: 0;
+  .btn-logout {
+    background: linear-gradient(45deg, #d33f3f, #820000);
+    box-shadow: 0 12px 22px #aa4f4fcc;
   }
-  .error-msg, .success-msg {
-    font-weight: 700;
-    margin-top: 0.5rem;
+  .btn-logout:hover {
+    background: linear-gradient(120deg, #820000, #d33f3f);
+    box-shadow: 0 15px 28px 0 #882828;
   }
-  .error-msg {
-    color: #cc0000;
+  footer {
+    width: 100%;
+    max-width: 900px;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #074218aa;
   }
-  .success-msg {
-    color: #006600;
+  @media(max-width: 480px) {
+    .dashboard-btn {
+      font-size: 1.01rem;
+      padding: 1.95rem 0;
+    }
   }
 </style>
+</head>
+<body>
+
+<header>Kenya School Portal - Admin Dashboard</header>
+
+<main>
+  <div class="admin-info" role="status" aria-live="polite">
+    Logged in as: <span id="adminEmail">Not logged in</span>
+  </div>
+  <div class="dashboard-grid" role="region" aria-label="Admin dashboard features">
+    <button class="dashboard-btn" id="btnAddSchool" aria-describedby="descAddSchool">Add School</button>
+    <button class="dashboard-btn" id="btnManageAdmins" aria-describedby="descManageAdmins">Manage Admins</button>
+    <button class="dashboard-btn" id="btnManageTeachers" aria-describedby="descManageTeachers">Manage Teachers</button>
+    <button class="dashboard-btn" id="btnSchoolAnalytics" aria-describedby="descAnalytics">School Analytics</button>
+    <button class="dashboard-btn" id="btnTopRatedSchools" aria-describedby="descTopRated">Manage Top Rated Schools</button>
+    <button class="dashboard-btn btn-logout" id="btnLogout" aria-describedby="descLogout">Logout</button>
+  </div>
+</main>
+
+<footer role="contentinfo">© Kenya School Portal 2025</footer>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-</head>
-<body>
-
-<h1>Main Admin Panel</h1>
-<div class="flex-row" style="align-items: center; margin-bottom: 1rem;">
-  <p>Logged in as: <span id="adminEmail">Not logged in</span></p>
-  <button id="logoutBtn" style="display:none;">Logout</button>
-</div>
-
-<!-- Admin content sections -->
-<div id="adminContent" class="hidden">
-  <!-- Content as before... -->
-  <!-- (Omitted here for brevity; keep all previous admin panel sections and JS handlers) -->
-</div>
-
 <script>
+  // Firebase config
   const firebaseConfig = {
-    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-    authDomain: "school-portal-233f5.firebaseapp.com",
-    projectId: "school-portal-233f5",
-    storageBucket: "school-portal-233f5.appspot.com",
-    messagingSenderId: "314984934331",
-    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+    apiKey: "...",
+    authDomain: "...",
+    projectId: "...",
+    storageBucket: "...",
+    messagingSenderId: "...",
+    appId: "..."
   };
-
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
-  const storage = firebase.storage();
 
-  const loginSection = document.getElementById('loginSection');
-  const adminContent = document.getElementById('adminContent');
-  const loginBtn = document.getElementById('loginBtn');
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const loginError = document.getElementById('loginError');
-  const logoutBtn = document.getElementById('logoutBtn');
   const adminEmailSpan = document.getElementById('adminEmail');
-
-  // Hardcoded admin email
-  const mainAdminEmail = "levisbonventure@gmail.com";
-
-  loginBtn.addEventListener('click', async () => {
-    loginError.textContent = '';
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    if (!email || !password) {
-      loginError.textContent = 'Enter email and password.';
-      return;
-    }
-
-    try {
-      // Use real email/password sign-in here
-      const userCredential = await auth.signInWithEmailAndPassword(email, password);
-      const user = userCredential.user;
-
-      if (user.email !== mainAdminEmail) {
-        loginError.textContent = 'Access denied: Not main admin.';
-        await auth.signOut();
-        return;
-      }
-
-      // Show admin panel UI
-      adminEmailSpan.textContent = email;
-      loginSection.style.display = 'none';
-      adminContent.style.display = 'block';
-      logoutBtn.style.display = 'inline-block';
-
-      // Load admin functions here, e.g.:
-      // await loadSchoolsIntoSelect();
-      // await refreshPerformance();
-      // ... (your other functions)
-
-    } catch (e) {
-      loginError.textContent = 'Login failed: ' + e.message;
-    }
-  });
-
-  logoutBtn.addEventListener('click', async () => {
-    await auth.signOut();
-    adminEmailSpan.textContent = 'Not logged in';
-    adminContent.style.display = 'none';
-    loginSection.style.display = 'block';
-    logoutBtn.style.display = 'none';
-    loginError.textContent = '';
-    emailInput.value = '';
-    passwordInput.value = '';
-  });
+  const btnLogout = document.getElementById('btnLogout');
 
   auth.onAuthStateChanged(user => {
-    if (user) {
-      if (user.email === mainAdminEmail) {
-        loginSection.style.display = 'none';
-        adminContent.style.display = 'block';
-        adminEmailSpan.textContent = user.email;
-        logoutBtn.style.display = 'inline-block';
-      } else {
-        auth.signOut();
-        adminContent.style.display = 'none';
-        loginSection.style.display = 'block';
-        logoutBtn.style.display = 'none';
-        adminEmailSpan.textContent = 'Not logged in';
-      }
+    if(user && user.email === 'levisbonventure@gmail.com'){
+      adminEmailSpan.textContent = user.email;
     } else {
-      adminContent.style.display = 'none';
-      loginSection.style.display = 'block';
-      logoutBtn.style.display = 'none';
-      adminEmailSpan.textContent = 'Not logged in';
+      window.location.href = 'login.html'; // redirect to login if unauthorized
     }
   });
 
-  // Include your other admin functions here as before ...
+  btnLogout.onclick = () => {
+    auth.signOut();
+  };
 
+  // Redirect button clicks to pages - adjust URLs as needed:
+  document.getElementById('btnAddSchool').onclick = () => window.location.href = 'add_school.html';
+  document.getElementById('btnManageAdmins').onclick = () => window.location.href = 'manage_admins.html';
+  document.getElementById('btnManageTeachers').onclick = () => window.location.href = 'manage_teachers.html';
+  document.getElementById('btnSchoolAnalytics').onclick = () => window.location.href = 'school_analytics.html';
+  document.getElementById('btnTopRatedSchools').onclick = () => window.location.href = 'manage_top_rated.html';
 </script>
 
 </body>
