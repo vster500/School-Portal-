@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Admins - Kenya School Portal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: "Montserrat", sans-serif;
+      background: linear-gradient(135deg, #e8f0fe, #98e6cf);
+      margin: 0;
+      padding: 1rem;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #233247;
+    }
+    header {
+      background-color: #000;
+      color: #38ef7d;
+      padding: 2.5rem 1.5rem;
+      border-radius: 0 0 48px 48px;
+      font-weight: 700;
+      font-size: 2.4rem;
+      text-align: center;
+      box-shadow: 0 5px 16px #79f293ac;
+      margin-bottom: 2rem;
+    }
+    form {
+      background: white;
+      border-radius: 18px;
+      padding: 1.8rem 2.3rem;
+      box-shadow: 0 6px 18px rgb(56 239 125 /0.29);
+      margin-bottom: 3rem;
+    }
+    label {
+      font-weight: 700;
+      color: #176c3b;
+      display: block;
+      margin-bottom: 0.6rem;
+      font-size: 1.05rem;
+    }
+    select,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.55rem 1rem;
+      border-radius: 24px;
+      border: 2px solid #38ef7d;
+      font-size: 1rem;
+      margin-bottom: 1.25rem;
+      outline-offset: 0;
+      transition: border-color 0.3s ease;
+      color: #115124;
+    }
+    select:focus,
+    input:focus {
+      border-color: #064e10;
+    }
+    button {
+      background: linear-gradient(45deg, #38ef7d, #11998e);
+      padding: 0.75rem 1.8rem;
+      border: none;
+      border-radius: 28px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgb(56 239 125 / 0.8);
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: linear-gradient(150deg, #11998e, #38ef7d);
+    }
+    .error-msg {
+      color: #aa2a2a;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .success-msg {
+      color: #19671d;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .admin-list {
+      background: white;
+      border-radius: 18px;
+      padding: 1rem 1rem;
+      box-shadow: 0 6px 12px rgb(56 239 125 /0.22);
+    }
+    .search-bar {
+      margin-bottom: 1rem;
+      max-width: 420px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 1rem;
+      color: #115124;
+    }
+    th,
+    td {
+      border: 1px solid #8ce19b96;
+      padding: 0.8rem 1rem;
+      text-align: left;
+    }
+    th {
+      background-color: #38ef7d;
+      color: #064e10;
+      font-weight: 700;
+    }
+    tr:nth-child(odd) {
+      background-color: #e5ffcf;
+    }
+    tr:hover {
+      background-color: #b4ef94;
+    }
+    .btn-delete {
+      background: #dc2626;
+      border: none;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 18px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-delete:hover {
+      background: #991b1b;
+    }
+    @media (max-width: 520px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      tr {
+        margin-bottom: 1rem;
+      }
+      th {
+        position: absolute; 
+        left: -9999px;
+        top: -9999px;
+      }
+      td {
+        padding-left: 50%;
+        text-align: right;
+        position: relative;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: 45%;
+        font-weight: 700;
+        text-align: left;
+        color: #2c5236;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>Manage Admins</header>
+
+<section aria-labelledby="formTitle">
+  <h2 id="formTitle" style="font-weight:700; margin-bottom:1.2rem; color:#2b6e2b;">Add New Admin</h2>
+  <form id="adminForm" novalidate>
+    <label for="schoolSelect">Select School</label>
+    <select id="schoolSelect" required>
+      <option value="">Loading schools...</option>
+    </select>
+
+    <label for="fullNameInput">Full Name</label>
+    <input type="text" id="fullNameInput" placeholder="Enter full name" required />
+
+    <label for="emailInput">Email Address</label>
+    <input type="email" id="emailInput" placeholder="Enter email" required />
+
+    <label for="passwordInput">Password</label>
+    <input type="password" id="passwordInput" placeholder="Enter password" minlength="6" required />
+
+    <label for="confirmPasswordInput">Confirm Password</label>
+    <input
+      type="password"
+      id="confirmPasswordInput"
+      placeholder="Confirm password"
+      minlength="6"
+      required
+    />
+
+    <div class="error-msg" id="formError"></div>
+    <div class="success-msg" id="formSuccess"></div>
+
+    <button type="submit" aria-describedby="formSuccess formError">Add Admin</button>
+  </form>
+</section>
+
+<section class="admin-list" aria-label="Current Admins List">
+  <h2 style="font-weight:700; margin-bottom: 1rem; color:#2b6e2b;">Current Admins</h2>
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="Search admins by name or email"
+    class="search-bar"
+    aria-label="Search current admins"
+  />
+  <table aria-live="polite" aria-atomic="true" role="table" aria-describedby="Current Admins List">
+    <thead>
+      <tr>
+        <th scope="col">Full Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">School</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="adminsTableBody">
+      <tr>
+        <td colspan="4" style="text-align:center; padding: 2rem 0; color: #8bbf87;">Loading admins...</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+
+<script type="module">
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    deleteUser
+  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    setDoc,
+    doc,
+    query,
+    where,
+    onSnapshot,
+    deleteDoc,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const adminForm = document.getElementById("adminForm");
+  const schoolSelect = document.getElementById("schoolSelect");
+  const fullNameInput = document.getElementById("fullNameInput");
+  const emailInput = document.getElementById("emailInput");
+  const passwordInput = document.getElementById("passwordInput");
+  const confirmPasswordInput = document.getElementById("confirmPasswordInput");
+  const formError = document.getElementById("formError");
+  const formSuccess = document.getElementById("formSuccess");
+
+  const adminsTableBody = document.getElementById("adminsTableBody");
+  const searchInput = document.getElementById("searchInput");
+
+  // Load schools into dropdown
+  async function loadSchools() {
+    const schoolsCol = collection(db, "schools");
+    const schoolSnapshots = await getDocs(schoolsCol);
+    schoolSelect.innerHTML = "<option value=''>Select School</option>";
+    schoolSnapshots.forEach(docSnap => {
+      const school = docSnap.data();
+      const option = document.createElement("option");
+      option.value = docSnap.id;
+      option.textContent = school.name;
+      schoolSelect.appendChild(option);
+    });
+  }
+  loadSchools();
+
+  // Load admins list from Firestore with real-time updates
+  function loadAdmins() {
+    const adminsCol = collection(db, "users");
+    const q = query(adminsCol, where("role", "==", "admin"), orderBy("fullName"));
+    onSnapshot(q, snapshot => {
+      const admins = [];
+      snapshot.forEach(docSnap => admins.push({ id: docSnap.id, ...docSnap.data() }));
+      renderAdmins(admins);
+    });
+  }
+
+  // Render admin list
+  function renderAdmins(admins) {
+    const filter = searchInput.value.trim().toLowerCase();
+    adminsTableBody.innerHTML = "";
+    const filtered = admins.filter(admin =>
+      admin.fullName.toLowerCase().includes(filter) || admin.email.toLowerCase().includes(filter)
+    );
+    if (filtered.length === 0) {
+      adminsTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#679360; padding:1.8rem;">No matching admins</td></tr>`;
+      return;
+    }
+    filtered.forEach(admin => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td data-label="Full Name">${admin.fullName || "-"}</td>
+        <td data-label="Email">${admin.email || "-"}</td>
+        <td data-label="School">${admin.schoolName || "-"}</td>
+        <td data-label="Actions">
+          <button class="btn-delete" onclick="deleteAdmin('${admin.id}', '${admin.email}')">Delete</button>
+        </td>
+      `;
+      adminsTableBody.appendChild(tr);
+    });
+  }
+
+  // Admin delete functionality
+  window.deleteAdmin = async (docID, adminEmail) => {
+    if (!confirm(`Are you sure you want to delete admin ${adminEmail}?`)) return;
+    try {
+      await deleteDoc(doc(db, "users", docID));
+      alert("Admin deleted");
+    } catch (err) {
+      alert("Delete failed: " + err.message);
+    }
+  };
+
+  // Add admin form submit
+  adminForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    formError.textContent = "";
+    formSuccess.textContent = "";
+
+    const fullName = fullNameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+    const schoolID = schoolSelect.value;
+
+    if (!schoolID) {
+      formError.textContent = "Please select a school.";
+      return;
+    }
+    if (!fullName || !email || !password || !confirmPassword) {
+      formError.textContent = "Please fill all required fields.";
+      return;
+    }
+    if (password !== confirmPassword) {
+      formError.textContent = "Passwords do not match.";
+      return;
+    }
+    if (password.length < 6) {
+      formError.textContent = "Passwords must be at least 6 characters.";
+      return;
+    }
+
+    try {
+      // Create auth user
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Get school name from collection
+      const schoolDoc = await db.collection("schools").doc(schoolID).get();
+      const schoolName = schoolDoc.exists ? schoolDoc.data().name : "";
+
+      // Save user info in Firestore users collection
+      await setDoc(doc(db, "users", user.uid), {
+        fullName,
+        email,
+        schoolID,
+        schoolName,
+        role: "admin",
+        createdAt: new Date()
+      });
+
+      formSuccess.textContent = "Admin registered successfully!";
+      adminForm.reset();
+      loadAdmins();
+    } catch (err) {
+      formError.textContent = err.message;
+    }
+  });
+
+  searchInput.addEventListener("input", () => {
+    // We use latest loaded admins for search; handled in renderAdmins
+  });
+
+  // Initial load of admins
+  loadAdmins();
+</script>
+
+</body>
+</html>
