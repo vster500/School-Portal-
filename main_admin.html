@@ -118,21 +118,29 @@
   };
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-  const db = firebase.firestore();
 
   const adminEmailSpan = document.getElementById('adminEmail');
   const btnLogout = document.getElementById('btnLogout');
 
+  // Only allow main admin (your email) to stay on this page
   auth.onAuthStateChanged(user => {
-    if(user && user.email === 'levisbonventure@gmail.com'){
-      adminEmailSpan.textContent = user.email;
+    if(user){
+      if(user.email === 'levisbonventure@gmail.com'){   // ✅ your super admin email
+        adminEmailSpan.textContent = user.email;
+      } else {
+        auth.signOut().then(() => {
+          window.location.href = 'login.html';
+        });
+      }
     } else {
-      window.location.href = 'login.html'; // redirect to login if unauthorized
+      window.location.href = 'login.html';
     }
   });
 
   btnLogout.onclick = () => {
-    auth.signOut();
+    auth.signOut().then(() => {
+      window.location.href = 'login.html';
+    });
   };
 
   // Redirect button clicks to pages - adjust URLs as needed:
@@ -144,4 +152,4 @@
 </script>
 
 </body>
-</html>
+  </html>
