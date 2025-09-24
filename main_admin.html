@@ -28,13 +28,6 @@
     max-width: 900px;
     padding: 2rem 1rem 3rem 1rem;
   }
-  .admin-info {
-    color: #105725;
-    font-size: 1.1rem;
-    margin-bottom: 1.8rem;
-    font-weight: 600;
-    text-align: center;
-  }
   .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
@@ -88,24 +81,20 @@
 <header>Kenya School Portal - Admin Dashboard</header>
 
 <main>
-  <div class="admin-info" role="status" aria-live="polite">
-    Logged in as: <span id="adminEmail">Not logged in</span>
-  </div>
   <div class="dashboard-grid" role="region" aria-label="Admin dashboard features">
-    <button class="dashboard-btn" id="btnAddSchool" aria-describedby="descAddSchool">Add School</button>
-    <button class="dashboard-btn" id="btnManageAdmins" aria-describedby="descManageAdmins">Manage Admins</button>
-    <button class="dashboard-btn" id="btnManageTeachers" aria-describedby="descManageTeachers">Manage Teachers</button>
-    <button class="dashboard-btn" id="btnSchoolAnalytics" aria-describedby="descAnalytics">School Analytics</button>
-    <button class="dashboard-btn" id="btnTopRatedSchools" aria-describedby="descTopRated">Manage Top Rated Schools</button>
-    <button class="dashboard-btn btn-logout" id="btnLogout" aria-describedby="descLogout">Logout</button>
+    <button class="dashboard-btn" id="btnAddSchool">Add School</button>
+    <button class="dashboard-btn" id="btnManageAdmins">Manage Admins</button>
+    <button class="dashboard-btn" id="btnManageTeachers">Manage Teachers</button>
+    <button class="dashboard-btn" id="btnSchoolAnalytics">School Analytics</button>
+    <button class="dashboard-btn" id="btnTopRatedSchools">Manage Top Rated Schools</button>
+    <button class="dashboard-btn btn-logout" id="btnLogout">Logout</button>
   </div>
 </main>
 
-<footer role="contentinfo">© Kenya School Portal 2025</footer>
+<footer>© Kenya School Portal 2025</footer>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
   // Firebase config
   const firebaseConfig = {
@@ -119,14 +108,11 @@
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
 
-  const adminEmailSpan = document.getElementById('adminEmail');
-  const btnLogout = document.getElementById('btnLogout');
-
   // Only allow main admin (your email) to stay on this page
   auth.onAuthStateChanged(user => {
-    if(user){
-      if(user.email === 'levisbonventure@gmail.com'){   // ✅ your super admin email
-        adminEmailSpan.textContent = user.email;
+    if (user) {
+      if (user.email === 'levisbonventure@gmail.com') {
+        // stay here
       } else {
         auth.signOut().then(() => {
           window.location.href = 'login.html';
@@ -137,13 +123,13 @@
     }
   });
 
-  btnLogout.onclick = () => {
+  document.getElementById('btnLogout').onclick = () => {
     auth.signOut().then(() => {
       window.location.href = 'login.html';
     });
   };
 
-  // Redirect button clicks to pages - adjust URLs as needed:
+  // Button redirects
   document.getElementById('btnAddSchool').onclick = () => window.location.href = 'add_school.html';
   document.getElementById('btnManageAdmins').onclick = () => window.location.href = 'manage_admins.html';
   document.getElementById('btnManageTeachers').onclick = () => window.location.href = 'manage_teachers.html';
@@ -152,4 +138,4 @@
 </script>
 
 </body>
-  </html>
+</html>
