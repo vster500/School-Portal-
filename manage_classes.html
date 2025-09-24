@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manage Classes - Kenya School Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%);
+      margin: 0; color: #233247;
+    }
+    header {
+      background-color: #000; color: #fff;
+      padding: 2.6rem 1.3rem 2.8rem 1.3rem;
+      text-align: center;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+      font-weight: 700; font-size: 2.1rem;
+    }
+    .container {
+      max-width: 1050px;
+      margin: 2.7rem auto 2.7rem;
+      background: white;
+      border-radius: 28px;
+      padding: 2.2rem 1.4rem 2.7rem 1.4rem;
+      box-shadow: 0 12px 22px 0 rgb(56 239 125 / 0.20);
+    }
+    .btn-primary {
+      background: #14a800; color: #fff; font-weight: 700;
+      padding: 0.7rem 1.7rem; border-radius: 30px;
+      box-shadow: 0 4px 11px #58e034aa; border: none; cursor: pointer;
+      font-size: 1.04rem;
+      transition: background 0.32s ease;
+    }
+    .btn-primary:hover { background: #0e6f2b; color: #def9de; }
+    .btn-danger {
+      background-color: #dc2626; color: #fff; padding: 0.55rem 1.3rem;
+      border-radius: 18px; font-weight: 700; font-size: 0.93rem; border: none; cursor: pointer;
+    }
+    .btn-danger:hover { background: #991b1b; }
+    .class-grid {
+      display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+      gap: 1.5rem; margin-top: 2rem;
+    }
+    .class-card {
+      background-color: #f4faf7; border-radius: 16px;
+      box-shadow: 0 3px 10px #d0f9db;
+      padding: 1.4rem 1.1rem; display: flex; flex-direction: column; align-items: start;
+      position: relative; min-height: 140px;
+    }
+    .class-title {
+      font-weight: 800; font-size: 1.25rem; margin-bottom: 0.4rem;
+    }
+    .teacher-remark {
+      color: #237e4d; font-size: 1.01rem; margin-bottom: 0.45rem;
+    }
+    .timestamp {
+      font-size: 0.85rem; color: #398157b7; margin-bottom: 0.65rem;
+    }
+    .remark-edit {
+      font-size: 0.92rem; margin-bottom: 0.3rem; color: #0e577f;
+      border: 1.2px solid #b3f1d1; background: #e2fff3;
+      border-radius: 7px; padding: 0.15rem 0.7rem;
+      width: 96%;
+    }
+    .card-actions {
+      position: absolute; top: 1.1rem; right: 1rem; display: flex; gap: 0.7rem;
+    }
+    .search-row {
+      margin: 0 0 1.12rem 0; display: flex; justify-content: start; gap: 1rem; align-items: center;
+    }
+    @media (max-width:700px){
+      .container {padding: 0.8rem;}
+      .class-title {font-size: 1.08rem;}
+      header {font-size: 1.18rem;}
+    }
+    .modal-bg {
+      display: none; position: fixed; inset:0; background: rgba(0,0,0,0.15);
+      justify-content: center; align-items: center; z-index: 500;
+    }
+    .modal-bg.active{ display: flex;}
+    .modal {background: white; border-radius: 21px; box-shadow: 0 4px 11px #69f1c5; padding: 32px 32px; max-width: 370px; min-width: 255px;}
+    .modal-footer{
+      display: flex; gap: 1rem; margin-top: 20px; justify-content: flex-end;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>Manage Classes</header>
+<div class="container">
+
+  <!-- Actions: always stacked on mobile -->
+  <div class="flex flex-col sm:flex-row gap-2 mt-3">
+    <div class="flex gap-2">
+      <button id="backBtn" class="btn-primary">⬅ Home</button>
+      <button id="openAddClassBtn" class="btn-primary">+ Add Class</button>
+    </div>
+    <div class="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
+      <input id="searchClass" ... />
+      <button id="importBtn" class="btn-primary">Import (CSV)</button>
+      <button id="exportBtn" class="btn-primary">Export (CSV)</button>
+    </div>
+  </div>
+  <!-- The rest: grid/cards -->
+  <div class="class-grid" id="classGrid"></div>
+</div>
+
+  <div class="class-grid" id="classGrid">
+    <!-- Classes load here -->
+  </div>
+
+</div>
+
+<div class="modal-bg" id="classModalBg">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle" style="font-weight:700;">Add New Class</h3>
+    <form id="addClassForm" autocomplete="off">
+      <label for="classSelect" style="font-weight:700;">Select Class</label>
+      <select id="classSelect" required style="width:100%; margin-bottom:1rem;">
+        <option value="">Select Class</option>
+      </select>
+      <div class="modal-footer">
+        <button type="submit" class="btn-primary">Save</button>
+        <button type="button" class="btn-danger" id="cancelClassBtn">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<input type="file" id="importFile" accept=".csv" style="display:none" />
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const schoolId = localStorage.getItem('schoolId') || 'school1';
+
+  const CLASSES = [
+    "pp1","pp2",
+    "Grade 1", "Grade 2", "Grade 3", "Grade 4", "Grade 5", "Grade 6",
+    "Grade 7", "Grade 8", "Grade 9"
+  ];
+
+  // Modal logic
+  const classModalBg = document.getElementById('classModalBg');
+  const openAddClassBtn = document.getElementById('openAddClassBtn');
+  const cancelClassBtn = document.getElementById('cancelClassBtn');
+  const addClassForm = document.getElementById('addClassForm');
+  const classSelect = document.getElementById('classSelect');
+  const classGrid = document.getElementById('classGrid');
+  const searchClass = document.getElementById('searchClass');
+  const backBtn = document.getElementById('backBtn');
+  const importFile = document.getElementById('importFile');
+  const importBtn = document.getElementById('importBtn');
+  const exportBtn = document.getElementById('exportBtn');
+
+  // Populate class dropdown with available
+  function populateClassDropdown() {
+    classSelect.innerHTML = '<option value="">Select Class</option>';
+    CLASSES.forEach(cl => {
+      classSelect.innerHTML += `<option value="${cl}">${cl}</option>`;
+    });
+  }
+  populateClassDropdown();
+
+  let classesLocal = [];
+
+  // Live load classes
+  function loadClasses() {
+    onSnapshot(collection(db, 'schools', schoolId, 'classes'), snap => {
+      classesLocal = [];
+      snap.forEach(docSnap => { classesLocal.push({id: docSnap.id, ...docSnap.data()}); });
+      renderClassGrid();
+    });
+  }
+  loadClasses();
+
+  // Render grid
+  function renderClassGrid() {
+    let filtered = [...classesLocal];
+    const search = searchClass.value.toLowerCase();
+    if (search) { filtered = filtered.filter(cl => cl.name.toLowerCase().includes(search)); }
+    classGrid.innerHTML = "";
+    if(!filtered.length){
+      classGrid.innerHTML = '<div style="padding:2.2rem;">No classes found.</div>';
+      return;
+    }
+    filtered.forEach(cl => {
+      const div = document.createElement('div');
+      div.className = "class-card";
+      div.innerHTML = `
+        <div class="class-title">${cl.name}</div>
+        ${cl.teacher ? `<div class="teacher-remark">Teacher: ${cl.teacher}</div>` : `<div class="teacher-remark"><span style="color:#b0c;opacity:0.69;">No teacher assigned</span></div>`}
+        <div class="timestamp">Created: ${cl.created ? (new Date(cl.created.seconds*1000)).toLocaleDateString() : 'Unknown'}</div>
+        <input class="remark-edit" type="text" value="${cl.remark||''}" placeholder="Add/edit note..." onchange="editRemark('${cl.id}',this.value)" />
+        <div class="card-actions">
+          <button class="btn-danger" onclick="deleteClass('${cl.id}')">Delete</button>
+        </div>
+      `;
+      classGrid.appendChild(div);
+    });
+  }
+
+  // Expose for inline
+  window.deleteClass = async (id) => {
+    if(!confirm('Delete this class? Student and subject data may depend on this!')) return;
+    await deleteDoc(doc(db, 'schools', schoolId, 'classes', id));
+    alert('Class deleted');
+  };
+
+  window.editRemark = async (id, value) => {
+    await updateDoc(doc(db, 'schools', schoolId, 'classes', id), { remark: value });
+  };
+
+  // Add new class
+  openAddClassBtn.onclick = () => { populateClassDropdown(); classModalBg.classList.add('active'); };
+  cancelClassBtn.onclick = () => classModalBg.classList.remove('active');
+  addClassForm.onsubmit = async e => {
+    e.preventDefault();
+    const className = classSelect.value;
+    if(!className) return alert('Select a class!');
+    // Avoid duplicates
+    if(classesLocal.map(c=>c.name).includes(className)) return alert('Class already exists!');
+    await addDoc(collection(db, 'schools', schoolId, 'classes'), { name: className, created: serverTimestamp(), remark: "" });
+    classModalBg.classList.remove('active');
+  };
+
+  // Search
+  searchClass.oninput = renderClassGrid;
+
+  // BACK button
+  backBtn.onclick = () => window.location.href = "admin_dashboard.html";
+
+  // Export
+  exportBtn.onclick = () => {
+    let csv = "Class Name,Teacher,Remark,Created
+"+classesLocal.map(c =>
+      [c.name||"",c.teacher||"",c.remark||"",(c.created ? new Date(c.created.seconds*1000).toLocaleDateString() : "")].join(",")
+    ).join("
+");
+    const blob = new Blob([csv], {type: "text/csv"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "classes.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Import
+  importBtn.onclick = ()=> importFile.click();
+  importFile.onchange = async function(){
+    if(!importFile.files.length) return;
+    const file = importFile.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e)=>{
+      const lines = e.target.result.split(/
+?
+/).slice(1); // skip header
+      for(const line of lines){
+        if(!line.trim()) continue;
+        const [name,teacher,remark] = line.split(",");
+        if(name && !classesLocal.map(c=>c.name).includes(name)){
+          await addDoc(collection(db,'schools',schoolId,'classes'),{ name: name.trim(), teacher: (teacher||"").trim(), remark: (remark||"").trim(), created: serverTimestamp() });
+        }
+      }
+      alert("Classes imported");
+    };
+    reader.readAsText(file);
+    importFile.value="";
+  };
+
+  // Expose editRemark global for inline change
+  window.editRemark = window.editRemark;
+
+</script>
+</body>
+</html>
