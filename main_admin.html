@@ -93,48 +93,14 @@
 
 <footer>© Kenya School Portal 2025</footer>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "...",
-    authDomain: "...",
-    projectId: "...",
-    storageBucket: "...",
-    messagingSenderId: "...",
-    appId: "..."
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-
-  // Only allow main admin (your email) to stay on this page
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      if (user.email === 'levisbonventure@gmail.com') {
-        // stay here
-      } else {
-        auth.signOut().then(() => {
-          window.location.href = 'login.html';
-        });
-      }
-    } else {
-      window.location.href = 'login.html';
-    }
-  });
-
-  document.getElementById('btnLogout').onclick = () => {
-    auth.signOut().then(() => {
-      window.location.href = 'login.html';
-    });
-  };
-
-  // Button redirects
+  // For testing only – no Firebase restrictions
   document.getElementById('btnAddSchool').onclick = () => window.location.href = 'add_school.html';
   document.getElementById('btnManageAdmins').onclick = () => window.location.href = 'manage_admins.html';
   document.getElementById('btnManageTeachers').onclick = () => window.location.href = 'manage_teachers.html';
   document.getElementById('btnSchoolAnalytics').onclick = () => window.location.href = 'school_analytics.html';
   document.getElementById('btnTopRatedSchools').onclick = () => window.location.href = 'manage_top_rated.html';
+  document.getElementById('btnLogout').onclick = () => window.location.href = 'login.html';
 </script>
 
 </body>
