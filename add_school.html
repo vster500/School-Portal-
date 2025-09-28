@@ -1,300 +1,1066 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Kenya School Portal - Add School</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<style>
-  body {
-    margin: 0;
-    font-family: 'Montserrat', Arial, sans-serif;
-    background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%);
-    color: #233247;
-  }
-  header {
-    background-color: #000;
-    color: #fff;
-    padding: 2.5rem 0 3rem;
-    text-align: center;
-    border-bottom-left-radius: 40px;
-    border-bottom-right-radius: 40px;
-  }
-  header h1 {
-    font-size: 2.5rem;
-    letter-spacing: 0.04em;
-    margin: 0;
-    font-weight: 700;
-  }
-  .container {
-    max-width: 720px;
-    margin: 2rem auto 3rem;
-    background: white;
-    border-radius: 15px;
-    padding: 2rem 3rem;
-    box-shadow: 0 8px 30px rgb(56 239 125 / 0.35);
-  }
-  .form-label {
-    font-weight: 700;
-    margin-bottom: 0.35rem;
-  }
-  input[type="text"], input[type="email"], select, textarea {
-    width: 100%;
-    padding: 0.55rem 1rem;
-    font-size: 1.05rem;
-    border-radius: 20px;
-    border: 2px solid #1d8fff;
-    margin-bottom: 1.3rem;
-    outline-offset: 0;
-    transition: border-color 0.25s ease;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: #38ef7d;
-    outline: none;
-  }
-  textarea {
-    min-height: 100px;
-    resize: vertical;
-  }
-  button[type="submit"] {
-    background-color: #38ef7d;
-    color: #025e2d;
-    padding: 0.9rem 1.6rem;
-    font-weight: 700;
-    font-size: 1.1rem;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    box-shadow: 0 3px 10px rgba(56,239,125,0.6);
-    transition: background-color 0.3s ease;
-  }
-  button[type="submit"]:hover {
-    background-color: #147822;
-    color: white;
-  }
-  .status-message {
-    font-weight: 700;
-    margin-top: 0.4rem;
-  }
-  .status-success {
-    color: #147822;
-  }
-  .status-error {
-    color: #b91c1c;
-  }
-</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register Your School - Kenya School Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a56db;
+            --secondary: #059669;
+            --accent: #7e22ce;
+            --light: #f0f9ff;
+            --dark: #0f172a;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        
+        .dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+            color: #e2e8f0 !important;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 2rem 0 2.5rem;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><path fill="white" d="M28.2,38.6c0,0,13.9-15.4,33.2-7.5c19.3,7.9,19.7,25.3,20.7,31.6c1,6.3-9.3,9.3-14.9,9.3c-5.6,0-15.4-2.5-24.3-9.3C34,55.4,28.2,38.6,28.2,38.6z"/></svg>');
+            background-size: 200px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            background: rgba(255,255,255,0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            letter-spacing: 0.03em;
+            margin: 0;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+        
+        .nav-bar {
+            max-width: 1200px;
+            margin: -30px auto 0;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .dark-mode .nav-bar {
+            background: #1e293b;
+            box-shadow: 0 5px 20px rgba(255,255,255,0.05);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-bar a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+        }
+        
+        .nav-bar a:hover {
+            color: var(--secondary);
+            background: #f1f5f9;
+        }
+        
+        .dark-mode .nav-bar a:hover {
+            background: #334155;
+        }
+        
+        .registration-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .registration-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .dark-mode .registration-card {
+            background: #1e293b;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.05);
+        }
+        
+        .progress-bar {
+            display: flex;
+            background: #f8fafc;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .dark-mode .progress-bar {
+            background: #334155;
+            border-bottom: 1px solid #475569;
+        }
+        
+        .progress-step {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .step-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+        
+        .step-number.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .step-number.completed {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .step-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .step-description {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        
+        .dark-mode .step-description {
+            color: #94a3b8;
+        }
+        
+        .progress-connector {
+            flex: 1;
+            height: 2px;
+            background: #e2e8f0;
+            margin: 0 10px;
+            position: relative;
+            top: -10px;
+        }
+        
+        .dark-mode .progress-connector {
+            background: #475569;
+        }
+        
+        .progress-connector.completed {
+            background: var(--secondary);
+        }
+        
+        .form-container {
+            padding: 2rem;
+        }
+        
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dark-mode .form-title {
+            color: #e2e8f0;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .dark-mode .form-label {
+            color: #e2e8f0;
+        }
+        
+        .form-label .required {
+            color: #ef4444;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .dark-mode .form-input, .dark-mode .form-select, .dark-mode .form-textarea {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .facilities-grid, .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .dark-mode .form-actions {
+            border-top: 1px solid #475569;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 86, 219, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        
+        .dark-mode .btn-secondary {
+            background: #475569;
+            color: #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .dark-mode .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary) 0%, #10b981 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 150, 105, 0.3);
+        }
+        
+        .preview-card {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 2px dashed #cbd5e1;
+        }
+        
+        .dark-mode .preview-card {
+            background: #334155;
+            border-color: #475569;
+        }
+        
+        .preview-title {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .dark-mode .preview-title {
+            color: #e2e8f0;
+        }
+        
+        .school-preview {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .dark-mode .school-preview {
+            background: #1e293b;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.05);
+        }
+        
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .preview-logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .preview-info h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .preview-type {
+            background: #e0f2fe;
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 0.3rem;
+        }
+        
+        .preview-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .preview-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .dark-mode .preview-detail {
+            color: #94a3b8;
+        }
+        
+        .password-strength {
+            height: 5px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: all 0.3s;
+            border-radius: 5px;
+        }
+        
+        .strength-weak {
+            background: #ef4444;
+            width: 25%;
+        }
+        
+        .strength-fair {
+            background: #f59e0b;
+            width: 50%;
+        }
+        
+        .strength-good {
+            background: #10b981;
+            width: 75%;
+        }
+        
+        .strength-strong {
+            background: var(--secondary);
+            width: 100%;
+        }
+        
+        .password-feedback {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            color: #64748b;
+        }
+        
+        .dark-mode .password-feedback {
+            color: #94a3b8;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.error {
+            background: #ef4444;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .progress-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .progress-connector {
+                display: none;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .facilities-grid, .programs-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-  <h1>Kenya School Portal</h1>
-  <p>Add a New School to the Portal</p>
-</header>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h1>Kenya School Portal</h1>
+        </div>
+        
+        <p class="tagline">Register your school to reach thousands of parents across Kenya</p>
+    </header>
 
-<div class="container">
-  <form id="addSchoolForm">
-
-    <label class="form-label" for="schoolName">School Name *</label>
-    <input type="text" id="schoolName" name="schoolName" required />
-
-    <label class="form-label" for="county">County *</label>
-    <select id="county" name="county" required></select>
-
-    <label class="form-label" for="location">Location (Town) *</label>
-    <input type="text" id="location" name="location" required />
-
-    <label class="form-label" for="schoolType">School Type *</label>
-    <select id="schoolType" name="schoolType" required>
-      <option value="">Select type</option>
-      <option value="Public">Public</option>
-      <option value="Private">Private</option>
-    </select>
-
-    <div id="schoolCodeContainer" style="display:none;">
-      <label class="form-label" for="schoolCode">School Code *</label>
-      <input type="text" id="schoolCode" name="schoolCode" />
+    <div class="nav-bar">
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> Back to Home</a>
+            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+        </div>
+        
+        <button id="darkModeToggle" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white p-2 rounded-full cursor-pointer">
+            <i class="fas fa-moon"></i>
+        </button>
     </div>
 
-    <label class="form-label" for="levels">School Levels *</label>
-    <select id="levels" name="levels" multiple size="3" required>
-      <option value="Pre-primary">Pre-primary</option>
-      <option value="Primary">Primary</option>
-      <option value="Junior Secondary">Junior Secondary</option>
-    </select>
+    <div class="registration-container">
+        <div class="registration-card">
+            <div class="progress-bar">
+                <div class="progress-step">
+                    <div class="step-number active" id="step1-number">1</div>
+                    <div class="step-info">
+                        <div class="step-title">School Information</div>
+                        <div class="step-description">Basic details</div>
+                    </div>
+                </div>
+                <div class="progress-connector" id="connector1"></div>
+                
+                <div class="progress-step">
+                    <div class="step-number" id="step2-number">2</div>
+                    <div class="step-info">
+                        <div class="step-title">Location & Contact</div>
+                        <div class="step-description">Address & phone</div>
+                    </div>
+                </div>
+                <div class="progress-connector" id="connector2"></div>
+                
+                <div class="progress-step">
+                    <div class="step-number" id="step3-number">3</div>
+                    <div class="step-info">
+                        <div class="step-title">Admin Account</div>
+                        <div class="step-description">Login credentials</div>
+                    </div>
+                </div>
+                <div class="progress-connector" id="connector3"></div>
+                
+                <div class="progress-step">
+                    <div class="step-number" id="step4-number">4</div>
+                    <div class="step-info">
+                        <div class="step-title">Complete Profile</div>
+                        <div class="step-description">Facilities & programs</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <!-- Step 1: School Information -->
+                <div class="form-step active" id="step1">
+                    <div class="form-title">
+                        <i class="fas fa-school"></i> School Information
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">School Name <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="schoolName" placeholder="Enter official school name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">School Type <span class="required">*</span></label>
+                            <select class="form-select" id="schoolType" required>
+                                <option value="">Select school type</option>
+                                <option value="Public">Public School</option>
+                                <option value="Private">Private School</option>
+                                <option value="International">International School</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Curriculum <span class="required">*</span></label>
+                            <select class="form-select" id="curriculum" required>
+                                <option value="">Select curriculum</option>
+                                <option value="CBC">Competency Based Curriculum (CBC)</option>
+                                <option value="International">International Curriculum</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Establishment Year</label>
+                            <input type="number" class="form-input" id="establishmentYear" min="1900" max="2023" placeholder="e.g., 1995">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Education Levels Offered <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="levelPrePrimary" value="Pre-Primary">
+                                <label for="levelPrePrimary">Pre-Primary (PP1 & PP2)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="levelPrimary" value="Primary">
+                                <label for="levelPrimary">Primary (Grade 1-6)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="levelJSS" value="Junior Secondary">
+                                <label for="levelJSS">Junior Secondary (Grade 7-9)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="levelSSS" value="Senior Secondary">
+                                <label for="levelSSS">Senior Secondary (Grade 10-12)</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">CBC Implementation Stage</label>
+                        <select class="form-select" id="cbcStage">
+                            <option value="">Select implementation stage</option>
+                            <option value="Fully implemented">Fully implemented</option>
+                            <option value="Partially implemented">Partially implemented</option>
+                            <option value="Planning phase">Planning phase</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <div></div> <!-- Empty div for spacing -->
+                        <button class="btn btn-primary" onclick="nextStep(1)">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Location & Contact -->
+                <div class="form-step" id="step2">
+                    <div class="form-title">
+                        <i class="fas fa-map-marker-alt"></i> Location & Contact Information
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">County <span class="required">*</span></label>
+                            <select class="form-select" id="county" required>
+                                <option value="">Select county</option>
+                                <!-- Counties will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Sub-county</label>
+                            <input type="text" class="form-input" id="subCounty" placeholder="Enter sub-county">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Ward</label>
+                            <input type="text" class="form-input" id="ward" placeholder="Enter ward">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Physical Address <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="address" placeholder="Enter physical address" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Official Phone Number <span class="required">*</span></label>
+                            <input type="tel" class="form-input" id="phone" placeholder="e.g., 0712 345 678" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Alternative Phone Number</label>
+                            <input type="tel" class="form-input" id="altPhone" placeholder="e.g., 0700 123 456">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">School Email <span class="required">*</span></label>
+                            <input type="email" class="form-input" id="schoolEmail" placeholder="school@example.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Website</label>
+                            <input type="url" class="form-input" id="website" placeholder="https://www.example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="prevStep(2)">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-primary" onclick="nextStep(2)">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Admin Account -->
+                <div class="form-step" id="step3">
+                    <div class="form-title">
+                        <i class="fas fa-user-shield"></i> Administrator Account
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Full Name <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="adminName" placeholder="Enter your full name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Position <span class="required">*</span></label>
+                            <select class="form-select" id="adminPosition" required>
+                                <option value="">Select your position</option>
+                                <option value="Principal">Principal</option>
+                                <option value="Deputy Principal">Deputy Principal</option>
+                                <option value="Director">Director</option>
+                                <option value="Administrator">Administrator</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Phone Number <span class="required">*</span></label>
+                            <input type="tel" class="form-input" id="adminPhone" placeholder="e.g., 0712 345 678" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Email Address <span class="required">*</span></label>
+                            <input type="email" class="form-input" id="adminEmail" placeholder="your.email@example.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Password <span class="required">*</span></label>
+                            <input type="password" class="form-input" id="password" placeholder="Create a secure password" required>
+                            <div class="password-strength">
+                                <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                            </div>
+                            <div class="password-feedback" id="passwordFeedback"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password <span class="required">*</span></label>
+                            <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm your password" required>
+                            <div class="password-feedback" id="confirmFeedback"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="prevStep(3)">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-primary" onclick="nextStep(3)">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Complete Profile -->
+                <div class="form-step" id="step4">
+                    <div class="form-title">
+                        <i class="fas fa-info-circle"></i> Complete School Profile
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">School Mission/Vision</label>
+                        <textarea class="form-textarea" id="mission" placeholder="Briefly describe your school's mission and vision"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Key Facilities</label>
+                        <div class="facilities-grid">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facilityScienceLab" value="Science Laboratory">
+                                <label for="facilityScienceLab">Science Laboratory</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facilityComputerLab" value="Computer Lab">
+                                <label for="facilityComputerLab">Computer Lab</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facilityLibrary" value="Library">
+                                <label for="facilityLibrary">Library</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facilitySports" value="Sports Facilities">
+                                <label for="facilitySports">Sports Facilities</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facilityArt" value="Art Room">
+                                <label for="facilityArt">Art Room</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facilityMusic" value="Music Room">
+                                <label for="facilityMusic">Music Room</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facilityDining" value="Dining Hall">
+                                <label for="facilityDining">Dining Hall</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="facilityBoarding" value="Boarding Facilities">
+                                <label for="facilityBoarding">Boarding Facilities</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Special Programs</label>
+                        <div class="programs-grid">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="programSports" value="Sports Academy">
+                                <label for="programSports">Sports Academy</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="programMusic" value="Music Program">
+                                <label for="programMusic">Music Program</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="programDrama" value="Drama Club">
+                                <label for="programDrama">Drama Club</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="programScience" value="Science Club">
+                                <label for="programScience">Science Club</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="programDebate" value="Debate Club">
+                                <label for="programDebate">Debate Club</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">School Logo</label>
+                        <input type="file" class="form-input" id="schoolLogo" accept="image/*">
+                        <small class="text-gray-500">Recommended size: 200x200 pixels</small>
+                    </div>
+                    
+                    <div class="preview-card">
+                        <div class="preview-title">School Preview</div>
+                        <div class="school-preview" id="schoolPreview">
+                            <!-- Preview will be generated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="prevStep(4)">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <button class="btn btn-success" onclick="submitRegistration()">
+                            <i class="fas fa-check"></i> Complete Registration
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <label class="form-label" for="feeStructure">Fee Structure (e.g. KES 15,000 / term)</label>
-    <input type="text" id="feeStructure" name="feeStructure" />
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Kenya School Portal</h3>
+                <p>Connecting parents, students, and schools across Kenya for better education outcomes.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                    <li><a href="#"><i class="fas fa-question-circle"></i> Help Center</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul class="footer-links">
+                    <li><a href="tel:+254700000000"><i class="fas fa-phone"></i> +254 700 000 000</a></li>
+                    <li><a href="mailto:info@kenyaschools.co.ke"><i class="fas fa-envelope"></i> info@kenyaschools.co.ke</a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2023 Kenya School Portal. All rights reserved.
+        </div>
+    </footer>
 
-    <label class="form-label" for="schoolDescription">Brief Description</label>
-    <textarea id="schoolDescription" name="schoolDescription"></textarea>
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully</span>
+    </div>
 
-    <label class="form-label" for="motto">School Motto</label>
-    <input type="text" id="motto" name="motto" />
-
-    <label class="form-label" for="vision">Vision Statement</label>
-    <textarea id="vision" name="vision"></textarea>
-
-    <label class="form-label" for="principal">Principal / Director Name</label>
-    <input type="text" id="principal" name="principal" />
-
-    <label class="form-label" for="principalContact">Principal Contact (email or phone)</label>
-    <input type="text" id="principalContact" name="principalContact" />
-
-    <label class="form-label" for="languages">Languages of Instruction (comma separated)</label>
-    <input type="text" id="languages" name="languages" />
-
-    <label class="form-label" for="facilities">Facilities (comma separated, e.g. Library, Labs, Sports)</label>
-    <input type="text" id="facilities" name="facilities" />
-
-    <label class="form-label" for="socialFacebook">Facebook URL</label>
-    <input type="url" id="socialFacebook" name="socialFacebook" placeholder="https://facebook.com/yourPage" />
-
-    <label class="form-label" for="socialTwitter">Twitter URL</label>
-    <input type="url" id="socialTwitter" name="socialTwitter" placeholder="https://twitter.com/yourPage" />
-
-    <label class="form-label" for="socialInstagram">Instagram URL</label>
-    <input type="url" id="socialInstagram" name="socialInstagram" placeholder="https://instagram.com/yourPage" />
-
-    <label class="form-label" for="schoolWebsite">School Website URL</label>
-    <input type="url" id="schoolWebsite" name="schoolWebsite" placeholder="https://yourSchoolWebsite.com" />
-
-    <label class="form-label" for="contact">Contact Details (email or phone) *</label>
-    <input type="text" id="contact" name="contact" required />
-
-    <label class="form-label" for="photos">School Photos (At least one photo required)</label>
-    <input type="file" id="photos" name="photos" accept="image/*" multiple required />
-
-    <button type="submit">Add School</button>
-    <div id="statusMessage" class="status-message"></div>
-  </form>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-    authDomain: "school-portal-233f5.firebaseapp.com",
-    projectId: "school-portal-233f5",
-    storageBucket: "school-portal-233f5.appspot.com",
-    messagingSenderId: "314984934331",
-    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const storage = firebase.storage();
-
-  const COUNTY_LIST = [
-    "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita Taveta","Tana River","Tharaka Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
-  ];
-
-  const countySelect = document.getElementById('county');
-  COUNTY_LIST.forEach(county => {
-    const option = document.createElement('option');
-    option.value = county;
-    option.textContent = county;
-    countySelect.appendChild(option);
-  });
-
-  const schoolTypeSelect = document.getElementById('schoolType');
-  const schoolCodeContainer = document.getElementById('schoolCodeContainer');
-  const schoolCodeInput = document.getElementById('schoolCode');
-
-  schoolTypeSelect.addEventListener('change', () => {
-    if (schoolTypeSelect.value === 'Public') {
-      schoolCodeContainer.style.display = 'block';
-      schoolCodeInput.setAttribute('required', 'required');
-    } else {
-      schoolCodeContainer.style.display = 'none';
-      schoolCodeInput.removeAttribute('required');
-    }
-  });
-
-  const addSchoolForm = document.getElementById('addSchoolForm');
-  const statusMessage = document.getElementById('statusMessage');
-
-  addSchoolForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    statusMessage.textContent = '';
-    statusMessage.className = 'status-message';
-
-    if(addSchoolForm.photos.files.length === 0) {
-      showError("Please upload at least one school photo.");
-      return;
-    }
-    if (!addSchoolForm.schoolName.value.trim()) return showError("School Name is required.");
-    if (!addSchoolForm.county.value) return showError("Please select the county.");
-    if (!addSchoolForm.location.value.trim()) return showError("Please enter the location.");
-    if (!addSchoolForm.schoolType.value) return showError("Please select school type.");
-    if (schoolTypeSelect.value === 'Public' && !addSchoolForm.schoolCode.value.trim()) return showError("School code is required for public schools.");
-    if (!addSchoolForm.levels.selectedOptions.length) return showError("Please select at least one level.");
-    if (!addSchoolForm.contact.value.trim()) return showError("Please enter contact info.");
-
-    try {
-      // Upload photos
-      let photoUrls = [];
-      if(addSchoolForm.photos.files.length > 0) {
-        const promises = [];
-        for(let file of addSchoolForm.photos.files) {
-          const fileRef = storage.ref().child(`school_photos/${Date.now()}_${file.name}`);
-          promises.push(fileRef.put(file).then(snapshot => snapshot.ref.getDownloadURL()));
-        }
-        photoUrls = await Promise.all(promises);
-      }
-
-      // Prepare school data
-      const docData = {
-        name: addSchoolForm.schoolName.value.trim(),
-        county: addSchoolForm.county.value,
-        location: addSchoolForm.location.value.trim(),
-        type: addSchoolForm.schoolType.value,
-        schoolCode: addSchoolForm.schoolType.value === 'Public' ? addSchoolForm.schoolCode.value.trim() : null,
-        levels: Array.from(addSchoolForm.levels.selectedOptions).map(o => o.value),
-        price: addSchoolForm.feeStructure.value.trim() || null,
-        description: addSchoolForm.schoolDescription.value.trim() || null,
-        motto: addSchoolForm.motto.value.trim() || null,
-        vision: addSchoolForm.vision.value.trim() || null,
-        principal: addSchoolForm.principal.value.trim() || null,
-        principalContact: addSchoolForm.principalContact.value.trim() || null,
-        languages: addSchoolForm.languages.value.trim() || null,
-        facilities: addSchoolForm.facilities.value.trim() || null,
-        socialLinks: {
-          facebook: addSchoolForm.socialFacebook.value.trim() || null,
-          twitter: addSchoolForm.socialTwitter.value.trim() || null,
-          instagram: addSchoolForm.socialInstagram.value.trim() || null
-        },
-        website: addSchoolForm.schoolWebsite.value.trim() || null,
-        contact: addSchoolForm.contact.value.trim(),
-        photos: photoUrls,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-        featured: false
-      };
-
-      await db.collection('schools').add(docData);
-
-      showSuccess("School added successfully! Redirecting to homepage...");
-      addSchoolForm.reset();
-      schoolCodeContainer.style.display = "none";
-
-      setTimeout(() => {
-        window.location.href = "index.html";
-      }, 2300);
-
-    } catch(error) {
-      showError("Error adding school: " + error.message);
-    }
-  });
-
-  function showError(msg) {
-    statusMessage.textContent = msg;
-    statusMessage.className = 'status-message status-error';
-  }
-  function showSuccess(msg) {
-    statusMessage.textContent = msg;
-    statusMessage.className = 'status-message status-success';
-  }
-</script>
-</body>
-</html>
+    <script>
+        // Kenya counties
+        const COUNTY_LIST = [
+            "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabi
