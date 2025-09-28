@@ -1,391 +1,1294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Kenya School Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<style>
-  /* (your original styles unchanged) */
-  body { margin: 0; padding: 0; font-family: 'Montserrat', Arial, sans-serif; background: linear-gradient(135deg, #e8f0fe, #98e6cf 80%); color: #233247; }
-  header { background-color: #000; color: #fff; padding: 2.5rem 0 3rem; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; position: relative; }
-  header h1 { font-size: 2.5rem; letter-spacing: 0.04em; margin: 0; font-weight: 700; text-shadow: none; }
-  header p { font-size: 1.25rem; margin-top: 1rem; margin-bottom: 2rem; font-weight: 500; }
-  .hero-search { max-width: 680px; margin: 0 auto; display: flex; gap: 1rem; }
-  .hero-search input, .hero-search select { font-size: 1.03rem; padding: 0.8rem; border-radius: 30px; border: none; outline: none; margin: 0; flex: 1 1 0; }
-  .hero-search button { background: #14a800; color: #fff; font-weight: 700; padding: 0.8rem 1.8rem; border-radius: 30px; border: none; cursor: pointer; font-size: 1.07rem; box-shadow: 0 2px 8px rgba(44,196,80,0.18); transition: background 0.22s; }
-  .hero-search button:hover { background: #0e6f2b; }
-  .nav-bar { max-width: 1150px; margin: -48px auto 0; background: #fff; padding: 0.7rem 2rem; border-radius: 20px; box-shadow: 0 3px 15px #bae8e8bb; display: flex; justify-content: flex-end; align-items: center; gap: 1rem; position: relative; z-index: 100; }
-  .nav-bar a { color: #1d8fff; font-weight: 700; margin-left: 1rem; text-decoration: none; font-size: 1.07rem; letter-spacing: 0.02em; transition: color 0.22s; }
-  .nav-bar a:hover { color: #14a800; }
-  .filters-wrap { display: flex; gap: 1.3rem; margin: 2.2rem auto 2rem; justify-content: center; flex-wrap: wrap; max-width: 900px; }
-  .filters-wrap select, .filters-wrap button { padding: 0.6rem 1.2rem; font-size: 1rem; border-radius: 25px; border: 1.2px solid #1d8fff; color: #233247; background: #f7fafc; }
-  .filters-wrap button { background: #1d8fff; color: #fff; border: none; font-weight: 700; box-shadow: 0 2px 6px #8ed6f6aa; }
-  .filters-wrap button.selected, .filters-wrap button:focus { background: #38ef7d; color: #023129; border: 1.5px solid #1d8fff; }
-  .top-schools-section { max-width: 1200px; margin: 2.5rem auto 1.8rem; }
-  .top-schools-list { display: flex; gap: 1.8rem; overflow-x: auto; padding-bottom: 0.7rem; }
-  .school-card { flex: 1 1 210px; min-width: 250px; max-width: 300px; background: #fff; border-radius: 21px; box-shadow: 0 3px 20px #bae8e8cc; padding: 1.2rem 1rem 1.4rem; display: flex; flex-direction: column; align-items: center; position: relative; transition: transform 0.12s, box-shadow 0.24s; cursor: pointer; }
-  .school-card:hover { transform: translateY(-3px) scale(1.018); box-shadow: 0 10px 30px #56be7faa; }
-  .school-logo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin-bottom: 0.7rem; box-shadow: 0 2px 6px #eee; border: 3px solid #e2f5fd; background: #fafbff; }
-  .top-badge { background: linear-gradient(90deg, #38ef7d, #1d8fff); color: #fff; font-weight: 900; border-radius: 8px 8px 8px 0; font-size: 0.92rem; position: absolute; top: 0; right: 0; padding: 0.32rem 1rem; letter-spacing: 0.045em; }
-  .school-card .levels, .school-card .type, .school-card .county { font-size: 0.99rem; margin-top: 0.24rem; color: #188a62; font-weight: 600; }
-  .school-card .type { color: #1d8fff; font-weight: 700; letter-spacing: 0.01em; }
-  .school-card .county { color: #626e85; font-size: 0.93rem; }
-  .school-card .price { margin: 0.4rem 0 0.18rem 0; color: #147822; font-weight: 700; }
-  .school-card button { margin-top: 0.7rem; background: #38ef7d; color: #025e2d; font-size: 1rem; font-weight: 700; border: none; border-radius: 24px; padding: 0.48rem 1.35rem; cursor: pointer; box-shadow: 0 2px 8px #bafedeaa; transition: background 0.18s; }
-  .school-card button:hover { background: #147822; color: #fff; }
-  main { max-width: 1200px; margin: 0 auto 2.2rem; padding: 1.2rem 0; }
-  .school-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4rem; }
-  .saved-children-bar { background: linear-gradient(90deg, #39e4d8, #3edc81); margin: 1.1rem auto 2rem; padding: 1rem 1.3rem; border-radius: 15px; max-width: 900px; color: #054f35; box-shadow: 0 2px 6px #bafede88; display: none; flex-wrap: wrap; align-items: center; gap: 1rem; }
-  .saved-child-chip { background: #fff; color: #22b573; border-radius: 13px; padding: 0.47rem 1.2rem; margin: 0.2rem 0.53rem 0.2rem 0; font-size: 1.03rem; font-weight: 700; cursor: pointer; transition: background 0.14s; display: inline-block; border: 1.5px solid #33c9f7; box-shadow: 0 1px 4px #53fbcd24; }
-  .saved-child-chip:hover { background: #38ef7d; color: #014d2a; }
-  .section-title { font-size: 1.2rem; text-transform: uppercase; font-weight: 900; color: #16527a; margin: 1.6rem 0 0.6rem 4px; letter-spacing: 0.1em; border-left: 4px solid #38ef7d; padding-left: 0.5rem; }
-  @media (max-width: 700px) {
-    header { padding: 1.2rem 0 2.2rem; }
-    .hero-search { flex-direction: column; gap: 0.55rem; width: 98%; }
-    .top-schools-list { gap: 0.6rem; }
-    .school-card { min-width: 85vw; }
-    .nav-bar { padding: 0.3rem 0.6rem; border-radius: 12px; }
-    .filters-wrap { flex-direction: column; gap: 0.5rem; }
-    .school-grid { grid-template-columns: 1fr; }
-  }
-  body.dark-mode { background-color: #121212; color: #ddd; }
-  body.dark-mode header { background-color: #111; color: #eee; }
-  body.dark-mode .nav-bar { background-color: #222; box-shadow: 0 3px 12px rgba(255 255 255 / 0.15); }
-  body.dark-mode .school-card { background-color: #222; border-color: #555; color: #ddd; box-shadow: 0 4px 10px rgba(255 255 255 / 0.15); }
-  body.dark-mode button { background-color: #38ef7d; color: #023129; }
-  /* small helper messages */
-  .muted { color: #6b7280; font-size: 0.95rem; }
-  .error { color: #b91c1c; }
-</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kenya School Portal - Find the Best Schools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a56db;
+            --secondary: #059669;
+            --accent: #7e22ce;
+            --light: #f0f9ff;
+            --dark: #0f172a;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        
+        .dark-mode {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+            color: #e2e8f0 !important;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 3rem 0 4rem;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><path fill="white" d="M28.2,38.6c0,0,13.9-15.4,33.2-7.5c19.3,7.9,19.7,25.3,20.7,31.6c1,6.3-9.3,9.3-14.9,9.3c-5.6,0-15.4-2.5-24.3-9.3C34,55.4,28.2,38.6,28.2,38.6z"/></svg>');
+            background-size: 200px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            background: rgba(255,255,255,0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            letter-spacing: 0.03em;
+            margin: 0;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            margin-top: 1rem;
+            margin-bottom: 2.5rem;
+            font-weight: 500;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+        
+        .hero-search {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-input-group {
+            flex: 1;
+            position: relative;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+        
+        .hero-search input {
+            width: 100%;
+            font-size: 1.1rem;
+            padding: 1rem 1rem 1rem 3rem;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .hero-search input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
+        }
+        
+        .hero-search select {
+            font-size: 1rem;
+            padding: 1rem;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            outline: none;
+            background: white;
+            cursor: pointer;
+            min-width: 160px;
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, var(--secondary) 0%, #10b981 100%);
+            color: white;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
+        }
+        
+        .nav-bar {
+            max-width: 1200px;
+            margin: -40px auto 0;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .dark-mode .nav-bar {
+            background: #1e293b;
+            box-shadow: 0 5px 20px rgba(255,255,255,0.05);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-bar a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+        }
+        
+        .nav-bar a:hover {
+            color: var(--secondary);
+            background: #f1f5f9;
+        }
+        
+        .dark-mode .nav-bar a:hover {
+            background: #334155;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .filters-wrap {
+            display: flex;
+            gap: 1.5rem;
+            margin: 2.5rem auto 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            padding: 0 1rem;
+        }
+        
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            border: 2px solid #cbd5e1;
+            color: #475569;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .dark-mode .filter-btn {
+            background: #334155;
+            color: #cbd5e1;
+            border-color: #475569;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin: 2.5rem 0 1.5rem;
+            padding-left: 1rem;
+            border-left: 5px solid var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dark-mode .section-title {
+            color: #e2e8f0;
+        }
+        
+        .top-schools-section, .all-schools-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .top-schools-list {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding: 1rem 0.5rem 2rem;
+            scrollbar-width: thin;
+        }
+        
+        .top-schools-list::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .top-schools-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        .school-card {
+            flex: 0 0 300px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dark-mode .school-card {
+            background: #1e293b;
+            box-shadow: 0 5px 20px rgba(255,255,255,0.05);
+        }
+        
+        .school-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .school-card.featured::before {
+            content: 'FEATURED';
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 30px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 10px rgba(126, 34, 206, 0.3);
+        }
+        
+        .school-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .school-logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            object-fit: cover;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .school-info h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .school-type {
+            background: #e0f2fe;
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 0.3rem;
+        }
+        
+        .school-details {
+            margin: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .dark-mode .detail-item {
+            color: #94a3b8;
+        }
+        
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #f59e0b;
+            font-weight: 600;
+        }
+        
+        .school-card .action-btn {
+            margin-top: auto;
+            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .school-card .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26, 86, 219, 0.3);
+        }
+        
+        .school-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stats-section {
+            max-width: 1200px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .dark-mode .stat-card {
+            background: #1e293b;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.05);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+        
+        .dark-mode .stat-label {
+            color: #94a3b8;
+        }
+        
+        .quick-actions {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .dark-mode .action-card {
+            background: #1e293b;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.05);
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 25px rgba(26, 86, 219, 0.1);
+        }
+        
+        .action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .action-card h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .action-card p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .dark-mode .action-card p {
+            color: #94a3b8;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .saved-children-bar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            margin: 1.5rem auto;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            max-width: 1200px;
+            color: white;
+            box-shadow: 0 5px 15px rgba(26, 86, 219, 0.2);
+            display: none;
+        }
+        
+        .saved-child-chip {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            margin: 0.3rem 0.5rem 0.3rem 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .saved-child-chip:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 1.1rem;
+            }
+            
+            .hero-search {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-bar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+                display: none;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+            }
+            
+            .user-info {
+                width: 100;
+                justify-content: center;
+            }
+            
+            .school-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-schools-list {
+                gap: 1rem;
+            }
+            
+            .school-card {
+                flex: 0 0 85%;
+            }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: var(--secondary);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
-<header>
-  <h1>Kenya School Portal</h1>
-  <p>Find, compare, and connect with the best schools in every county — all from one place.</p>
-  <button type="button" id="darkModeToggle" style="position: absolute; top:10px; right:20px; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; cursor:pointer;">🌙 Dark Mode</button>
+    <header>
+        <button type="button" id="darkModeToggle" class="absolute top-6 right-6 bg-white/20 text-white p-2 rounded-full cursor-pointer z-10">
+            <i class="fas fa-moon"></i>
+        </button>
+        
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h1>Kenya School Portal</h1>
+        </div>
+        
+        <p class="tagline">Find, compare, and connect with the best schools in every county — all from one place.</p>
+        
+        <form class="hero-search" id="mainSearchForm" onsubmit="return false;">
+            <div class="search-input-group">
+                <i class="search-icon fas fa-search"></i>
+                <input type="search" id="heroSearchInput" placeholder="Search schools, students, or admission numbers..." />
+            </div>
+            <select id="levelFilter">
+                <option value="">All Levels</option>
+                <option value="Pre-primary">Pre-primary</option>
+                <option value="Primary">Primary</option>
+                <option value="Junior Secondary">Junior Secondary</option>
+                <option value="Senior Secondary">Senior Secondary</option>
+            </select>
+            <select id="countyFilter">
+                <option value="">All Counties</option>
+            </select>
+            <button id="mainSearchBtn" type="button" class="search-btn">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
+    </header>
 
-  <form class="hero-search" id="mainSearchForm" onsubmit="return false;">
-    <input type="search" id="heroSearchInput" placeholder="Search schools by name, location or admission..." />
-    <select id="levelFilter"><option value="">All Levels</option><option value="Pre-primary">Pre-primary</option><option value="Primary">Primary</option><option value="Junior Secondary">Junior Secondary</option></select>
-    <select id="countyFilter"></select>
-    <button id="mainSearchBtn" type="button">Search</button>
-  </form>
-</header>
+    <div class="nav-bar">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links" id="navLinks">
+            <a href="login.html"><i class="fas fa-sign-in-alt"></i> Login / Register</a>
+            <a href="admin-dashboard.html"><i class="fas fa-plus-circle"></i> Add Your School</a>
+            <a href="#news"><i class="fas fa-newspaper"></i> News & Resources</a>
+            <a href="#contact"><i class="fas fa-envelope"></i> Contact Us</a>
+        </div>
+        
+        <div class="user-info">
+            <div class="avatar">GU</div>
+            <span>Guest User</span>
+        </div>
+    </div>
 
-<div class="nav-bar">
-  <a href="login.html">Login / Register</a>
-<a href="add_school.html">Add Your School</a>
-  <a href="#news">News & Free Resources</a>
-</div>
+    <div class="saved-children-bar" id="savedChildrenBar">
+        <b><i class="fas fa-child"></i> Your Saved Children:</b>
+        <div id="savedChildrenChips" style="display: inline; margin-left: 1rem;"></div>
+    </div>
 
-<div class="filters-wrap">
-  <span style="font-weight:700;color:#1d8fff;">Browse by:</span>
-  <select id="filterLevelMini"><option value="">All Levels</option><option value="Pre-primary">Pre-primary</option><option value="Primary">Primary</option><option value="Junior Secondary">Junior Secondary</option></select>
-  <select id="filterCountyMini"></select>
-  <select id="filterTypeMini"><option value="">All Types</option><option value="Public">Public</option><option value="Private">Private</option></select>
-</div>
+    <div class="filters-wrap">
+        <span style="font-weight:700;color:var(--primary);">Browse by:</span>
+        <button class="filter-btn active"><i class="fas fa-star"></i> Top Rated</button>
+        <button class="filter-btn"><i class="fas fa-map-marker-alt"></i> Nearest</button>
+        <button class="filter-btn"><i class="fas fa-money-bill-wave"></i> Affordable</button>
+        <button class="filter-btn"><i class="fas fa-chart-line"></i> High Performance</button>
+    </div>
 
-<div class="saved-children-bar" id="savedChildrenBar">
-  <b>Your Saved Children:</b>
-  <div id="savedChildrenChips" style="display:inline;"></div>
-</div>
+    <section class="quick-actions">
+        <div class="actions-grid">
+            <div class="action-card" onclick="window.location.href='login.html'">
+                <div class="action-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3>Register Your School</h3>
+                <p>Get your school on the portal to reach more parents</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='login.html'">
+                <div class="action-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Find a Student</h3>
+                <p>Search for a student by name or admission number</p>
+            </div>
+            <div class="action-card" onclick="window.location.href='#news'">
+                <div class="action-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3>Free Resources</h3>
+                <p>Download CBC notes, schemes of work and more</p>
+            </div>
+        </div>
+    </section>
 
-<section class="top-schools-section">
-  <div class="section-title">Top Rated Schools</div>
-  <div class="top-schools-list" id="topSchoolsList"></div>
-</section>
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-school"></i>
+                </div>
+                <div class="stat-number">1,247</div>
+                <div class="stat-label">Schools Registered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="stat-number">24,891</div>
+                <div class="stat-label">Students Tracked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stat-number">8,562</div>
+                <div class="stat-label">Active Teachers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-smile"></i>
+                </div>
+                <div class="stat-number">87%</div>
+                <div class="stat-label">Parent Satisfaction</div>
+            </div>
+        </div>
+    </section>
 
-<main>
-  <div class="section-title">All Schools</div>
-  <div class="school-grid" id="schoolGrid"></div>
-</main>
+    <section class="top-schools-section">
+        <div class="section-title">
+            <i class="fas fa-crown"></i> Top Rated Schools
+        </div>
+        <div class="top-schools-list" id="topSchoolsList">
+            <!-- Top schools will be loaded here -->
+        </div>
+    </section>
 
-<section id="news">
-  <div class="section-title">Latest News & Free Educational Resources</div>
-  <div style="background:#f9fbfc;padding:1.1rem 1rem;border-radius:1em;">
-    <p><b>MOE:</b> Gov. releases new CBC notes and schemes of work for JSS. &mdash; <a href="#">Download</a></p>
-    <p>Guide: <a href="#">How to choose the best school for your child</a></p>
-    <p>See <a href="#">more resources</a> &mdash; or <a href="#">Contact admin</a>.</p>
-  </div>
-</section>
+    <section class="all-schools-section">
+        <div class="section-title">
+            <i class="fas fa-list"></i> All Schools
+        </div>
+        <div class="school-grid" id="schoolGrid">
+            <!-- All schools will be loaded here -->
+        </div>
+    </section>
 
-<!-- small status area -->
-<div style="max-width:1200px;margin:1rem auto;padding:0 1rem;">
-  <div id="statusMessage" class="muted">Connecting to server...</div>
-</div>
+    <section id="news" class="max-w-1200 mx-auto px-4 my-8">
+        <div class="section-title">
+            <i class="fas fa-newspaper"></i> Latest News & Free Educational Resources
+        </div>
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md">
+            <p class="mb-3"><b>MOE Update:</b> Government releases new CBC notes and schemes of work for JSS. &mdash; <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">Download Here</a></p>
+            <p class="mb-3">Guide: <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">How to choose the best school for your child</a></p>
+            <p>See <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">more resources</a> or <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">Contact admin</a> for assistance.</p>
+        </div>
+    </section>
 
-<!-- Firebase + app logic (module) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-  import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-  import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Kenya School Portal</h3>
+                <p>Connecting parents, students, and schools across Kenya for better education outcomes.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                    <li><a href="#news"><i class="fas fa-newspaper"></i> News & Resources</a></li>
+                    <li><a href="#contact"><i class="fas fa-envelope"></i> Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <ul class="footer-links">
+                    <li><a href="tel:+254700000000"><i class="fas fa-phone"></i> +254 700 000 000</a></li>
+                    <li><a href="mailto:info@kenyaschools.co.ke"><i class="fas fa-envelope"></i> info@kenyaschools.co.ke</a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2023 Kenya School Portal. All rights reserved.
+        </div>
+    </footer>
 
-  // <-- your firebase config (as you provided) -->
-  const firebaseConfig = {
-    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-    authDomain: "school-portal-233f5.firebaseapp.com",
-    projectId: "school-portal-233f5",
-    storageBucket: "school-portal-233f5.appspot.com",
-    messagingSenderId: "314984934331",
-    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-  };
+    <div id="statusMessage" class="fixed bottom-4 left-4 bg-white dark:bg-slate-800 shadow-lg rounded-lg px-4 py-2 text-sm"></div>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  const storage = getStorage(app);
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Operation completed successfully</span>
+    </div>
 
-  // Counties
-  const COUNTY_LIST = [
-    "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita Taveta","Tana River","Tharaka Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
-  ];
+    <!-- Firebase + app logic -->
+    <script type="module">
+        // Import the functions you need from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-  // DOM refs
-  const countyFilter = document.getElementById('countyFilter');
-  const filterCountyMini = document.getElementById('filterCountyMini');
-  const heroSearchInput = document.getElementById('heroSearchInput');
-  const mainSearchBtn = document.getElementById('mainSearchBtn');
-  const statusMessage = document.getElementById('statusMessage');
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+            authDomain: "school-portal-233f5.firebaseapp.com",
+            projectId: "school-portal-233f5",
+            storageBucket: "school-portal-233f5.appspot.com",
+            messagingSenderId: "314984934331",
+            appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+        };
 
-  const schoolGrid = document.getElementById('schoolGrid');
-  const topSchoolsList = document.getElementById('topSchoolsList');
-  const savedChildrenBar = document.getElementById('savedChildrenBar');
-  const savedChildrenChips = document.getElementById('savedChildrenChips');
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
 
-  // populate county selects
-  countyFilter.innerHTML = '<option value="">All Counties</option>' + COUNTY_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
-  filterCountyMini.innerHTML = countyFilter.innerHTML;
+        // Counties in Kenya
+        const COUNTY_LIST = [
+            "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita Taveta","Tana River","Tharaka Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
+        ];
 
-  // Dark mode
-  const darkModeToggle = document.getElementById('darkModeToggle');
-  darkModeToggle.addEventListener('click', () => {
-    const on = document.body.classList.toggle('dark-mode');
-    darkModeToggle.textContent = on ? '☀️ Light Mode' : '🌙 Dark Mode';
-    localStorage.setItem('darkMode', on ? 'enabled' : 'disabled');
-  });
-  const savedDark = localStorage.getItem('darkMode');
-  if (savedDark === 'enabled') { document.body.classList.add('dark-mode'); darkModeToggle.textContent = '☀️ Light Mode'; }
+        // DOM references
+        const countyFilter = document.getElementById('countyFilter');
+        const heroSearchInput = document.getElementById('heroSearchInput');
+        const mainSearchBtn = document.getElementById('mainSearchBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const schoolGrid = document.getElementById('schoolGrid');
+        const topSchoolsList = document.getElementById('topSchoolsList');
+        const savedChildrenBar = document.getElementById('savedChildrenBar');
+        const savedChildrenChips = document.getElementById('savedChildrenChips');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
 
-  // state
-  let schoolsLocal = []; // cached client-side copy for filtering
+        // Populate county selects
+        countyFilter.innerHTML = '<option value="">All Counties</option>' + COUNTY_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
 
-  // --- utilities ---
-  function showStatus(msg, err=false) {
-    statusMessage.textContent = msg;
-    statusMessage.className = err ? 'error' : 'muted';
-  }
-
-  function createSchoolCard(docId, s) {
-    const container = document.createElement('div');
-    container.className = 'school-card';
-    const logoPart = s.logoUrl ? `<img src="${s.logoUrl}" class="school-logo" alt="logo">` : `<div class="school-logo" style="background:#ccc;"></div>`;
-    container.innerHTML = `
-      ${s.featured ? `<div class="top-badge">Featured</div>` : ''}
-      ${logoPart}
-      <div class="levels">${s.levels || ''}</div>
-      <div style="font-size:1.13rem;font-weight:800;">${s.name || 'Unnamed School'}</div>
-      <div class="county">${s.county || (s.location || '')}</div>
-      <div class="type">${s.type || ''}</div>
-      <div class="price">${s.price ? s.price : ''}</div>
-      <button type="button" data-id="${docId}">Visit School</button>
-    `;
-    // Visit click
-    const btn = container.querySelector('button');
-    btn.addEventListener('click', () => { window.location.href = `school.html?id=${docId}`; });
-    return container;
-  }
-
-  // --- real-time loaders ---
-  function loadSchoolsRealtime() {
-    showStatus('Loading schools...');
-    const col = collection(db, "schools");
-    // onSnapshot will call once immediately and then on every change
-    onSnapshot(col, (snap) => {
-      schoolsLocal = [];
-      schoolGrid.innerHTML = '';
-      topSchoolsList.innerHTML = '';
-      if (snap.empty) {
-        showStatus('No schools found', true);
-        schoolGrid.innerHTML = `<p class="muted">No schools registered</p>`;
-        return;
-      }
-
-      snap.forEach(d => {
-        const s = d.data();
-        s.__id = d.id;
-        schoolsLocal.push(s);
-      });
-
-      // show all
-      showSchools(schoolsLocal);
-      showTopSchools(schoolsLocal.filter(s => s.featured));
-      showStatus('Connected — live schools streaming');
-    }, (err) => {
-      console.error('schools onSnapshot error', err);
-      showStatus('Unable to stream schools: ' + err.message, true);
-    });
-  }
-
-  function loadNotificationsRealtime() {
-    showStatus('Loading notifications...');
-    const col = collection(db, "notifications");
-    onSnapshot(col, (snap) => {
-      const container = document.getElementById('news');
-      // We'll only update the "notifications" list area inside #news
-      const notifArea = document.getElementById('news').querySelector('div[style]');
-      if (!notifArea) return;
-      notifArea.innerHTML = '';
-      if (snap.empty) {
-        notifArea.innerHTML = '<p class="muted">No notifications</p>';
-        return;
-      }
-      snap.forEach(d => {
-        const n = d.data();
-        const p = document.createElement('p');
-        p.innerHTML = `<strong>${n.title || ''}</strong> ${n.message || ''} ${n.fileUrl ? ` <a href="${n.fileUrl}" target="_blank">Download</a>` : ''}`;
-        notifArea.appendChild(p);
-      });
-    }, (err) => {
-      console.error('notifications onSnapshot error', err);
-      showStatus('Unable to stream notifications: ' + err.message, true);
-    });
-  }
-
-  // show functions use cached array
-  function showSchools(list) {
-    schoolGrid.innerHTML = '';
-    if (!list.length) {
-      schoolGrid.innerHTML = '<p class="muted">No schools to show</p>';
-      return;
-    }
-    list.forEach(s => {
-      const id = s.__id || s.id || '';
-      const card = createSchoolCard(id, s);
-      schoolGrid.appendChild(card);
-    });
-  }
-
-  function showTopSchools(list) {
-    topSchoolsList.innerHTML = '';
-    if (!list.length) {
-      topSchoolsList.innerHTML = '<div class="muted">No featured schools</div>';
-      return;
-    }
-    list.slice(0,8).forEach((s, idx) => {
-      const card = createSchoolCard(s.__id || s.id, s);
-      // add badge
-      const badge = card.querySelector('.top-badge') || document.createElement('div');
-      badge.className = 'top-badge';
-      badge.textContent = `Top ${idx+1}`;
-      if (!card.querySelector('.top-badge')) card.prepend(badge);
-      topSchoolsList.appendChild(card);
-    });
-  }
-
-  // --- saved children rendering ---
-  function renderSavedChildren() {
-    const saved = JSON.parse(localStorage.getItem('savedChildren') || '[]');
-    if (!saved || !saved.length) {
-      savedChildrenBar.style.display = 'none';
-      return;
-    }
-    savedChildrenChips.innerHTML = '';
-    saved.forEach(child => {
-      const chip = document.createElement('span');
-      chip.className = 'saved-child-chip';
-      chip.textContent = `${child.name} (${child.admission})`;
-      chip.addEventListener('click', () => { window.location.href = `student_profile.html?schoolId=${child.schoolId || ''}&id=${child.id || ''}&admission=${child.admission}`; });
-      savedChildrenChips.appendChild(chip);
-    });
-    savedChildrenBar.style.display = 'flex';
-  }
-
-  function saveChildToLocal(child) {
-    const saved = JSON.parse(localStorage.getItem('savedChildren') || '[]');
-    // prevent duplicates by admission
-    if (saved.some(s => s.admission === child.admission)) {
-      alert('Child already saved');
-      return;
-    }
-    saved.push(child);
-    localStorage.setItem('savedChildren', JSON.stringify(saved));
-    renderSavedChildren();
-    alert('Child saved');
-  }
-
-  // --- search / quick student lookup ---
-  async function performSearch() {
-    const term = heroSearchInput.value.trim();
-    const lvl = document.getElementById('levelFilter').value;
-    const county = document.getElementById('countyFilter').value;
-    const type = document.getElementById('typeFilter')?.value || '';
-
-    // if looks like an admission number (digits or starts with ADM) do quick student lookup
-    const looksLikeAdmission = /^(\d+|ADM[\w-]+)$/i.test(term);
-    if (looksLikeAdmission && term.length > 0) {
-      // attempt to find student by admission field (simple query)
-      try {
-        const studentsCol = collection(db, 'students');
-        // getDocs and filter client-side because text-search is limited in Firestore (for demo)
-        const snap = await getDocs(studentsCol);
-        const found = [];
-        snap.forEach(d => {
-          const st = d.data();
-          if ((st.admission && st.admission.toString().toLowerCase() === term.toLowerCase()) ||
-              (st.name && st.name.toLowerCase().includes(term.toLowerCase()))) {
-            found.push({ id: d.id, ...st });
-          }
+        // Dark mode toggle
+        darkModeToggle.addEventListener('click', () => {
+            const on = document.body.classList.toggle('dark-mode');
+            darkModeToggle.innerHTML = on ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            localStorage.setItem('darkMode', on ? 'enabled' : 'disabled');
         });
-        if (found.length) {
-          // show first match and give option to save
-          const st = found[0];
-          const ok = confirm(`Found student: ${st.name} — admission ${st.admission} — Save to your Saved Children?`);
-          if (ok) saveChildToLocal({ name: st.name, admission: st.admission, id: st.id, schoolId: st.schoolId || '' });
-          return;
-        } else {
-          alert('No student found with that admission number.');
-          return;
+
+        // Apply saved dark mode preference
+        const savedDark = localStorage.getItem('darkMode');
+        if (savedDark === 'enabled') { 
+            document.body.classList.add('dark-mode'); 
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         }
-      } catch (err) {
-        console.error('student lookup error', err);
-        alert('Student lookup failed: ' + err.message);
-        return;
-      }
-    }
 
-    // Otherwise filter schools client-side (we already have schoolsLocal)
-    let filtered = schoolsLocal.slice();
-    if (term) filtered = filtered.filter(s => ((s.name || '').toLowerCase().includes(term.toLowerCase()) || (s.location || '').toLowerCase().includes(term.toLowerCase())));
-    if (lvl) filtered = filtered.filter(s => (s.levels || '').toLowerCase().includes(lvl.toLowerCase()));
-    if (county) filtered = filtered.filter(s => (s.county || s.location || '').toLowerCase().includes(county.toLowerCase()));
-    if (type) filtered = filtered.filter(s => (s.type || '').toLowerCase() === type.toLowerCase());
-    showSchools(filtered);
-    window.scrollTo({ top: document.querySelector('main').offsetTop - 60, behavior: 'smooth' });
-  }
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
 
-  // --- initialization & online/offline handling ---
-  function startApp() {
-    if (!navigator.onLine) {
-      showStatus('You are offline — cannot stream live data', true);
-    }
-    loadSchoolsRealtime();
-    loadNotificationsRealtime();
-    renderSavedChildren();
-  }
+        // State
+        let schoolsLocal = [];
 
-  // wire up search button
-  mainSearchBtn.addEventListener('click', performSearch);
-  heroSearchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+        // Utility functions
+        function showStatus(msg, err = false) {
+            statusMessage.textContent = msg;
+            statusMessage.className = err ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800';
+        }
 
-  // online/offline event listeners
-  window.addEventListener('online', () => { showStatus('Back online — reconnecting...'); startApp(); });
-  window.addEventListener('offline', () => { showStatus('You are offline — live data paused', true); });
+        function showToast(msg, type = 'success') {
+            toastMessage.textContent = msg;
+            toast.className = `toast ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
-  // start
-  startApp();
-</script>
+        function createSchoolCard(docId, s, isFeatured = false) {
+            const container = document.createElement('div');
+            container.className = `school-card ${isFeatured ? 'featured' : ''}`;
+            
+            const logoContent = s.logoUrl ? 
+                `<img src="${s.logoUrl}" class="school-logo" alt="${s.name} logo">` : 
+                `<div class="school-logo"><i class="fas fa-school"></i></div>`;
+                
+            const ratingStars = '★'.repeat(s.rating || 4) + '☆'.repeat(5 - (s.rating || 4));
+            
+            container.innerHTML = `
+                <div class="school-header">
+                    ${logoContent}
+                    <div class="school-info">
+                        <h3>${s.name || 'Unnamed School'}</h3>
+                        <span class="school-type">${s.type || 'School'}</span>
+                    </div>
+                </div>
+                <div class="school-details">
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${s.county || (s.location || 'Kenya')}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>${s.levels || 'All Levels'}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-star"></i>
+                        <span class="rating">${ratingStars} (${s.rating || 4}.0)</span>
+                    </div>
+                    ${s.price ? `
+                    <div class="detail-item">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>KES ${s.price.toLocaleString()} per term</span>
+                    </div>` : ''}
+                </div>
+                <button class="action-btn" data-id="${docId}">
+                    <i class="fas fa-external-link-alt"></i> Visit School
+                </button>
+            `;
+            
+            const btn = container.querySelector('.action-btn');
+            btn.addEventListener('click', () => {
+                window.location.href = `school.html?id=${docId}`;
+            });
+            
+            return container;
+        }
+
+        // Load schools in real-time
+        function loadSchoolsRealtime() {
+            showStatus('Loading schools...');
+            const col = collection(db, "schools");
+            
+            onSnapshot(col, (snap) => {
+                schoolsLocal = [];
+                schoolGrid.innerHTML = '';
+                topSchoolsList.innerHTML = '';
+                
+                if (snap.empty) {
+                    showStatus('No schools found', true);
+                    schoolGrid.innerHTML = `<p class="text-center py-8">No schools registered yet. <a href="admin-dashboard.html" class="text-blue-600">Add your school</a> to get started.</p>`;
+                    return;
+                }
+
+                snap.forEach(d => {
+                    const s = d.data();
+                    s.__id = d.id;
+                    schoolsLocal.push(s);
+                });
+
+                // Show all schools and featured schools
+                showSchools(schoolsLocal);
+                showTopSchools(schoolsLocal.filter(s => s.featured).slice(0, 6));
+                showStatus(`${schoolsLocal.length} schools loaded successfully`);
+            }, (err) => {
+                console.error('Schools loading error:', err);
+                showStatus('Unable to load schools: ' + err.message, true);
+            });
+        }
+
+        function showSchools(list) {
+            schoolGrid.innerHTML = '';
+            
+            if (!list.length) {
+                schoolGrid.innerHTML = '<p class="text-center py-8 col-span-full">No schools match your search criteria.</p>';
+                return;
+            }
+            
+            list.forEach(s => {
+                const id = s.__id || s.id || '';
+                const card = createSchoolCard(id, s);
+                schoolGrid.appendChild(card);
+            });
+        }
+
+        function showTopSchools(list) {
+            topSchoolsList.innerHTML = '';
+            
+            if (!list.length) {
+                topSchoolsList.innerHTML = '<p class="text-center py-4">No featured schools at the moment.</p>';
+                return;
+            }
+            
+            list.forEach((s, idx) => {
+                const card = createSchoolCard(s.__id || s.id, s, true);
+                topSchoolsList.appendChild(card);
+            });
+        }
+
+        // Search functionality
+        async function performSearch() {
+            const term = heroSearchInput.value.trim().toLowerCase();
+            const level = document.getElementById('levelFilter').value;
+            const county = document.getElementById('countyFilter').value;
+            
+            // If search looks like an admission number, try student lookup
+            if (term && /^(\d+|adm[\w-]+)$/i.test(term)) {
+                try {
+                    const studentsCol = collection(db, 'students');
+                    const snap = await getDocs(studentsCol);
+                    const found = [];
+                    
+                    snap.forEach(d => {
+                        const st = d.data();
+                        if ((st.admission && st.admission.toString().toLowerCase() === term) ||
+                            (st.name && st.name.toLowerCase().includes(term))) {
+                            found.push({ id: d.id, ...st });
+                        }
+                    });
+                    
+                    if (found.length) {
+                        const st = found[0];
+                        const save = confirm(`Found student: ${st.name} (Admission: ${st.admission}). Save to your children?`);
+                        if (save) {
+                            saveChildToLocal({ name: st.name, admission: st.admission, id: st.id, schoolId: st.schoolId || '' });
+                        }
+                        return;
+                    }
+                } catch (err) {
+                    console.error('Student search error:', err);
+                    showToast('Student search failed: ' + err.message, 'error');
+                }
+            }
+            
+            // Filter schools
+            let filtered = schoolsLocal.slice();
+            
+            if (term) {
+                filtered = filtered.filter(s => 
+                    (s.name || '').toLowerCase().includes(term) || 
+                    (s.location || '').toLowerCase().includes(term) ||
+                    (s.description || '').toLowerCase().includes(term)
+                );
+            }
+            
+            if (level) {
+                filtered = filtered.filter(s => (s.levels || '').toLowerCase().includes(level.toLowerCase()));
+            }
+            
+            if (county) {
+                filtered = filtered.filter(s => (s.county || '').toLowerCase().includes(county.toLowerCase()));
+            }
+            
+            showSchools(filtered);
+            
+            // Scroll to results
+            document.querySelector('.all-schools-section').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
+        // Saved children functionality
+        function renderSavedChildren() {
+            const saved = JSON.parse(localStorage.getItem('savedChildren') || '[]');
+            
+            if (!saved.length) {
+                savedChildrenBar.style.display = 'none';
+                return;
+            }
+            
+            savedChildrenChips.innerHTML = '';
+            saved.forEach(child => {
+                const chip = document.createElement('span');
+                chip.className = 'saved-child-chip';
+                chip.innerHTML = `<i class="fas fa-user"></i> ${child.name} (${child.admission})`;
+                chip.addEventListener('click', () => {
+                    window.location.href = `student-profile.html?schoolId=${child.schoolId || ''}&id=${child.id || ''}&admission=${child.admission}`;
+                });
+                savedChildrenChips.appendChild(chip);
+            });
+            
+            savedChildrenBar.style.display = 'flex';
+        }
+
+        function saveChildToLocal(child) {
+            const saved = JSON.parse(localStorage.getItem('savedChildren') || '[]');
+            
+            if (saved.some(s => s.admission === child.admission)) {
+                showToast('Child already saved', 'error');
+                return;
+            }
+            
+            saved.push(child);
+            localStorage.setItem('savedChildren', JSON.stringify(saved));
+            renderSavedChildren();
+            showToast('Child saved successfully');
+        }
+
+        // Initialize the application
+        function startApp() {
+            if (!navigator.onLine) {
+                showStatus('You are offline — showing cached data', true);
+            }
+            
+            loadSchoolsRealtime();
+            renderSavedChildren();
+            
+            // Check authentication status
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    const userInfo = document.querySelector('.user-info');
+                    userInfo.innerHTML = `
+                        <div class="avatar">${user.email.charAt(0).toUpperCase()}</div>
+                        <span>${user.email}</span>
+                        <button id="logoutBtn" class="ml-2 text-sm bg-red-500 text-white px-2 py-1 rounded">Logout</button>
+                    `;
+                    
+                    document.getElementById('logoutBtn').addEventListener('click', () => {
+                        signOut(auth);
+                    });
+                }
+            });
+        }
+
+        // Event listeners
+        mainSearchBtn.addEventListener('click', performSearch);
+        heroSearchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+        
+        document.getElementById('levelFilter').addEventListener('change', performSearch);
+        document.getElementById('countyFilter').addEventListener('change', performSearch);
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // In a real app, this would filter the schools
+                showToast(`Filtered by: ${this.textContent.trim()}`);
+            });
+        });
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', startApp);
+
+        // Online/offline handling
+        window.addEventListener('online', () => {
+            showStatus('Connection restored — loading latest data');
+            startApp();
+        });
+
+        window.addEventListener('offline', () => {
+            showStatus('You are offline — showing cached data', true);
+        });
+    </script>
 </body>
 </html>
