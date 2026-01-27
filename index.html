@@ -1,40 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Kenya School Portal - Find the Best Schools</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #1a56db;
-            --secondary: #059669;
-            --accent: #7e22ce;
-            --light: #f0f9ff;
-            --dark: #0f172a;
-        }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', Arial, sans-serif;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            color: #1e293b;
-            min-height: 100vh;
-        }
-        
-        .dark-mode {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-            color: #e2e8f0 !important;
-        }
-        
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            color: white;
-            padding: 3rem 0 4rem;
-            text-align: center;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulse of Kenya</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* ----- GENERAL STYLES ----- */
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: 'Inter', sans-serif; background:#0F172A; color:#E5E7EB; }
+  a { color:#FBBF24; text-decoration:none; }
+  header { position: sticky; top:0; background:#1E293B; padding:15px 20px; text-align:center; z-index:10; display:flex; flex-direction:column; align-items:center; }
+  header h1 { font-size:2.5rem; margin:0; color:#38BDF8; }
+  header select { margin-top:10px; padding:8px 12px; border-radius:8px; border:none; font-size:1rem; cursor:pointer; }
+  .tabs { display:flex; justify-content:center; gap:10px; margin:20px 0; flex-wrap:wrap; }
+  .tabs button { padding:10px 20px; border-radius:10px; border:none; cursor:pointer; font-weight:600; transition:0.2s; }
+  .tabs button.active { background:#38BDF8; color:#0F172A; }
+  .tabs button:hover { opacity:0.85; }
+
+  .section { background:#1E293B; padding:20px; margin:15px auto; border-radius:15px; max-width:800px; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
+  .section h2 { text-align:center; color:#FBBF24; margin-bottom:15px; }
+  .buttons-grid { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+  .buttons-grid button { flex:1 1 40%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; transition:transform 0.2s; color:#0F172A; }
+  .buttons-grid button:hover { transform:scale(1.05); opacity:0.9; }
+  #submitBtn { width:100%; padding:12px 0; border:none; border-radius:12px; background:#38BDF8; color:#0F172A; font-weight:600; cursor:pointer; margin-top:15px; transition:0.2s; }
+  #submitBtn:hover { background:#0EA5E9; }
+  #message { text-align:center; margin-top:10px; font-style:italic; color:#34D399; }
+
+  /* ----- BAR GRAPH STYLES ----- */
+  .bar-container { display:flex; align-items:flex-end; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:15px; }
+  .bar { width:40px; display:flex; flex-direction:column-reverse; border-radius:6px 6px 0 0; overflow:hidden; position:relative; cursor:pointer; transition:0.3s; }
+  .bar-fill { width:100%; display:block; text-align:center; font-size:0.8rem; color:#0F172A; font-weight:600; transition:height 0.5s; }
+  .bar-label { text-align:center; margin-top:5px; font-weight:500; word-wrap:break-word; font-size:0.85rem; }
+
+  footer { text-align:center; font-size:0.9rem; color:#9CA3AF; margin:20px 0; }
+  .tooltip { position:absolute; background:rgba(0,0,0,0.8); color:#FFF; padding:4px 8px; border-radius:6px; font-size:0.75rem; pointer-events:none; opacity:0; transition:opacity 0.2s; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Pulse of Kenya</h1>
+  <select id="county">
+    <option value="Nairobi" selected>Nairobi</option>
+    <option value="Mombasa">Mombasa</option>
+    <option value="Kisumu">Kisumu</option>
+    <option value="UasinGishu">Uasin Gishu</option>
+    <option value="Kiambu">Kiambu</option>
+    <option value="Kakamega">Kakamega</option>
+    <option value="Meru">Meru</option>
+    <option value="Machakos">Machakos</option>
+    <option value="Nakuru">Nakuru</option>
+    <option value="Kisii">Kisii</option>
+    <option value="Nyeri">Nyeri</option>
+    <option value="Garissa">Garissa</option>
+    <option value="Kilifi">Kilifi</option>
+    <option value="Embu">Embu</option>
+    <option value="Busia">Busia</option>
+    <option value="Siaya">Siaya</option>
+    <option value="Migori">Migori</option>
+    <option value="Kajiado">Kajiado</option>
+    <option value="Kitui">Kitui</option>
+    <option value="Other">Other Counties</option>
+  </select>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="active" data-tab="national">National Overview</button>
+  <button data-tab="county">County Analysis</button>
+  <button data-tab="politics">Political Offices</button>
+  <button data-tab="issues">Social Issues</button>
+</div>
+
+<!-- NATIONAL OVERVIEW -->
+<div class="section" id="tab-national">
+  <h2>National Overview</h2>
+  <div id="national-results" class="bar-container"></div>
+</div>
+
+<!-- COUNTY ANALYSIS -->
+<div class="section" id="tab-county" style="display:none">
+  <h2>County Analysis</h2>
+  <div id="results"></div>
+</div>
+
+<!-- POLITICAL OPINION -->
+<div class="section" id="tab-politics" style="display:none">
+  <h2>Political Opinion</h2>
+  <div class="buttons-grid" id="politics-buttons">
+    <button style="background:#34D399" data-type="Working">Working</button>
+    <button style="background:#FBBF24" data-type="Needs Improvement">Needs Improvement</button>
+    <button style="background:#F87171" data-type="Not Working">Not Working</button>
+  </div>
+</div>
+
+<!-- SOCIAL ISSUES -->
+<div class="section" id="tab-issues" style="display:none">
+  <h2>Social Issues</h2>
+  <div class="buttons-grid" id="issues-buttons">
+    <button style="background:#F87171" data-type="Hunger">Hunger</button>
+    <button style="background:#F87171" data-type="Flood">Flood</button>
+    <button style="background:#F87171" data-type="Accident">Accident</button>
+    <button style="background:#F87171" data-type="Robbery">Robbery</button>
+  </div>
+</div>
+
+<button id="submitBtn">Submit Opinion</button>
+<div id="message"></div>
+
+<footer>
+  Anonymous. Safe. Informative. | <a href="philosophy.html">Read Philosophy</a>
+</footer>
+
+<script>
+  // -------------------- INITIAL DATA --------------------
+  const counties = ["Nairobi","Mombasa","Kisumu","UasinGishu","Kiambu","Kakamega","Meru","Machakos","Nakuru","Kisii","Nyeri","Garissa","Kilifi","Embu","Busia","Siaya","Migori","Kajiado","Kitui","Other"];
+  const initialData = {
+    President:{Working:0,"Needs Improvement":0,"Not Working":0,total:0},
+    Governor:{Working:0,"Needs Improvement":0,"Not Working":0,total:0},
+    Senator:{Working:0,"Needs Improvement":0,"Not Working":0,total:0},
+    Hunger:{total:0},
+    Flood:{total:0},
+    Accident:{total:0},
+    Robbery:{total:0}
+  };
+  let countyData = {};
+  counties.forEach(c=>countyData[c]=JSON.parse(JSON.stringify(initialData)));
+
+  // -------------------- LOCAL STORAGE --------------------
+  if(!localStorage.getItem('votes')) localStorage.setItem('votes',JSON.stringify({}));
+  const votesLS = JSON.parse(localStorage.getItem('votes'));
+
+  // -------------------- STATE --------------------
+  let selectedOffice = "President";
+  let selectedOpinion = null;
+  let selectedIssue = null;
+  let selectedCounty = document.getElementById('county').value;
+
+  // -------------------- TABS --------------------
+  document.querySelectorAll('.tabs button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      ["national","county","politics","issues"].forEach(t=>{
+        document.getElementById(`tab-${t}`).style.display = t===tab?"block":"none";
+      });
+    });
+  });
+
+  // -------------------- OFFICE TABS (inside politics) --------------------
+  const officeTabsContainer = document.createElement("div");
+  officeTabsContainer.className = "tabs";
+  ["President","Governor","Senator"].forEach(o=>{
+    const btn = document.createElement("button");
+    btn.textContent=o;
+    if(o==="President") btn.classList.add("active");
+    btn.dataset.office=o;
+    btn.addEventListener("click",()=>{selectedOffice=o; document.querySelectorAll(".officeTabsInner button").forEach(b=>b.classList.remove("active")); btn.classList.add("active");});
+    officeTabsContainer.appendChild(btn);
+  });
+  const politicsSection = document.getElementById("tab-politics");
+  politicsSection.insertBefore(officeTabsContainer,politicsSection.firstChild);
+  officeTabsContainer.classList.add("officeTabsInner");
+
+  // -------------------- POLITICS BUTTONS --------------------
+  document.querySelectorAll('#politics-buttons button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      selectedOpinion = btn.dataset.type;
+      selectedIssue = null;
+      document.getElementById('message').innerText = `Selected: ${selectedOffice} → ${selectedOpinion}`;
+    });
+  });
+
+  // -------------------- ISSUES BUTTONS --------------------
+  document.querySelectorAll('#issues-buttons button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      selectedIssue = btn.dataset.type;
+      selectedOpinion = null;
+      document.getElementById('message').innerText = `Selected Issue: ${selectedIssue}`;
+    });
+  });
+
+  // -------------------- COUNTY SELECTION --------------------
+  document.getElementById('county').addEventListener('change',(e)=>{
+    selectedCounty = e.target.value;
+    renderResults();
+  });
+
+  // -------------------- SUBMIT --------------------
+  document.getElementById('submitBtn').addEventListener('click',()=>{
+    if(selectedOpinion){
+      const key = `${selectedCounty}_${selectedOffice}`;
+      if(votesLS[key]){ alert("You already voted for this office in this county! Reload to vote again."); return; }
+      countyData[selectedCounty][selectedOffice][selectedOpinion]++;
+      countyData[selectedCounty][selectedOffice].total++;
+      votesLS[key]=true;
+    } else if(selectedIssue){
+      const key = `${selectedCounty}_${selectedIssue}`;
+      if(votesLS[key]){ alert("You already voted for this issue in this county! Reload to vote again."); return; }
+      countyData[selectedCounty][selectedIssue].total++;
+      votesLS[key]=true;
+    } else { alert("Please select an opinion or issue first."); return; }
+    localStorage.setItem('votes',JSON.stringify(votesLS));
+    selectedOpinion=null; selectedIssue=null;
+    document.getElementById('message').innerText = "Opinion submitted ✅";
+    renderResults();
+  });
+
+  // -------------------- RENDER RESULTS --------------------
+  function renderResults(){
+    const countyContainer = document.getElementById('results');
+    countyContainer.innerHTML = "";
+    const county = selectedCounty;
+    const data = countyData[county];
+
+    // NATIONAL OVERVIEW - VERTICAL BARS
+    const nationalContainer = document.getElementById('national-results');
+    nationalContainer.innerHTML = "";
+    for(let type in initialData){
+      let total=0;
+      if(type==="President"||type==="Governor"||type==="Senator"){
+        total = counties.reduce((sum,c)=>sum + countyData[c][type].total,0);
+      } else {
+        total = counties.reduce((sum,c)=>sum + countyData[c][type].total,0);
+      }
+      if(total===0) continue;
+      const bar = document.createElement("div");
+      bar.classList.add("bar");
+      bar.title = type;
+      if(type==="President"||type==="Governor"||type==="Senator"){
+        ["Working","Needs Improvement","Not Working"].forEach(option=>{
+          const count = counties.reduce((sum,c)=>sum+countyData[c][type][option],0);
+          const height = Math.round((count/total)*150);
+          let color="#34D399";
+          if(option==="Needs Improvement") color="#FBBF24";
+          if(option==="Not Working") color="#F87171";
+          const fill = document.createElement("div");
+          fill.classList.add("bar-fill");
+          fill.style.height = `${height}px`;
+          fill.style.background=color;
+          fill.title=`${option}: ${count} votes`;
+          bar.appendChild(fill);
+        });
+      } else {
+        const count = total;
+        const height = Math.min(150,count*5);
+        const fill = document.createElement("div");
+        fill.classList.add("bar-fill");
+        fill.style.height = `${height}px`;
+        fill.style.background="#F87171";
+        fill.title=`${count} votes`;
+        bar.appendChild(fill);
+      }
+      const label = document.createElement("div");
+      label.classList.add("bar-label");
+      label.innerText = type;
+      const wrapper = document.createElement("div");
+      wrapper.style.display="flex"; wrapper.style.flexDirection="column"; wrapper.style.alignItems="center";
+      wrapper.appendChild(bar); wrapper.appendChild(label);
+      nationalContainer.appendChild(wrapper);
+    }
+
+    // COUNTY RESULTS
+    for(let type in data){
+      const total = data[type].total;
+      if(total===0) continue;
+      countyContainer.innerHTML += `<h3>${type}</h3>`;
+      if(type==="President"||type==="Governor"||type==="Senator"){
+        ["Working","Needs Improvement","Not Working"].forEach(option=>{
+          const count = data[type][option];
+          const percent = Math.round((count/total)*100);
+          let color="#34D399";
+          if(option==="Needs Improvement") color="#FBBF24";
+          if(option==="Not Working") color="#F87171";
+          countyContainer.innerHTML+=`
+          <div class="bar-container">
+            <div class="bar-label">${option}: ${percent}%</div>
+            <div class="bar"><div class="bar-fill" style="width:100%; height:${percent*1.5}px; background:${color}"></div></div>
+          </div>`;
+        });
+      } else {
+        const count = total;
+        countyContainer.innerHTML+=`
+        <div class="bar-container">
+          <div class="bar-label">${type}: ${count}</div>
+          <div class="bar"><div class="bar-fill" style="width:100%; height:${count*5}px; background:#F87171"></div></div>
+        </div>`;
+      }
+    }
+  }
+
+  renderResults();
+</script>
+</body>
+    </html>            text-align: center;
             border-bottom-left-radius: 40px;
             border-bottom-right-radius: 40px;
             position: relative;
