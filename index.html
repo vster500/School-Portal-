@@ -3,1673 +3,722 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pulse of Kenya</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<title>Pulse of Kenya 2027</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-  /* ----- GENERAL STYLES ----- */
-  * { box-sizing: border-box; }
-  body { margin:0; font-family: 'Inter', sans-serif; background:#0F172A; color:#E5E7EB; }
-  a { color:#FBBF24; text-decoration:none; }
-  header { position: sticky; top:0; background:#1E293B; padding:15px 20px; text-align:center; z-index:10; display:flex; flex-direction:column; align-items:center; }
-  header h1 { font-size:2.5rem; margin:0; color:#38BDF8; }
-  header select { margin-top:10px; padding:8px 12px; border-radius:8px; border:none; font-size:1rem; cursor:pointer; }
-  .tabs { display:flex; justify-content:center; gap:10px; margin:20px 0; flex-wrap:wrap; }
-  .tabs button { padding:10px 20px; border-radius:10px; border:none; cursor:pointer; font-weight:600; transition:0.2s; }
-  .tabs button.active { background:#38BDF8; color:#0F172A; }
-  .tabs button:hover { opacity:0.85; }
+  :root {
+    --primary: #0F172A;
+    --secondary: #1E293B;
+    --accent: #38BDF8;
+    --warning: #FBBF24;
+    --success: #34D399;
+    --danger: #F87171;
+    --text: #E5E7EB;
+    --text-secondary: #9CA3AF;
+  }
 
-  .section { background:#1E293B; padding:20px; margin:15px auto; border-radius:15px; max-width:800px; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
-  .section h2 { text-align:center; color:#FBBF24; margin-bottom:15px; }
-  .buttons-grid { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
-  .buttons-grid button { flex:1 1 40%; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; transition:transform 0.2s; color:#0F172A; }
-  .buttons-grid button:hover { transform:scale(1.05); opacity:0.9; }
-  #submitBtn { width:100%; padding:12px 0; border:none; border-radius:12px; background:#38BDF8; color:#0F172A; font-weight:600; cursor:pointer; margin-top:15px; transition:0.2s; }
-  #submitBtn:hover { background:#0EA5E9; }
-  #message { text-align:center; margin-top:10px; font-style:italic; color:#34D399; }
+  * {
+    box-sizing: border-box;
+  }
 
-  /* ----- BAR GRAPH STYLES ----- */
-  .bar-container { display:flex; align-items:flex-end; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:15px; }
-  .bar { width:40px; display:flex; flex-direction:column-reverse; border-radius:6px 6px 0 0; overflow:hidden; position:relative; cursor:pointer; transition:0.3s; }
-  .bar-fill { width:100%; display:block; text-align:center; font-size:0.8rem; color:#0F172A; font-weight:600; transition:height 0.5s; }
-  .bar-label { text-align:center; margin-top:5px; font-weight:500; word-wrap:break-word; font-size:0.85rem; }
+  body { 
+    margin: 0; 
+    font-family: 'Inter', sans-serif; 
+    background: var(--primary); 
+    color: var(--text);
+    line-height: 1.6;
+  }
 
-  footer { text-align:center; font-size:0.9rem; color:#9CA3AF; margin:20px 0; }
-  .tooltip { position:absolute; background:rgba(0,0,0,0.8); color:#FFF; padding:4px 8px; border-radius:6px; font-size:0.75rem; pointer-events:none; opacity:0; transition:opacity 0.2s; }
+  header { 
+    position: sticky; 
+    top: 0; 
+    background: var(--secondary); 
+    padding: 20px; 
+    z-index: 1000; 
+    text-align: center;
+    border-bottom: 2px solid var(--accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  header h1 { 
+    margin: 0; 
+    font-size: 2.2rem; 
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .kenya-flag {
+    font-size: 1.8rem;
+  }
+
+  .section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .section { 
+    background: var(--secondary); 
+    padding: 25px; 
+    margin: 20px 0; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .section h2 { 
+    text-align: center; 
+    color: var(--warning); 
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  #map-container {
+    position: relative;
+  }
+
+  #map { 
+    height: 500px; 
+    border-radius: 15px; 
+    margin-top: 10px;
+    border: 2px solid var(--accent);
+  }
+
+  .county-info {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(30, 41, 59, 0.95);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid var(--accent);
+    max-width: 250px;
+    z-index: 100;
+  }
+
+  .county-info h3 {
+    margin: 0 0 10px 0;
+    color: var(--accent);
+  }
+
+  .county-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    font-size: 0.9rem;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-value {
+    font-weight: 600;
+    color: var(--warning);
+  }
+
+  .bar-container { 
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: center; 
+    gap: 20px; 
+    flex-wrap: wrap; 
+    margin-top: 20px;
+    min-height: 200px;
+  }
+
+  .bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70px;
+  }
+
+  .bar { 
+    width: 50px; 
+    display: flex;
+    flex-direction: column-reverse;
+    border-radius: 8px 8px 0 0; 
+    overflow: hidden; 
+    position: relative; 
+    cursor: pointer; 
+    transition: transform 0.3s;
+    min-height: 150px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .bar:hover {
+    transform: translateY(-5px);
+  }
+
+  .bar-fill { 
+    width:100%; 
+    display:block; 
+    text-align:center; 
+    font-size:0.7rem; 
+    color: var(--primary); 
+    font-weight:600; 
+    transition:height 0.8s ease-out;
+    position: relative;
+  }
+
+  .bar-fill span {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    font-size: 0.7rem;
+    color: var(--primary);
+    font-weight: bold;
+  }
+
+  .bar-label { 
+    text-align:center; 
+    margin-top:10px; 
+    font-weight:600; 
+    font-size:0.9rem;
+    color: var(--text);
+  }
+
+  .bar-percentage {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 5px;
+  }
+
+  .buttons-grid { 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px; 
+    margin-top: 15px;
+  }
+
+  .buttons-grid button { 
+    padding: 15px; 
+    border: none; 
+    border-radius: 10px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: all 0.3s;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .buttons-grid button:hover { 
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .buttons-grid button:active { 
+    transform: translateY(-1px);
+  }
+
+  .office-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .office-btn {
+    padding: 10px 20px;
+    border: 2px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .office-btn.active {
+    background: var(--accent);
+    color: var(--primary);
+  }
+
+  .office-btn:hover:not(.active) {
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .control-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #submitBtn { 
+    background: var(--success);
+    color: var(--primary);
+  }
+
+  #exportBtn {
+    background: var(--warning);
+    color: var(--primary);
+  }
+
+  #resetBtn {
+    background: var(--danger);
+    color: white;
+  }
+
+  #message { 
+    text-align:center; 
+    margin-top:15px; 
+    font-size:1.1rem;
+    min-height: 30px;
+    padding: 10px;
+    border-radius: 8px;
+    background: rgba(52, 211, 153, 0.1);
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: var(--secondary);
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+    border: 2px solid var(--accent);
+  }
+
+  .modal h3 {
+    color: var(--warning);
+    margin-top: 0;
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+
+  footer { 
+    text-align:center; 
+    padding: 30px 20px;
+    margin-top: 40px;
+    background: var(--secondary);
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  footer p {
+    color: var(--text-secondary);
+    margin: 10px 0;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover {
+    color: var(--warning);
+    text-decoration: underline;
+  }
+
+  .progress-bar {
+    height: 5px;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.5s;
+    border-radius: 3px;
+    margin-top: 10px;
+  }
+
+  .selected-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--secondary);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid var(--accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 100;
+    max-width: 300px;
+  }
+
+  @media (max-width: 768px) {
+    .section { padding: 20px 15px; }
+    #map { height: 400px; }
+    .buttons-grid { grid-template-columns: 1fr; }
+    .county-info { position: static; max-width: 100%; margin-bottom: 15px; }
+    header h1 { font-size: 1.8rem; }
+  }
 </style>
 </head>
 <body>
 
+<!-- Terms Modal -->
+<div id="termsModal" class="modal">
+  <div class="modal-content">
+    <h3>🇰🇪 Welcome to Pulse of Kenya 2027</h3>
+    <p><strong>How this works:</strong></p>
+    <ul>
+      <li>✅ Your vote is completely anonymous - no personal data is collected</li>
+      <li>📊 Data is stored locally on your device</li>
+      <li>🗳️ One vote per political office per device (you can vote on multiple issues)</li>
+      <li>📈 Your participation helps create a real-time picture of Kenyan sentiment</li>
+      <li>🔒 All data stays on your device unless you choose to export it</li>
+    </ul>
+    <p><em>This is a civic engagement tool for informed, anonymous public opinion.</em></p>
+    <div class="modal-buttons">
+      <button onclick="closeTerms()" class="control-btn" style="background: var(--success);">I Understand & Agree</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Modal -->
+<div id="resetModal" class="modal">
+  <div class="modal-content">
+    <h3>⚠️ Reset All Data</h3>
+    <p>This will delete all votes and data stored on this device. This action cannot be undone.</p>
+    <p><strong>Are you sure you want to reset?</strong></p>
+    <div class="modal-buttons">
+      <button onclick="closeResetModal()" class="control-btn" style="background: var(--text-secondary);">Cancel</button>
+      <button onclick="confirmReset()" class="control-btn" style="background: var(--danger);">Yes, Reset All Data</button>
+    </div>
+  </div>
+</div>
+
 <header>
-  <h1>Pulse of Kenya</h1>
-  <select id="county">
-    <option value="Nairobi" selected>Nairobi</option>
-    <option value="Mombasa">Mombasa</option>
-    <option value="Kisumu">Kisumu</option>
-    <option value="UasinGishu">Uasin Gishu</option>
-    <option value="Kiambu">Kiambu</option>
-    <option value="Kakamega">Kakamega</option>
-    <option value="Meru">Meru</option>
-    <option value="Machakos">Machakos</option>
-    <option value="Nakuru">Nakuru</option>
-    <option value="Kisii">Kisii</option>
-    <option value="Nyeri">Nyeri</option>
-    <option value="Garissa">Garissa</option>
-    <option value="Kilifi">Kilifi</option>
-    <option value="Embu">Embu</option>
-    <option value="Busia">Busia</option>
-    <option value="Siaya">Siaya</option>
-    <option value="Migori">Migori</option>
-    <option value="Kajiado">Kajiado</option>
-    <option value="Kitui">Kitui</option>
-    <option value="Other">Other Counties</option>
-  </select>
+  <h1><span class="kenya-flag">🇰🇪</span> Pulse of Kenya 2027</h1>
+  <p>Anonymous. Safe. Informative.</p>
 </header>
 
-<!-- TABS -->
-<div class="tabs">
-  <button class="active" data-tab="national">National Overview</button>
-  <button data-tab="county">County Analysis</button>
-  <button data-tab="politics">Political Offices</button>
-  <button data-tab="issues">Social Issues</button>
-</div>
-
-<!-- NATIONAL OVERVIEW -->
-<div class="section" id="tab-national">
-  <h2>National Overview</h2>
-  <div id="national-results" class="bar-container"></div>
-</div>
-
-<!-- COUNTY ANALYSIS -->
-<div class="section" id="tab-county" style="display:none">
-  <h2>County Analysis</h2>
-  <div id="results"></div>
-</div>
-
-<!-- POLITICAL OPINION -->
-<div class="section" id="tab-politics" style="display:none">
-  <h2>Political Opinion</h2>
-  <div class="buttons-grid" id="politics-buttons">
-    <button style="background:#34D399" data-type="Working">Working</button>
-    <button style="background:#FBBF24" data-type="Needs Improvement">Needs Improvement</button>
-    <button style="background:#F87171" data-type="Not Working">Not Working</button>
+<div class="section-container">
+  <!-- NATIONAL POLITICAL OVERVIEW -->
+  <div class="section">
+    <h2>📊 National Political Overview</h2>
+    <div class="office-selector">
+      <button class="office-btn active" data-office="President">President</button>
+      <button class="office-btn" data-office="Governor">Governor</button>
+      <button class="office-btn" data-office="Senator">Senator</button>
+      <button class="office-btn" data-office="WomenRep">Women Representative</button>
+      <button class="office-btn" data-office="MP">Member of Parliament</button>
+    </div>
+    <div id="national-results" class="bar-container"></div>
+    <div class="progress-bar" id="participation-bar"></div>
+    <p style="text-align: center; color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+      Total National Participation: <span id="total-votes">0</span> votes
+    </p>
   </div>
-</div>
 
-<!-- SOCIAL ISSUES -->
-<div class="section" id="tab-issues" style="display:none">
-  <h2>Social Issues</h2>
-  <div class="buttons-grid" id="issues-buttons">
-    <button style="background:#F87171" data-type="Hunger">Hunger</button>
-    <button style="background:#F87171" data-type="Flood">Flood</button>
-    <button style="background:#F87171" data-type="Accident">Accident</button>
-    <button style="background:#F87171" data-type="Robbery">Robbery</button>
+  <!-- MAP SELECTION -->
+  <div class="section" id="map-container">
+    <h2>🗺️ Click on a County to Vote</h2>
+    <div class="county-info" id="countyInfo" style="display: none;">
+      <h3 id="selectedCountyName">County</h3>
+      <div class="county-stats" id="countyStats"></div>
+    </div>
+    <div id="map"></div>
   </div>
-</div>
 
-<button id="submitBtn">Submit Opinion</button>
-<div id="message"></div>
+  <!-- COUNTY-LEVEL POLITICAL VOTING -->
+  <div class="section">
+    <h2>🏛️ Political Offices (County-Level)</h2>
+    <p style="text-align: center; margin-bottom: 20px; color: var(--text-secondary);">
+      How is your <span id="current-office-display" style="color: var(--accent); font-weight: 600;">President</span> performing in <span id="current-county-display" style="color: var(--warning); font-weight: 600;">Nairobi</span>?
+    </p>
+    <div class="buttons-grid" id="politics-buttons">
+      <button style="background: var(--success)" data-type="Working">
+        <span style="font-size: 1.2rem;">✅</span> Working Well
+      </button>
+      <button style="background: var(--warning)" data-type="Needs Improvement">
+        <span style="font-size: 1.2rem;">⚠️</span> Needs Improvement
+      </button>
+      <button style="background: var(--danger)" data-type="Not Working">
+        <span style="font-size: 1.2rem;">❌</span> Not Working
+      </button>
+    </div>
+  </div>
+
+  <!-- KENYAN SOCIAL ISSUES -->
+  <div class="section">
+    <h2>🇰🇪 Kenyan Social Issues</h2>
+    <p style="text-align: center; margin-bottom: 20px; color: var(--text-secondary);">
+      Report urgent issues in your county (you can vote on multiple issues)
+    </p>
+    <div class="buttons-grid" id="issues-buttons">
+      <button style="background: var(--danger)" data-type="Hunger">Hunger & Famine 🍽️</button>
+      <button style="background: var(--danger)" data-type="Flood">Floods & Drought 🌊</button>
+      <button style="background: var(--danger)" data-type="Accident">Road Accidents 🚨</button>
+      <button style="background: var(--danger)" data-type="Robbery">Crime & Robbery 🏚️</button>
+      <button style="background: var(--danger)" data-type="Healthcare">Healthcare Crisis 🏥</button>
+      <button style="background: var(--danger)" data-type="Education">Education Issues 📚</button>
+      <button style="background: var(--danger)" data-type="Corruption">Corruption Report 💰</button>
+      <button style="background: var(--danger)" data-type="Unemployment">Youth Unemployment 👨‍🎓</button>
+    </div>
+  </div>
+
+  <!-- KENYAN CONTEXT -->
+  <div class="section">
+    <h2>📈 Kenyan Context & Sentiment</h2>
+    <div class="buttons-grid" id="context-buttons">
+      <button style="background: #8B5CF6" data-type="Devolution">Devolution Working? 🏛️</button>
+      <button style="background: #8B5CF6" data-type="IEBC">Trust in IEBC? 🗳️</button>
+      <button style="background: #8B5CF6" data-type="Economy">Economy Improving? 💹</button>
+      <button style="background: #8B5CF6" data-type="Security">Feeling Safe? 🛡️</button>
+      <button style="background: #8B5CF6" data-type="Future">Hopeful for Future? 🌅</button>
+      <button style="background: #8B5CF6" data-type="Unity">National Unity? 🤝</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="submitBtn" class="control-btn">
+      <span style="font-size: 1.2rem;">🗳️</span> Submit Your Vote
+    </button>
+    <button id="exportBtn" class="control-btn">
+      <span style="font-size: 1.2rem;">📤</span> Export Data
+    </button>
+    <button id="resetBtn" class="control-btn">
+      <span style="font-size: 1.2rem;">🔄</span> Reset Data
+    </button>
+  </div>
+
+  <div id="message"></div>
+</div>
 
 <footer>
-  Anonymous. Safe. Informative. | <a href="philosophy.html">Read Philosophy</a>
+  <div class="footer-links">
+    <a href="#" onclick="showTerms()">How This Works</a>
+    <a href="#" onclick="exportData()">Export Your Data</a>
+    <a href="#" onclick="showResetModal()">Reset Data</a>
+    <a href="#map-container">Back to Map</a>
+  </div>
+  <p>Anonymous. Safe. Informative.</p>
+  <p>Data stored locally on your device • No personal information collected</p>
+  <p>© 2024 Pulse of Kenya • A Civic Engagement Initiative</p>
 </footer>
 
+<!-- Selected Indicator -->
+<div id="selectedIndicator" class="selected-indicator" style="display: none;">
+  <strong>Selected:</strong> <span id="indicatorText"></span>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // -------------------- INITIAL DATA --------------------
-  const counties = ["Nairobi","Mombasa","Kisumu","UasinGishu","Kiambu","Kakamega","Meru","Machakos","Nakuru","Kisii","Nyeri","Garissa","Kilifi","Embu","Busia","Siaya","Migori","Kajiado","Kitui","Other"];
-  const initialData = {
-    President:{Working:0,"Needs Improvement":0,"Not Working":0,total:0},
-    Governor:{Working:0,"Needs Improvement":0,"Not Working":0,total:0},
-    Senator:{Working:0,"Needs Improvement":0,"Not Working":0,total:0},
-    Hunger:{total:0},
-    Flood:{total:0},
-    Accident:{total:0},
-    Robbery:{total:0}
-  };
-  let countyData = {};
-  counties.forEach(c=>countyData[c]=JSON.parse(JSON.stringify(initialData)));
-
-  // -------------------- LOCAL STORAGE --------------------
-  if(!localStorage.getItem('votes')) localStorage.setItem('votes',JSON.stringify({}));
-  const votesLS = JSON.parse(localStorage.getItem('votes'));
-
-  // -------------------- STATE --------------------
-  let selectedOffice = "President";
-  let selectedOpinion = null;
-  let selectedIssue = null;
-  let selectedCounty = document.getElementById('county').value;
-
-  // -------------------- TABS --------------------
-  document.querySelectorAll('.tabs button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const tab = btn.dataset.tab;
-      ["national","county","politics","issues"].forEach(t=>{
-        document.getElementById(`tab-${t}`).style.display = t===tab?"block":"none";
-      });
-    });
-  });
-
-  // -------------------- OFFICE TABS (inside politics) --------------------
-  const officeTabsContainer = document.createElement("div");
-  officeTabsContainer.className = "tabs";
-  ["President","Governor","Senator"].forEach(o=>{
-    const btn = document.createElement("button");
-    btn.textContent=o;
-    if(o==="President") btn.classList.add("active");
-    btn.dataset.office=o;
-    btn.addEventListener("click",()=>{selectedOffice=o; document.querySelectorAll(".officeTabsInner button").forEach(b=>b.classList.remove("active")); btn.classList.add("active");});
-    officeTabsContainer.appendChild(btn);
-  });
-  const politicsSection = document.getElementById("tab-politics");
-  politicsSection.insertBefore(officeTabsContainer,politicsSection.firstChild);
-  officeTabsContainer.classList.add("officeTabsInner");
-
-  // -------------------- POLITICS BUTTONS --------------------
-  document.querySelectorAll('#politics-buttons button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      selectedOpinion = btn.dataset.type;
-      selectedIssue = null;
-      document.getElementById('message').innerText = `Selected: ${selectedOffice} → ${selectedOpinion}`;
-    });
-  });
-
-  // -------------------- ISSUES BUTTONS --------------------
-  document.querySelectorAll('#issues-buttons button').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      selectedIssue = btn.dataset.type;
-      selectedOpinion = null;
-      document.getElementById('message').innerText = `Selected Issue: ${selectedIssue}`;
-    });
-  });
-
-  // -------------------- COUNTY SELECTION --------------------
-  document.getElementById('county').addEventListener('change',(e)=>{
-    selectedCounty = e.target.value;
-    renderResults();
-  });
-
-  // -------------------- SUBMIT --------------------
-  document.getElementById('submitBtn').addEventListener('click',()=>{
-    if(selectedOpinion){
-      const key = `${selectedCounty}_${selectedOffice}`;
-      if(votesLS[key]){ alert("You already voted for this office in this county! Reload to vote again."); return; }
-      countyData[selectedCounty][selectedOffice][selectedOpinion]++;
-      countyData[selectedCounty][selectedOffice].total++;
-      votesLS[key]=true;
-    } else if(selectedIssue){
-      const key = `${selectedCounty}_${selectedIssue}`;
-      if(votesLS[key]){ alert("You already voted for this issue in this county! Reload to vote again."); return; }
-      countyData[selectedCounty][selectedIssue].total++;
-      votesLS[key]=true;
-    } else { alert("Please select an opinion or issue first."); return; }
-    localStorage.setItem('votes',JSON.stringify(votesLS));
-    selectedOpinion=null; selectedIssue=null;
-    document.getElementById('message').innerText = "Opinion submitted ✅";
-    renderResults();
-  });
-
-  // -------------------- RENDER RESULTS --------------------
-  function renderResults(){
-    const countyContainer = document.getElementById('results');
-    countyContainer.innerHTML = "";
-    const county = selectedCounty;
-    const data = countyData[county];
-
-    // NATIONAL OVERVIEW - VERTICAL BARS
-    const nationalContainer = document.getElementById('national-results');
-    nationalContainer.innerHTML = "";
-    for(let type in initialData){
-      let total=0;
-      if(type==="President"||type==="Governor"||type==="Senator"){
-        total = counties.reduce((sum,c)=>sum + countyData[c][type].total,0);
-      } else {
-        total = counties.reduce((sum,c)=>sum + countyData[c][type].total,0);
-      }
-      if(total===0) continue;
-      const bar = document.createElement("div");
-      bar.classList.add("bar");
-      bar.title = type;
-      if(type==="President"||type==="Governor"||type==="Senator"){
-        ["Working","Needs Improvement","Not Working"].forEach(option=>{
-          const count = counties.reduce((sum,c)=>sum+countyData[c][type][option],0);
-          const height = Math.round((count/total)*150);
-          let color="#34D399";
-          if(option==="Needs Improvement") color="#FBBF24";
-          if(option==="Not Working") color="#F87171";
-          const fill = document.createElement("div");
-          fill.classList.add("bar-fill");
-          fill.style.height = `${height}px`;
-          fill.style.background=color;
-          fill.title=`${option}: ${count} votes`;
-          bar.appendChild(fill);
-        });
-      } else {
-        const count = total;
-        const height = Math.min(150,count*5);
-        const fill = document.createElement("div");
-        fill.classList.add("bar-fill");
-        fill.style.height = `${height}px`;
-        fill.style.background="#F87171";
-        fill.title=`${count} votes`;
-        bar.appendChild(fill);
-      }
-      const label = document.createElement("div");
-      label.classList.add("bar-label");
-      label.innerText = type;
-      const wrapper = document.createElement("div");
-      wrapper.style.display="flex"; wrapper.style.flexDirection="column"; wrapper.style.alignItems="center";
-      wrapper.appendChild(bar); wrapper.appendChild(label);
-      nationalContainer.appendChild(wrapper);
-    }
-
-    // COUNTY RESULTS
-    for(let type in data){
-      const total = data[type].total;
-      if(total===0) continue;
-      countyContainer.innerHTML += `<h3>${type}</h3>`;
-      if(type==="President"||type==="Governor"||type==="Senator"){
-        ["Working","Needs Improvement","Not Working"].forEach(option=>{
-          const count = data[type][option];
-          const percent = Math.round((count/total)*100);
-          let color="#34D399";
-          if(option==="Needs Improvement") color="#FBBF24";
-          if(option==="Not Working") color="#F87171";
-          countyContainer.innerHTML+=`
-          <div class="bar-container">
-            <div class="bar-label">${option}: ${percent}%</div>
-            <div class="bar"><div class="bar-fill" style="width:100%; height:${percent*1.5}px; background:${color}"></div></div>
-          </div>`;
-        });
-      } else {
-        const count = total;
-        countyContainer.innerHTML+=`
-        <div class="bar-container">
-          <div class="bar-label">${type}: ${count}</div>
-          <div class="bar"><div class="bar-fill" style="width:100%; height:${count*5}px; background:#F87171"></div></div>
-        </div>`;
-      }
-    }
+// ==================== INITIALIZATION ====================
+document.addEventListener('DOMContentLoaded', function() {
+  // Show terms on first visit
+  if (!localStorage.getItem('termsAccepted')) {
+    showTerms();
   }
+  
+  initApp();
+});
 
+// ==================== DATA STRUCTURE ====================
+const kenyaCounties = [
+  "Nairobi", "Mombasa", "Kisumu", "UasinGishu", "Kiambu", "Kakamega", "Meru", "Machakos",
+  "Nakuru", "Kisii", "Nyeri", "Garissa", "Kilifi", "Embu", "Busia", "Siaya", "Migori",
+  "Kajiado", "Kitui", "Bungoma", "HomaBay", "Turkana", "Mandera", "Wajir", "Marsabit",
+  "Isiolo", "Laikipia", "Nandi", "Baringo", "Samburu", "TransNzoia", "WestPokot",
+  "ElgeyoMarakwet", "TharakaNithi", "Makueni", "Nyandarua", "TaitaTaveta", "Muranga",
+  "Kirinyaga", "Nyamira", "Vihiga", "Narok", "Kericho", "Bomet", "Lamu", "TanaRiver"
+];
+
+const initialData = {
+  President: { Working: 0, "Needs Improvement": 0, "Not Working": 0, total: 0 },
+  Governor: { Working: 0, "Needs Improvement": 0, "Not Working": 0, total: 0 },
+  Senator: { Working: 0, "Needs Improvement": 0, "Not Working": 0, total: 0 },
+  WomenRep: { Working: 0, "Needs Improvement": 0, "Not Working": 0, total: 0 },
+  MP: { Working: 0, "Needs Improvement": 0, "Not Working": 0, total: 0 },
+  Hunger: { total: 0 },
+  Flood: { total: 0 },
+  Accident: { total: 0 },
+  Robbery: { total: 0 },
+  Healthcare: { total: 0 },
+  Education: { total: 0 },
+  Corruption: { total: 0 },
+  Unemployment: { total: 0 },
+  Devolution: { Yes: 0, No: 0, total: 0 },
+  IEBC: { Yes: 0, No: 0, total: 0 },
+  Economy: { Yes: 0, No: 0, total: 0 },
+  Security: { Yes: 0, No: 0, total: 0 },
+  Future: { Yes: 0, No: 0, total: 0 },
+  Unity: { Yes: 0, No: 0, total: 0 }
+};
+
+let countyData = {};
+let selectedOffice = "President";
+let selectedOpinion = null;
+let selectedIssue = null;
+let selectedContext = null;
+let selectedCounty = "Nairobi";
+
+// Load or initialize data
+function initApp() {
+  kenyaCounties.forEach(county => {
+    if (localStorage.getItem(`county_${county}`)) {
+      countyData[county] = JSON.parse(localStorage.getItem(`county_${county}`));
+    } else {
+      countyData[county] = JSON.parse(JSON.stringify(initialData));
+    }
+  });
+  
+  // Load vote history
+  if (!localStorage.getItem('voteHistory')) {
+    localStorage.setItem('voteHistory', JSON.stringify([]));
+  }
+  
+  // Load user fingerprint
+  if (!localStorage.getItem('userFingerprint')) {
+    localStorage.setItem('userFingerprint', generateUserFingerprint());
+  }
+  
+  initMap();
+  setupEventListeners();
   renderResults();
-</script>
-</body>
-    </html>            text-align: center;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.1"><path fill="white" d="M28.2,38.6c0,0,13.9-15.4,33.2-7.5c19.3,7.9,19.7,25.3,20.7,31.6c1,6.3-9.3,9.3-14.9,9.3c-5.6,0-15.4-2.5-24.3-9.3C34,55.4,28.2,38.6,28.2,38.6z"/></svg>');
-            background-size: 200px;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .logo-icon {
-            font-size: 2.5rem;
-            background: rgba(255,255,255,0.2);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        h1 {
-            font-size: 2.8rem;
-            letter-spacing: 0.03em;
-            margin: 0;
-            font-weight: 800;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .tagline {
-            font-size: 1.3rem;
-            margin-top: 1rem;
-            margin-bottom: 2.5rem;
-            font-weight: 500;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            opacity: 0.9;
-        }
-        
-        .hero-search {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            gap: 1rem;
-            background: white;
-            padding: 1rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            position: relative;
-            z-index: 10;
-        }
-        
-        .search-input-group {
-            flex: 1;
-            position: relative;
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-        }
-        
-        .hero-search input {
-            width: 100%;
-            font-size: 1.1rem;
-            padding: 1rem 1rem 1rem 3rem;
-            border-radius: 15px;
-            border: 2px solid #e2e8f0;
-            outline: none;
-            transition: all 0.3s;
-            background: #f8fafc;
-        }
-        
-        .hero-search input::placeholder {
-            color: #94a3b8;
-        }
-        
-        .hero-search input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
-            background: white;
-        }
-        
-        .hero-search select {
-            font-size: 1rem;
-            padding: 1rem;
-            border-radius: 15px;
-            border: 2px solid #e2e8f0;
-            outline: none;
-            background: #f8fafc;
-            cursor: pointer;
-            min-width: 160px;
-            color: #64748b;
-        }
-        
-        .hero-search select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.1);
-            background: white;
-            color: #1e293b;
-        }
-        
-        .search-btn {
-            background: linear-gradient(135deg, var(--secondary) 0%, #10b981 100%);
-            color: white;
-            font-weight: 700;
-            padding: 1rem 2rem;
-            border-radius: 15px;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
-        }
-        
-        .nav-bar {
-            max-width: 1200px;
-            margin: -40px auto 0;
-            background: white;
-            padding: 1rem 2rem;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            z-index: 100;
-        }
-        
-        .dark-mode .nav-bar {
-            background: #1e293b;
-            box-shadow: 0 5px 20px rgba(255,255,255,0.05);
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .nav-bar a {
-            color: var(--primary);
-            font-weight: 600;
-            text-decoration: none;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.3s;
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-        }
-        
-        .nav-bar a:hover {
-            color: var(--secondary);
-            background: #f1f5f9;
-        }
-        
-        .dark-mode .nav-bar a:hover {
-            background: #334155;
-        }
-        
-        .user-menu {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .user-avatar {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-        
-        .user-avatar:hover {
-            background: #f1f5f9;
-        }
-        
-        .dark-mode .user-avatar:hover {
-            background: #334155;
-        }
-        
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            padding: 0.5rem;
-            min-width: 200px;
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            margin-top: 0.5rem;
-        }
-        
-        .dark-mode .dropdown-menu {
-            background: #1e293b;
-            box-shadow: 0 10px 25px rgba(255,255,255,0.1);
-        }
-        
-        .dropdown-menu.show {
-            display: flex;
-        }
-        
-        .dropdown-item {
-            padding: 0.75rem 1rem;
-            color: #1e293b;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        
-        .dark-mode .dropdown-item {
-            color: #e2e8f0;
-        }
-        
-        .dropdown-item:hover {
-            background: #f1f5f9;
-        }
-        
-        .dark-mode .dropdown-item:hover {
-            background: #334155;
-        }
-        
-        .dropdown-divider {
-            height: 1px;
-            background: #e2e8f0;
-            margin: 0.25rem 0;
-        }
-        
-        .dark-mode .dropdown-divider {
-            background: #475569;
-        }
-        
-        .filters-wrap {
-            display: flex;
-            gap: 1.5rem;
-            margin: 2.5rem auto 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            max-width: 1000px;
-            padding: 0 1rem;
-        }
-        
-        .filter-btn {
-            padding: 0.8rem 1.5rem;
-            font-size: 1rem;
-            border-radius: 50px;
-            border: 2px solid #cbd5e1;
-            color: #475569;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-        
-        .filter-btn.active, .filter-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .dark-mode .filter-btn {
-            background: #334155;
-            color: #cbd5e1;
-            border-color: #475569;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--dark);
-            margin: 2.5rem 0 1.5rem;
-            padding-left: 1rem;
-            border-left: 5px solid var(--secondary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .dark-mode .section-title {
-            color: #e2e8f0;
-        }
-        
-        .top-schools-section, .all-schools-section {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        
-        .top-schools-list {
-            display: flex;
-            gap: 1.5rem;
-            overflow-x: auto;
-            padding: 1rem 0.5rem 2rem;
-            scrollbar-width: thin;
-        }
-        
-        .top-schools-list::-webkit-scrollbar {
-            height: 8px;
-        }
-        
-        .top-schools-list::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        
-        .school-card {
-            flex: 0 0 300px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .dark-mode .school-card {
-            background: #1e293b;
-            box-shadow: 0 5px 20px rgba(255,255,255,0.05);
-        }
-        
-        .school-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-        
-        .school-card.featured::before {
-            content: 'FEATURED';
-            position: absolute;
-            top: 15px;
-            right: -30px;
-            background: var(--accent);
-            color: white;
-            padding: 5px 30px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            transform: rotate(45deg);
-            box-shadow: 0 2px 10px rgba(126, 34, 206, 0.3);
-        }
-        
-        .school-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .school-logo {
-            width: 70px;
-            height: 70px;
-            border-radius: 15px;
-            object-fit: cover;
-            background: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-        
-        .school-info h3 {
-            margin: 0;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-        
-        .school-type {
-            background: #e0f2fe;
-            color: var(--primary);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 0.3rem;
-        }
-        
-        .school-details {
-            margin: 1rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #64748b;
-        }
-        
-        .dark-mode .detail-item {
-            color: #94a3b8;
-        }
-        
-        .rating {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            color: #f59e0b;
-            font-weight: 600;
-        }
-        
-        .school-card .action-btn {
-            margin-top: auto;
-            background: linear-gradient(135deg, var(--primary) 0%, #3b82f6 100%);
-            color: white;
-            border: none;
-            padding: 0.8rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .school-card .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(26, 86, 219, 0.3);
-        }
-        
-        .school-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        
-        .stats-section {
-            max-width: 1200px;
-            margin: 3rem auto;
-            padding: 0 1rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-        }
-        
-        .dark-mode .stat-card {
-            background: #1e293b;
-            box-shadow: 0 5px 15px rgba(255,255,255,0.05);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
-        .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-        
-        .stat-number {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .stat-label {
-            font-size: 1rem;
-            color: #64748b;
-            font-weight: 600;
-        }
-        
-        .dark-mode .stat-label {
-            color: #94a3b8;
-        }
-        
-        .quick-actions {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .action-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-        
-        .dark-mode .action-card {
-            background: #1e293b;
-            box-shadow: 0 5px 15px rgba(255,255,255,0.05);
-        }
-        
-        .action-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 25px rgba(26, 86, 219, 0.1);
-        }
-        
-        .action-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-        
-        .action-card h3 {
-            margin: 0 0 0.5rem;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-        
-        .action-card p {
-            margin: 0;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-        
-        .dark-mode .action-card p {
-            color: #94a3b8;
-        }
-        
-        footer {
-            background: var(--dark);
-            color: white;
-            padding: 3rem 1rem;
-            margin-top: 4rem;
-        }
-        
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .footer-section h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-        
-        .footer-section h3::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--secondary);
-        }
-        
-        .footer-links {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .footer-links li {
-            margin-bottom: 0.8rem;
-        }
-        
-        .footer-links a {
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-            transform: translateX(5px);
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 2rem;
-            margin-top: 2rem;
-            border-top: 1px solid #334155;
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-        
-        .saved-children-bar {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            margin: 1.5rem auto;
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            max-width: 1200px;
-            color: white;
-            box-shadow: 0 5px 15px rgba(26, 86, 219, 0.2);
-            display: none;
-        }
-        
-        .saved-child-chip {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border-radius: 20px;
-            padding: 0.5rem 1rem;
-            margin: 0.3rem 0.5rem 0.3rem 0;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .saved-child-chip:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-        }
-        
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--primary);
-            cursor: pointer;
-        }
-        
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .tagline {
-                font-size: 1.1rem;
-            }
-            
-            .hero-search {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .nav-bar {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                gap: 0.5rem;
-                width: 100%;
-                display: none;
-            }
-            
-            .nav-links.active {
-                display: flex;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-                position: absolute;
-                right: 1rem;
-                top: 1rem;
-            }
-            
-            .user-info {
-                width: 100;
-                justify-content: center;
-            }
-            
-            .school-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .top-schools-list {
-                gap: 1rem;
-            }
-            
-            .school-card {
-                flex: 0 0 85%;
-            }
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            background: var(--secondary);
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-        }
-        
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <button type="button" id="darkModeToggle" class="absolute top-6 right-6 bg-white/20 text-white p-2 rounded-full cursor-pointer z-10">
-            <i class="fas fa-moon"></i>
-        </button>
-        
-        <div class="logo">
-            <div class="logo-icon">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h1>Kenya School Portal</h1>
-        </div>
-        
-        <p class="tagline">Find, compare, and connect with the best schools in every county — all from one place.</p>
-        
-        <form class="hero-search" id="mainSearchForm" onsubmit="return false;">
-            <div class="search-input-group">
-                <i class="search-icon fas fa-search"></i>
-                <input type="search" id="heroSearchInput" placeholder="Search schools, students, or admission numbers..." />
-            </div>
-            <select id="levelFilter">
-                <option value="">School Level</option>
-                <option value="Pre-primary">Pre-primary</option>
-                <option value="Primary">Primary</option>
-                <option value="Junior Secondary">Junior Secondary</option>
-                <option value="Senior Secondary">Senior Secondary</option>
-            </select>
-            <select id="countyFilter">
-                <option value="">Select County</option>
-            </select>
-            <button id="mainSearchBtn" type="button" class="search-btn">
-                <i class="fas fa-search"></i> Search
-            </button>
-        </form>
-    </header>
+  updateSelectedIndicator();
+}
 
-    <div class="nav-bar">
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <div class="nav-links" id="navLinks">
-            <a href="#news"><i class="fas fa-newspaper"></i> News & Resources</a>
-            <a href="#contact"><i class="fas fa-envelope"></i> Contact Us</a>
-        </div>
-        
-        <div class="user-menu">
-            <div class="user-avatar" id="userAvatar">
-                <div class="avatar">GU</div>
-                <span>Guest User</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            
-            <div class="dropdown-menu" id="dropdownMenu">
-                <a href="login.html" class="dropdown-item">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-                <a href="add_school.html" class="dropdown-item">
-                    <i class="fas fa-plus-circle"></i> Add Your School
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="#" class="dropdown-item" id="logoutBtn" style="display: none;">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-            </div>
-        </div>
-    </div>
+// ==================== USER FINGERPRINT ====================
+function generateUserFingerprint() {
+  const factors = [
+    navigator.userAgent,
+    navigator.language,
+    screen.width + 'x' + screen.height,
+    new Date().getTimezoneOffset(),
+    Math.random().toString(36).substr(2, 9)
+  ];
+  return btoa(factors.join('|')).substr(0, 32);
+}
 
-    <div class="saved-children-bar" id="savedChildrenBar">
-        <b><i class="fas fa-child"></i> Your Saved Children:</b>
-        <div id="savedChildrenChips" style="display: inline; margin-left: 1rem;"></div>
-    </div>
+// ==================== MAP INITIALIZATION ====================
+function initMap() {
+  const map = L.map('map').setView([-1.286389, 36.817223], 6);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+  
+  // Simplified Kenya counties coordinates (in a real app, use proper GeoJSON)
+  const countyCoordinates = {
+    "Nairobi": [-1.286389, 36.817223],
+    "Mombasa": [-4.0435, 39.6682],
+    "Kisumu": [-0.1022, 34.7617],
+    "UasinGishu": [0.5143, 35.2698],
+    "Kiambu": [-1.1667, 36.8333],
+    "Kakamega": [0.2827, 34.7519],
+    "Meru": [0.0500, 37.6500],
+    "Machakos": [-1.5167, 37.2667],
+    "Nakuru": [-0.3031, 36.0800],
+    "Kisii": [-0.6773, 34.7795],
+    "Nyeri": [-0.4201, 36.9476],
+    "Garissa": [-0.4536, 39.6461],
+    "Kilifi": [-3.6305, 39.8499],
+    "Embu": [-0.5390, 37.4574],
+    "Busia": [0.4600, 34.1119],
+    "Siaya": [0.0607, 34.2881],
+    "Migori": [-1.0634, 34.4731],
+    "Kajiado": [-1.8490, 36.7840],
+    "Kitui": [-1.3667, 38.0167],
+    "Bungoma": [0.5695, 34.5584]
+  };
+  
+  // Add markers for each county
+  Object.entries(countyCoordinates).forEach(([county, coords]) => {
+    const marker = L.circleMarker(coords, {
+      radius: 15,
+      fillColor: getCountyColor(county),
+      color: '#38BDF8',
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.8
+    }).addTo(map);
+    
+    marker.bindTooltip(`<strong>${county}</strong><br>Click to vote`);
+    
+    marker.on('click', function() {
+      selectedCounty = county;
+      updateSelectedIndicator();
+      updateCountyInfo();
+      renderResults();
+    });
+    
+    marker.on('mouseover', function() {
+      this.setStyle({ fillOpacity: 1, weight: 3 });
+    });
+    
+    marker.on('mouseout', function() {
+      this.setStyle({ fillOpacity: 0.8, weight: 2 });
+    });
+  });
+  
+  window.map = map;
+}
 
-    <div class="filters-wrap">
-        <span style="font-weight:700;color:var(--primary);">Browse by:</span>
-        <button class="filter-btn active"><i class="fas fa-star"></i> Top Rated</button>
-        <button class="filter-btn"><i class="fas fa-map-marker-alt"></i> Nearest</button>
-        <button class="filter-btn"><i class="fas fa-money-bill-wave"></i> Affordable</button>
-        <button class="filter-btn"><i class="fas fa-chart-line"></i> High Performance</button>
-    </div>
+function getCountyColor(county) {
+  const data = countyData[county];
+  if (!data || !data[selectedOffice] || data[selectedOffice].total === 0) {
+    return '#1E293B'; // No data
+  }
+  
+  const officeData = data[selectedOffice];
+  const score = (officeData.Working * 1 + officeData["Needs Improvement"] * 0.5) / officeData.total;
+  
+  if (score > 0.7) return '#34D399'; // Good
+  if (score > 0.4) return '#FBBF24'; // Average
+  return '#F87171'; // Poor
+}
 
-    <section class="quick-actions">
-        <div class="actions-grid">
-            <div class="action-card" onclick="window.location.href='add_school.html'">
-                <div class="action-icon">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <h3>Register Your School</h3>
-                <p>Get your school on the portal to reach more parents</p>
-            </div>
-            <div class="action-card" onclick="window.location.href='login.html'">
-                <div class="action-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <h3>Find a Student</h3>
-                <p>Search for a student by name or admission number</p>
-            </div>
-            <div class="action-card" onclick="window.location.href='#news'">
-                <div class="action-icon">
-                    <i class="fas fa-download"></i>
-                </div>
-                <h3>Free Resources</h3>
-                <p>Download CBC notes, schemes of work and more</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="stats-section">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-school"></i>
-                </div>
-                <div class="stat-number">1,247</div>
-                <div class="stat-label">Schools Registered</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-user-graduate"></i>
-                </div>
-                <div class="stat-number">24,891</div>
-                <div class="stat-label">Students Tracked</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                </div>
-                <div class="stat-number">8,562</div>
-                <div class="stat-label">Active Teachers</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-smile"></i>
-                </div>
-                <div class="stat-number">87%</div>
-                <div class="stat-label">Parent Satisfaction</div>
-            </div>
-        </div>
-    </section>
-
-    <section class="top-schools-section">
-        <div class="section-title">
-            <i class="fas fa-crown"></i> Top Rated Schools
-        </div>
-        <div class="top-schools-list" id="topSchoolsList">
-            <!-- Top schools will be loaded here -->
-        </div>
-    </section>
-
-    <section class="all-schools-section">
-        <div class="section-title">
-            <i class="fas fa-list"></i> All Schools
-        </div>
-        <div class="school-grid" id="schoolGrid">
-            <!-- All schools will be loaded here -->
-        </div>
-    </section>
-
-    <section id="news" class="max-w-1200 mx-auto px-4 my-8">
-        <div class="section-title">
-            <i class="fas fa-newspaper"></i> Latest News & Free Educational Resources
-        </div>
-        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-md">
-            <p class="mb-3"><b>MOE Update:</b> Government releases new CBC notes and schemes of work for JSS. &mdash; <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">Download Here</a></p>
-            <p class="mb-3">Guide: <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">How to choose the best school for your child</a></p>
-            <p>See <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">more resources</a> or <a href="#" class="text-blue-600 dark:text-blue-400 font-medium">Contact admin</a> for assistance.</p>
-        </div>
-    </section>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Kenya School Portal</h3>
-                <p>Connecting parents, students, and schools across Kenya for better education outcomes.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul class="footer-links">
-                    <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="login.html"><i class="fas fa-sign-in-alt"></i> Login</a></li>
-                    <li><a href="#news"><i class="fas fa-newspaper"></i> News & Resources</a></li>
-                    <li><a href="#contact"><i class="fas fa-envelope"></i> Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Info</h3>
-                <ul class="footer-links">
-                    <li><a href="tel:+254700000000"><i class="fas fa-phone"></i> +254 700 000 000</a></li>
-                    <li><a href="mailto:info@kenyaschools.co.ke"><i class="fas fa-envelope"></i> info@kenyaschools.co.ke</a></li>
-                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="copyright">
-            &copy; 2023 Kenya School Portal. All rights reserved.
-        </div>
-    </footer>
-
-    <div id="statusMessage" class="fixed bottom-4 left-4 bg-white dark:bg-slate-800 shadow-lg rounded-lg px-4 py-2 text-sm"></div>
-
-    <div id="toast" class="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toastMessage">Operation completed successfully</span>
-    </div>
-
-    <!-- Firebase + app logic -->
-    <script type="module">
-        // Import the functions you need from the SDKs
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
-            authDomain: "school-portal-233f5.firebaseapp.com",
-            projectId: "school-portal-233f5",
-            storageBucket: "school-portal-233f5.appspot.com",
-            messagingSenderId: "314984934331",
-            appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const storage = getStorage(app);
-
-        // Counties in Kenya
-        const COUNTY_LIST = [
-            "Baringo","Bomet","Bungoma","Busia","Elgeyo Marakwet","Embu","Garissa","Homa Bay","Isiolo","Kajiado","Kakamega","Kericho","Kiambu","Kilifi","Kirinyaga","Kisii","Kisumu","Kitui","Kwale","Laikipia","Lamu","Machakos","Makueni","Mandera","Marsabit","Meru","Migori","Mombasa","Murang'a","Nairobi","Nakuru","Nandi","Narok","Nyamira","Nyandarua","Nyeri","Samburu","Siaya","Taita Taveta","Tana River","Tharaka Nithi","Trans Nzoia","Turkana","Uasin Gishu","Vihiga","Wajir","West Pokot"
-        ];
-
-        // DOM references
-        const countyFilter = document.getElementById('countyFilter');
-        const heroSearchInput = document.getElementById('heroSearchInput');
-        const mainSearchBtn = document.getElementById('mainSearchBtn');
-        const statusMessage = document.getElementById('statusMessage');
-        const schoolGrid = document.getElementById('schoolGrid');
-        const topSchoolsList = document.getElementById('topSchoolsList');
-        const savedChildrenBar = document.getElementById('savedChildrenBar');
-        const savedChildrenChips = document.getElementById('savedChildrenChips');
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        const userAvatar = document.getElementById('userAvatar');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        // Populate county selects
-        countyFilter.innerHTML = '<option value="">Select County</option>' + COUNTY_LIST.map(c => `<option value="${c}">${c}</option>`).join('');
-
-        // Dark mode toggle
-        darkModeToggle.addEventListener('click', () => {
-            const on = document.body.classList.toggle('dark-mode');
-            darkModeToggle.innerHTML = on ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-            localStorage.setItem('darkMode', on ? 'enabled' : 'disabled');
-        });
-
-        // Apply saved dark mode preference
-        const savedDark = localStorage.getItem('darkMode');
-        if (savedDark === 'enabled') { 
-            document.body.classList.add('dark-mode'); 
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-
-        // Mobile menu toggle
-        mobileMenuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') ? 
-                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
-        });
-
-        // User dropdown menu
-        userAvatar.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-            dropdownMenu.classList.remove('show');
-        });
-
-        // State
-        let schoolsLocal = [];
-
-        // Utility functions
-        function showStatus(msg, err = false) {
-            statusMessage.textContent = msg;
-            statusMessage.className = err ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800';
-        }
-
-        function showToast(msg, type = 'success') {
-            toastMessage.textContent = msg;
-            toast.className = `toast ${type === 'error' ? 'bg-red-500' : 'bg-green-500'}`;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        function createSchoolCard(docId, s, isFeatured = false) {
-            const container = document.createElement('div');
-            container.className = `school-card ${isFeatured ? 'featured' : ''}`;
-            
-            const logoContent = s.logoUrl ? 
-                `<img src="${s.logoUrl}" class="school-logo" alt="${s.name} logo">` : 
-                `<div class="school-logo"><i class="fas fa-school"></i></div>`;
-                
-            const ratingStars = '★'.repeat(s.rating || 4) + '☆'.repeat(5 - (s.rating || 4));
-            
-            container.innerHTML = `
-                <div class="school-header">
-                    ${logoContent}
-                    <div class="school-info">
-                        <h3>${s.name || 'Unnamed School'}</h3>
-                        <span class="school-type">${s.type || 'School'}</span>
-                    </div>
-                </div>
-                <div class="school-details">
-                    <div class="detail-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>${s.county || (s.location || 'Kenya')}</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>${s.levels || 'All Levels'}</span>
-                    </div>
-                    <div class="detail-item">
-                        <i class="fas fa-star"></i>
-                        <span class="rating">${ratingStars} (${s.rating || 4}.0)</span>
-                    </div>
-                    ${s.price ? `
-                    <div class="detail-item">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <span>KES ${s.price.toLocaleString()} per term</span>
-                    </div>` : ''}
-                </div>
-                <button class="action-btn" data-id="${docId}">
-                    <i class="fas fa-external-link-alt"></i> Visit School
-                </button>
-            `;
-            
-            const btn = container.querySelector('.action-btn');
-            btn.addEventListener('click', () => {
-                window.location.href = `school.html?id=${docId}`;
-            });
-            
-            return container;
-        }
-
-        // Load schools in real-time
-        function loadSchoolsRealtime() {
-            showStatus('Loading schools...');
-            const col = collection(db, "schools");
-            
-            onSnapshot(col, (snap) => {
-                schoolsLocal = [];
-                schoolGrid.innerHTML = '';
-                topSchoolsList.innerHTML = '';
-                
-                if (snap.empty) {
-                    showStatus('No schools found', true);
-                    schoolGrid.innerHTML = `<p class="text-center py-8">No schools registered yet. <a href="add_school.html" class="text-blue-600">Add your school</a> to get started.</p>`;
-                    return;
-                }
-
-                snap.forEach(d => {
-                    const s = d.data();
-                    s.__id = d.id;
-                    schoolsLocal.push(s);
-                });
-
-                // Show all schools and featured schools
-                showSchools(schoolsLocal);
-                showTopSchools(schoolsLocal.filter(s => s.featured).slice(0, 6));
-                showStatus(`${schoolsLocal.length} schools loaded successfully`);
-            }, (err) => {
-                console.error('Schools loading error:', err);
-                showStatus('Unable to load schools: ' + err.message, true);
-            });
-        }
-
-        function showSchools(list) {
-            schoolGrid.innerHTML = '';
-            
-            if (!list.length) {
-                schoolGrid.innerHTML = '<p class="text-center py-8 col-span-full">No schools match your search criteria.</p>';
-                return;
-            }
-            
-            list.forEach(s => {
-                const id = s.__id || s.id || '';
-                const card = createSchoolCard(id, s);
-                schoolGrid.appendChild(card);
-            });
-        }
-
-        function showTopSchools(list) {
-            topSchoolsList.innerHTML = '';
-            
-            if (!list.length) {
-                topSchoolsList.innerHTML = '<p class="text-center py-4">No featured schools at the moment.</p>';
-                return;
-            }
-            
-            list.forEach((s, idx) => {
-                const card = createSchoolCard(s.__id || s.id, s, true);
-                topSchoolsList.appendChild(card);
-            });
-        }
-
-        // Search functionality
-        async function performSearch() {
-            const term = heroSearchInput.value.trim().toLowerCase();
-            const level = document.getElementById('levelFilter').value;
-            const county = document.getElementById('countyFilter').value;
-            
-            // If search looks like an admission number, try student lookup
-            if (term && /^(\d+|adm[\w-]+)$/i.test(term)) {
-                try {
-                    const studentsCol = collection(db, 'students');
-                    const snap = await getDocs(studentsCol);
-                    const found = [];
-                    
-                    snap.forEach(d => {
-                        const st = d.data();
-                        if ((st.admission && st.admission.toString().toLowerCase() === term) ||
-                            (st.name && st.name.toLowerCase().includes(term))) {
-                            found.push({ id: d.id, ...st });
-                        }
-                    });
-                    
-                    if (found.length) {
-                        const st = found[0];
-                        const save = confirm(`Found student: ${st.name} (Admission: ${st.admission}). Save to your children?`);
-                        if (save) {
-                            saveChildToLocal({ name: st.name, admission: st.admission, id: st.id, schoolId: st.schoolId || '' });
-                        }
-                        return;
-                    }
-                } catch (err) {
-                    console.error('Student search error:', err);
-                    showToast('Student search failed: ' + err.message, 'error');
-                }
-            }
-            
-            // Filter schools
-            let filtered = schoolsLocal.slice();
-            
-            if (term) {
-                filtered = filtered.filter(s => 
-                    (s.name || '').toLowerCase().includes(term) || 
-                    (s.location || '').toLowerCase().includes(term) ||
-                    (s.description || '').toLowerCase().includes(term)
-                );
-            }
-            
-            if (level) {
-                filtered = filtered.filter(s => (s.levels || '').toLowerCase().includes(level.toLowerCase()));
-            }
-            
-            if (county) {
-                filtered = filtered.filter(s => (s.county || '').toLowerCase().includes(county.toLowerCase()));
-            }
-            
-            showSchools(filtered);
-            
-            // Scroll to results
-            document.querySelector('.all-schools-section').scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        }
-
-        // Saved children functionality
-        function renderSavedChildren() {
-            const saved = JSON.parse(localStorage.getItem('savedChildren') || '[]');
-            
-            if (!saved.length) {
-                savedChildrenBar.style.display = 'none';
-                return;
-            }
-            
-            savedChildrenChips.innerHTML = '';
-            saved.forEach(child => {
-                const chip = document.createElement('span');
-                chip.className = 'saved-child-chip';
-                chip.innerHTML = `<i class="fas fa-user"></i> ${child.name} (${child.admission})`;
-                chip.addEventListener('click', () => {
-                    window.location.href = `student-profile.html?schoolId=${child.schoolId || ''}&id=${child.id || ''}&admission=${child.admission}`;
-                });
-                savedChildrenChips.appendChild(chip);
-            });
-            
-            savedChildrenBar.style.display = 'flex';
-        }
-
-        function saveChildToLocal(child) {
-            const saved = JSON.parse(localStorage.getItem('savedChildren') || '[]');
-            
-            if (saved.some(s => s.admission === child.admission)) {
-                showToast('Child already saved', 'error');
-                return;
-            }
-            
-            saved.push(child);
-            localStorage.setItem('savedChildren', JSON.stringify(saved));
-            renderSavedChildren();
-            showToast('Child saved successfully');
-        }
-
-        // Initialize the application
-        function startApp() {
-            if (!navigator.onLine) {
-                showStatus('You are offline — showing cached data', true);
-            }
-            
-            loadSchoolsRealtime();
-            renderSavedChildren();
-            
-            // Check authentication status
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    const userInfo = userAvatar.querySelector('span');
-                    const avatar = userAvatar.querySelector('.avatar');
-                    userInfo.textContent = user.email;
-                    avatar.textContent = user.email.charAt(0).toUpperCase();
-                    
-                    // Show logout button
-                    logoutBtn.style.display = 'block';
-                    
-                    logoutBtn.addEventListener('click', () => {
-                        signOut(auth);
-                    });
-                }
-            });
-        }
-
-        // Event listeners
-        mainSearchBtn.addEventListener('click', performSearch);
-        heroSearchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') performSearch();
-        });
-        
-        document.getElementById('levelFilter').addEventListener('change', performSearch);
-        document.getElementById('countyFilter').addEventListener('change', performSearch);
-
-        // Filter buttons
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                // In a real app, this would filter the schools
-                showToast(`Filtered by: ${this.textContent.trim()}`);
-            });
-        });
-
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', startApp);
-
-        // Online/offline handling
-        window.addEventListener('online', () => {
-            showStatus('Connection restored — loading latest data');
-            startApp();
-        });
-
-        window.addEventListener('offline', () => {
-            showStatus('You are offline — showing cached data', true);
-        });
-    </script>
-</body>
-</html>
+// ==================== EVENT LISTENERS ====================
+function setupEventListeners() {
+  // Office selection
+  document.querySelectorAll('.office-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.office-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('acti
