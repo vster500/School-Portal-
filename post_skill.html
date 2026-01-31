@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post Your Skill | KaziLink Kenya</title>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<style>
+:root {
+    --primary: #1877f2;
+    --primary-dark: #166fe5;
+    --accent: #42b72a;
+    --bg: #f0f2f5;
+    --card-bg: #ffffff;
+    --text-dark: #050505;
+    --text-secondary: #65676b;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg);
+    margin: 0; padding: 0;
+}
+header {
+    background-color: var(--card-bg);
+    padding: 15px 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.container {
+    max-width: 500px;
+    margin: 30px auto;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+.container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+input, textarea, select {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border-radius: var(--radius);
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+textarea { resize: vertical; min-height: 80px; }
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: 0.3s;
+}
+button:hover { background: linear-gradient(90deg, var(--primary-dark), var(--accent)); }
+.success-msg, .error-msg {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+.success-msg { color: var(--accent); }
+.error-msg { color: red; }
+</style>
+</head>
+<body>
+
+<header>KaziLink Kenya | Post Your Skill</header>
+
+<div class="container">
+    <h2>Post Your Skill</h2>
+    <div class="success-msg" id="successMsg"></div>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <input type="text" id="name" placeholder="Your Name" required>
+    <input type="text" id="skill" placeholder="Skill / Job Type (e.g., Driver, Maid)" required>
+    <textarea id="description" placeholder="Additional Description (optional)"></textarea>
+    <input type="text" id="county" placeholder="County" required>
+    <input type="text" id="town" placeholder="Town" required>
+    <input type="text" id="area" placeholder="Area / Estate" required>
+    <input type="text" id="availability" placeholder="Availability (e.g., Full-time, Casual)" required>
+    <input type="text" id="phone" placeholder="Phone Number" required>
+
+    <button id="submitBtn">Post Skill</button>
+</div>
+
+<script>
+// ===== FIREBASE CONFIG =====
+const firebaseConfig = {
+    apiKey: "AIzaSyBnpne91aBQsRYefwHO5fcaGliJTo8jhMk",
+    authDomain: "school-portal-233f5.firebaseapp.com",
+    projectId: "school-portal-233f5",
+    storageBucket: "school-portal-233f5.appspot.com",
+    messagingSenderId: "314984934331",
+    appId: "1:314984934331:web:92922fcc7a959e1fa0729e"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ===== SUBMIT FUNCTION =====
+document.getElementById('submitBtn').addEventListener('click', async () => {
+    const name = document.getElementById('name').value.trim();
+    const skill = document.getElementById('skill').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const county = document.getElementById('county').value.trim();
+    const town = document.getElementById('town').value.trim();
+    const area = document.getElementById('area').value.trim();
+    const availability = document.getElementById('availability').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
+    const successMsg = document.getElementById('successMsg');
+    const errorMsg = document.getElementById('errorMsg');
+    successMsg.innerText = '';
+    errorMsg.innerText = '';
+
+    if(!name || !skill || !county || !town || !area || !availability || !phone){
+        errorMsg.innerText = 'Please fill in all required fields.';
+        return;
+    }
+
+    try {
+        await db.collection('job_seekers').add({
+            name: name,
+            skill_text: skill,
+            description: description,
+            county: county,
+            town: town,
+            area: area,
+            availability: availability,
+            phone: phone,
+            reveal_count: 0,
+            status: 'active',
+            created_at: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        successMsg.innerText = 'Your skill has been posted successfully!';
+        // Clear fields
+        document.getElementById('name').value = '';
+        document.getElementById('skill').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('county').value = '';
+        document.getElementById('town').value = '';
+        document.getElementById('area').value = '';
+        document.getElementById('availability').value = '';
+        document.getElementById('phone').value = '';
+    } catch(err) {
+        console.error(err);
+        errorMsg.innerText = 'Error posting skill. Please try again.';
+    }
+});
+</script>
+
+</body>
+</html>
